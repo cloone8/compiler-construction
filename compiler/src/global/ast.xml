@@ -54,25 +54,6 @@
         </travuser>
       </traversal>
 
-      <traversal id="RI" name="Rename identifiers" default="sons" include="rename_identifiers.h">
-        <travuser>
-          <node name="Var" />
-          <node name="VarLet" />
-        </travuser>
-      </traversal>
-
-      <traversal id="SI" name="Sum ins" default="sons" include="sum_ints.h">
-        <travuser>
-          <node name="Num" />
-        </travuser>
-      </traversal>
-
-      <traversal id="OS" name="Optimise subtraction" default="sons" include="opt_sub.h">
-        <travuser>
-          <node name="BinOp" />
-        </travuser>
-      </traversal>
-
     </general>
   </phases>
 
