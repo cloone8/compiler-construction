@@ -4,6 +4,6 @@
 #include "types.h"
 
 extern node *SInum (node *arg_node, info *arg_info);
-extern node *SIdoSumInts( node *syntaxtree);
+extern node *SIdoSumInts(node *syntaxtree);
 
 #endif

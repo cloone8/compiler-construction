@@ -4,39 +4,39 @@
 <!--
 
 ****************************************************************************
-* 
+*
 * SAC Compiler Construction Framework
-* 
+*
 ****************************************************************************
-* 
+*
 * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
-* 
+*
 * (c) Copyright 1994 - 2011 by
-* 
+*
 *   SAC Development Team
 *   SAC Research Foundation
-* 
+*
 *   http://www.sac-home.org
 *   email:info@sac-home.org
-* 
+*
 *   All rights reserved
-* 
+*
 ****************************************************************************
-* 
-* The SAC compiler construction framework, all accompanying 
+*
+* The SAC compiler construction framework, all accompanying
 * software and documentation (in the following named this software)
 * is developed by the SAC Development Team (in the following named
 * the developer) which reserves all rights on this software.
-* 
+*
 * Permission to use this software is hereby granted free of charge
-* exclusively for the duration and purpose of the course 
-*   "Compilers and Operating Systems" 
+* exclusively for the duration and purpose of the course
+*   "Compilers and Operating Systems"
 * of the MSc programme Grid Computing at the University of Amsterdam.
 * Redistribution of the software or any parts thereof as well as any
-* alteration  of the software or any parts thereof other than those 
+* alteration  of the software or any parts thereof other than those
 * required to use the compiler construction framework for the purpose
 * of the above mentioned course are not permitted.
-* 
+*
 * The developer disclaims all warranties with regard to this software,
 * including all implied warranties of merchantability and fitness.  In no
 * event shall the developer be liable for any special, indirect or
@@ -46,9 +46,9 @@
 * performance of this software. The entire risk as to the quality and
 * performance of this software is with you. Should this software prove
 * defective, you assume the cost of all servicing, repair, or correction.
-* 
+*
 ****************************************************************************
- 
+
  -->
 
 
@@ -60,7 +60,7 @@
      > sabcmd ast2node.xslt ast.xml node.h
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-  
+
   <xsl:import href="common-key-tables.xsl"/>
   <xsl:import href="common-travfun.xsl"/>
   <xsl:import href="common-name-to-nodeenum.xsl"/>
@@ -101,7 +101,7 @@
   <xsl:template match="syntaxtree" mode="generate-attrib-structs">
      <xsl:text>
 /******************************************************************************
- * For each node a structure of its attributes is defined, named 
+ * For each node a structure of its attributes is defined, named
  * ATTRIBS_&lt;nodename&gt;
  *****************************************************************************/
      </xsl:text>
@@ -126,12 +126,12 @@
 
   <!-- generate an entry for an attribute within the attribute structure -->
   <xsl:template match="attribute" mode="generate-attrib-structs">
-    <xsl:value-of select="key( &quot;types&quot;, ./type/@name)/@ctype"/>
+    <xsl:value-of select="key(&quot;types&quot;, ./type/@name)/@ctype"/>
     <xsl:value-of select="' '"/>
     <xsl:value-of select="@name"/>
-    <xsl:if test="key( &quot;arraytypes&quot;, ./type/@name)">
+    <xsl:if test="key(&quot;arraytypes&quot;, ./type/@name)">
       <xsl:value-of select="'['" />
-      <xsl:value-of select="key( &quot;types&quot;, ./type/@name)/@size"/>
+      <xsl:value-of select="key(&quot;types&quot;, ./type/@name)/@size"/>
       <xsl:value-of select="']'" />
     </xsl:if>
     <xsl:value-of select="'; '"/>
@@ -169,7 +169,7 @@
     </xsl:apply-templates>
     <xsl:value-of select="'} ; '"/>
   </xsl:template>
- 
+
   <!-- generate an entry for each node within the union -->
   <xsl:template match="node" mode="generate-attrib-union">
     <xsl:value-of select="'struct ATTRIBS_N_'"/>

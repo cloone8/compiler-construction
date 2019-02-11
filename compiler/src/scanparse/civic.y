@@ -16,7 +16,7 @@
 
 static node *parseresult = NULL;
 extern int yylex();
-static int yyerror( char *errname);
+static int yyerror(char *errname);
 
 %}
 
@@ -57,11 +57,11 @@ program: stmts
 
 stmts: stmt stmts
         {
-          $$ = TBmakeStmts( $1, $2);
+          $$ = TBmakeStmts($1, $2);
         }
       | stmt
         {
-          $$ = TBmakeStmts( $1, NULL);
+          $$ = TBmakeStmts($1, NULL);
         }
         ;
 
@@ -73,13 +73,13 @@ stmt: assign
 
 assign: varlet LET expr SEMICOLON
         {
-          $$ = TBmakeAssign( $1, $3);
+          $$ = TBmakeAssign($1, $3);
         }
         ;
 
 varlet: ID
         {
-          $$ = TBmakeVarlet( STRcpy( $1));
+          $$ = TBmakeVarlet(STRcpy($1));
         }
         ;
 
@@ -90,11 +90,11 @@ expr: constant
       }
     | ID
       {
-        $$ = TBmakeVar( STRcpy( $1));
+        $$ = TBmakeVar(STRcpy($1));
       }
     | BRACKET_L expr binop expr BRACKET_R
       {
-        $$ = TBmakeBinop( $3, $2, $4);
+        $$ = TBmakeBinop($3, $2, $4);
       }
     ;
 
@@ -114,23 +114,23 @@ constant: floatval
 
 floatval: FLOAT
            {
-             $$ = TBmakeFloat( $1);
+             $$ = TBmakeFloat($1);
            }
          ;
 
 intval: NUM
         {
-          $$ = TBmakeNum( $1);
+          $$ = TBmakeNum($1);
         }
       ;
 
 boolval: TRUEVAL
          {
-           $$ = TBmakeBool( TRUE);
+           $$ = TBmakeBool(TRUE);
          }
        | FALSEVAL
          {
-           $$ = TBmakeBool( FALSE);
+           $$ = TBmakeBool(FALSE);
          }
        ;
 
@@ -150,20 +150,20 @@ binop: PLUS      { $$ = BO_add; }
 
 %%
 
-static int yyerror( char *error)
+static int yyerror(char *error)
 {
-  CTIabort( "line %d, col %d\nError parsing source code: %s\n",
+  CTIabort("line %d, col %d\nError parsing source code: %s\n",
             global.line, global.col, error);
 
-  return( 0);
+  return(0);
 }
 
-node *YYparseTree( void)
+node *YYparseTree(void)
 {
   DBUG_ENTER("YYparseTree");
 
   yyparse();
 
-  DBUG_RETURN( parseresult);
+  DBUG_RETURN(parseresult);
 }
 

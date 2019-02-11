@@ -1,17 +1,17 @@
 #ifndef GLOBALtype
-#define GLOBALtype( type)
+#define GLOBALtype(type)
 #endif
 
 #ifndef GLOBALname
-#define GLOBALname( name)
+#define GLOBALname(name)
 #endif
 
 #ifndef GLOBALinit
-#define GLOBALinit( init)
+#define GLOBALinit(init)
 #endif
 
 
-#define GLOBAL( type, name, init) GLOBALtype(type) GLOBALname(name) GLOBALinit(init)
+#define GLOBAL(type, name, init) GLOBALtype(type) GLOBALname(name) GLOBALinit(init)
 
 
 /*
@@ -19,7 +19,7 @@
  */
 
 #if 0
-GLOBAL( type, name, init)
+GLOBAL(type, name, init)
 #endif
 
 #undef GLOBALtype

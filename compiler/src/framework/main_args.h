@@ -1,37 +1,37 @@
 /* ---------------------------------------------------------------------------
- * 
+ *
  * SAC Compiler Construction Framework
- * 
+ *
  * ---------------------------------------------------------------------------
- * 
+ *
  * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
- * 
+ *
  * (c) Copyright 1994 - 2011 by
- * 
+ *
  *   SAC Development Team
  *   SAC Research Foundation
- * 
+ *
  *   http://www.sac-home.org
  *   email:info@sac-home.org
- * 
+ *
  *   All rights reserved
- * 
+ *
  * ---------------------------------------------------------------------------
- * 
- * The SAC compiler construction framework, all accompanying 
+ *
+ * The SAC compiler construction framework, all accompanying
  * software and documentation (in the following named this software)
  * is developed by the SAC Development Team (in the following named
  * the developer) which reserves all rights on this software.
- * 
+ *
  * Permission to use this software is hereby granted free of charge
- * exclusively for the duration and purpose of the course 
- *   "Compilers and Operating Systems" 
+ * exclusively for the duration and purpose of the course
+ *   "Compilers and Operating Systems"
  * of the MSc programme Grid Computing at the University of Amsterdam.
  * Redistribution of the software or any parts thereof as well as any
- * alteration  of the software or any parts thereof other than those 
+ * alteration  of the software or any parts thereof other than those
  * required to use the compiler construction framework for the purpose
  * of the above mentioned course are not permitted.
- * 
+ *
  * The developer disclaims all warranties with regard to this software,
  * including all implied warranties of merchantability and fitness.  In no
  * event shall the developer be liable for any special, indirect or
@@ -41,9 +41,9 @@
  * performance of this software. The entire risk as to the quality and
  * performance of this software is with you. Should this software prove
  * defective, you assume the cost of all servicing, repair, or correction.
- * 
+ *
  * ---------------------------------------------------------------------------
- */ 
+ */
 
 
 
@@ -56,27 +56,27 @@
  * analysis of command line arguments for C programs.
  *
  * Note that for these macros to work correctly you must link your executable
- * program with main_args.o derived from main_args.c ! 
- * 
- **************************************************************************** 
- * 
+ * program with main_args.o derived from main_args.c !
+ *
+ ****************************************************************************
+ *
  * Below is an example usage of these macros:
- * 
- * int main( int argc, char *argv[])
+ *
+ * int main(int argc, char *argv[])
  * {
- *   ARGS_BEGIN( argc, argv);
- *   
- *   ARGS_FLAG( "help", usage(); exit(0));
- * 
- *   ARGS_OPTION( "D", cppvars[num_cpp_vars++] = ARG);
- * 
- *   ARGS_OPTION( "maxinl", ARG_NUM(maxinl));
- * 
- *   ARGS_OPTION( "maxinl", ARG_INT(maxinl));
- * 
- *   ARGS_OPTION( "O", ARG_RANGE(cc_optimize, 0, 3));
- * 
- *   ARGS_OPTION_BEGIN( "d")
+ *   ARGS_BEGIN(argc, argv);
+ *
+ *   ARGS_FLAG("help", usage(); exit(0));
+ *
+ *   ARGS_OPTION("D", cppvars[num_cpp_vars++] = ARG);
+ *
+ *   ARGS_OPTION("maxinl", ARG_NUM(maxinl));
+ *
+ *   ARGS_OPTION("maxinl", ARG_INT(maxinl));
+ *
+ *   ARGS_OPTION("O", ARG_RANGE(cc_optimize, 0, 3));
+ *
+ *   ARGS_OPTION_BEGIN("d")
  *   {
  *     ARG_CHOICE_BEGIN();
  *     ARG_CHOICE("efence",    use_efence=1);
@@ -85,70 +85,70 @@
  *     ARG_CHOICE("cccall",    gen_cccall=1; cleanup=0);
  *     ARG_CHOICE_END();
  *   }
- *   ARGS_OPTION_END( "d");
- * 
- *   ARGS_OPTION_BEGIN( "check")
+ *   ARGS_OPTION_END("d");
+ *
+ *   ARGS_OPTION_BEGIN("check")
  *   {
  *     ARG_FLAGMASK_BEGIN();
- *     ARG_FLAGMASK( 'a', runtimecheck = RUNTIMECHECK_ALL);
- *     ARG_FLAGMASK( 'm', runtimecheck = RUNTIMECHECK_MALLOC);
- *     ARG_FLAGMASK( 'b', runtimecheck = RUNTIMECHECK_BOUNDARY);
- *     ARG_FLAGMASK( 'e', runtimecheck = RUNTIMECHECK_ERRNO);
+ *     ARG_FLAGMASK('a', runtimecheck = RUNTIMECHECK_ALL);
+ *     ARG_FLAGMASK('m', runtimecheck = RUNTIMECHECK_MALLOC);
+ *     ARG_FLAGMASK('b', runtimecheck = RUNTIMECHECK_BOUNDARY);
+ *     ARG_FLAGMASK('e', runtimecheck = RUNTIMECHECK_ERRNO);
  *     ARG_FLAGMASK_END();
  *   }
- *   ARGS_OPTION_END( "check");
- * 
+ *   ARGS_OPTION_END("check");
+ *
  *   ARGS_ARGUMENT(
  *   {
  *      strcpy(filename, ARG);
  *   });
  *
  *   ARGS_END();
- * 
+ *
  *   ...
  *   return(0);
  * }
- * 
- **************************************************************************** 
- * 
+ *
+ ****************************************************************************
+ *
  * Command line analysis is enabled by the macro ARGS_BEGIN() and disabled
- * by the macro ARGS_END(). In between these two, we distinguish between 
+ * by the macro ARGS_END(). In between these two, we distinguish between
  * "flags" which are command line entries that start with '-', "options"
  * which are flags with an additional argument and pure arguments. A dedicated
  * macro exists for each of these entry categories that defines the name of
  * the option or flag along with an associated code sequence which is to
  * be executed when the corresponding flag or option is detected.
- * 
+ *
  * Within a code sequence associated with a flag the name of the flag may
- * always be accessed by the variable OPT; within the code sequence associated 
+ * always be accessed by the variable OPT; within the code sequence associated
  * with an option, the corresponding argument can additionally be accessed
  * through the variable ARG.
- * 
+ *
  * If the associated code detects an error condition, the macro ARGS_ERROR()
  * provides means for a consistent error message production. This macro may
  * be redefined to suit particular needs, e.g. special error message layouts
  * in the context of larger software projects.
- * 
+ *
  * Some special flavours of options are supported by additional macros.
- * 
+ *
  * ARG_CHOICE() implements the selection within a given set of argument strings
  *              and allows to define particular actions to be performed for each.
- * 
+ *
  * ARG_FLAGMASK() implements arguments where each character triggers a certain
  *                bit in an associated bit field.
- * 
+ *
  * ARG_INT() implements an integer argument which is automatically converted
  *           from the command line string an assigned to the given variable.
- * 
+ *
  * ARG_NUM() implements an integer argument which is automatically converted
  *           from the command line string an assigned to the given variable;
  *           the argument must be greater or equal null.
- * 
+ *
  * ARG_RANGE() implements an integer argument which is automatically converted
  *             from the command line string an assigned to the given variable;
  *             the argument must be in the given range (both limits included).
- * 
- * 
+ *
+ *
  */
 
 
@@ -160,7 +160,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern int ARGS_CheckOption(char *pattern, char *argv1, char *argv2, 
+extern int ARGS_CheckOption(char *pattern, char *argv1, char *argv2,
                             char **option, char **argument);
 
 extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
@@ -240,7 +240,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
       ARGS_i++;                                         \
       continue;                                         \
     }
-      
+
 
 #define ARGS_UNKNOWN(action)                    \
 {                                               \
@@ -259,7 +259,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
 #ifndef ARGS_ERROR
 #define ARGS_ERROR(msg)                                                 \
 {                                                                       \
-  fprintf( stderr, "ERROR: %s : %s %s %s !\n",                          \
+  fprintf(stderr, "ERROR: %s : %s %s %s !\n",                          \
            msg, ARGS_argv[0], NULL==OPT?"":OPT, NULL==ARG?"":ARG);      \
 }
 #endif  /* ARGS_ERROR */
@@ -268,7 +268,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
 #define ARG_CHOICE_BEGIN()                      \
 {                                               \
   int ARGS_not_chosen = 1;
-  
+
 #define ARG_CHOICE(choice, action)                              \
   if (ARGS_not_chosen && ARGS_StringEqual(ARG, choice, 0)) {    \
     ARGS_not_chosen = 0;                                        \
@@ -300,7 +300,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
         ARGS_ERROR("Integer argument expected for option");             \
       }                                                                 \
     }
-    
+
 #define ARG_INT(id)                                                     \
     {                                                                   \
       int ARGS_tmp;                                                     \
@@ -319,7 +319,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
         ARGS_ERROR("Integer argument expected for option");             \
       }                                                                 \
     }
-    
+
 
 #define ARG_RANGE(id, min, max)                                 \
     {                                                           \
@@ -351,7 +351,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
       int ARGS_i=0;                             \
       while (ARG[ARGS_i] != '\0') {             \
         switch (ARG[ARGS_i]) {
-          
+
 
 #define ARG_FLAGMASK(c, action)                 \
         case c:                                 \
@@ -359,7 +359,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
             action;                             \
           }                                     \
         break;
-            
+
 #define ARG_FLAGMASK_END()                                      \
         default:                                                \
           {                                                     \
@@ -369,7 +369,7 @@ extern int ARGS_StringEqual(char *s1, char *s2, int case_sensitive);
         ARGS_i++;                                               \
       }                                                         \
     }
-    
+
 
 
 

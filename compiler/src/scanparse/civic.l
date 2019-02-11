@@ -15,7 +15,7 @@
 
 #define FILTER(token) \
   global.col += yyleng;  \
-  return( token);
+  return(token);
 
 #define LINEBUF_SIZE 256
 #define YY_NO_UNPUT
@@ -32,58 +32,58 @@
 
 %%
 
-"("                        { FILTER( BRACKET_L); }
-")"                        { FILTER( BRACKET_R); }
-","                        { FILTER( COMMA); }
-";"                        { FILTER( SEMICOLON); }
+"("                        { FILTER(BRACKET_L); }
+")"                        { FILTER(BRACKET_R); }
+","                        { FILTER(COMMA); }
+";"                        { FILTER(SEMICOLON); }
 
-"-"                        { FILTER( MINUS); }
-"+"                        { FILTER( PLUS);  }
-"*"                        { FILTER( STAR);  }
-"/"                        { FILTER( SLASH);  }
-"%"                        { FILTER( PERCENT);  }
+"-"                        { FILTER(MINUS); }
+"+"                        { FILTER(PLUS);  }
+"*"                        { FILTER(STAR);  }
+"/"                        { FILTER(SLASH);  }
+"%"                        { FILTER(PERCENT);  }
 
-"<="                       { FILTER( LE);    }
-"<"                        { FILTER( LT);    }
-">="                       { FILTER( GE);    }
-">"                        { FILTER( GT);    }
-"=="                       { FILTER( EQ);    }
-"!="                       { FILTER( NE);    }
-"&&"                       { FILTER( AND);    }
-"||"                       { FILTER( OR);    }
+"<="                       { FILTER(LE);    }
+"<"                        { FILTER(LT);    }
+">="                       { FILTER(GE);    }
+">"                        { FILTER(GT);    }
+"=="                       { FILTER(EQ);    }
+"!="                       { FILTER(NE);    }
+"&&"                       { FILTER(AND);    }
+"||"                       { FILTER(OR);    }
 
-"="                        { FILTER( LET);    }
+"="                        { FILTER(LET);    }
 
-"true"                     { FILTER( TRUEVAL); }
-"false"                    { FILTER( FALSEVAL); }
+"true"                     { FILTER(TRUEVAL); }
+"false"                    { FILTER(FALSEVAL); }
 
-"int"                      { FILTER( INTTYPE); }
-"float"                    { FILTER( FLOATTYPE); }
-"bool"                     { FILTER( BOOLTYPE); }
-"void"                     { FILTER( VOIDTYPE); }
+"int"                      { FILTER(INTTYPE); }
+"float"                    { FILTER(FLOATTYPE); }
+"bool"                     { FILTER(BOOLTYPE); }
+"void"                     { FILTER(VOIDTYPE); }
 
-"extern"                   { FILTER( EXTERN); }
-"export"                   { FILTER( EXPORT); }
-"static"                   { FILTER( STATIC); }
+"extern"                   { FILTER(EXTERN); }
+"export"                   { FILTER(EXPORT); }
+"static"                   { FILTER(STATIC); }
 
-"["                        { FILTER( SQR_BRACKET_L)}
-"]"                        { FILTER( SQR_BRACKET_R)}
+"["                        { FILTER(SQR_BRACKET_L)}
+"]"                        { FILTER(SQR_BRACKET_R)}
 
-"for"                      { FILTER( FOR)}
-"do"                       { FILTER( DO)}
-"while"                    { FILTER( WHILE)}
+"for"                      { FILTER(FOR)}
+"do"                       { FILTER(DO)}
+"while"                    { FILTER(WHILE)}
 
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
-                             FILTER( ID);
+                             FILTER(ID);
                            }
 
 [0-9]+                     { yylval.cint=atoi(yytext);
-                             FILTER( NUM);
+                             FILTER(NUM);
                            }
 
 [0-9]*\.[0-9]+             { yylval.cflt=atof(yytext);
-                             FILTER( FLOAT);
+                             FILTER(FLOAT);
                            }
 
 \n.*                       { global.line += 1;

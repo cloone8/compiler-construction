@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-extern void OPTcheckOptions( int argc, char **argv);
+extern void OPTcheckOptions(int argc, char **argv);
 
 #endif /* _SAC_OPTIONS_H_ */

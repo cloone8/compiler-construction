@@ -6,7 +6,7 @@
  *
  * Description:
  *
- * This module implements a demo traversal of the abstract syntax tree that 
+ * This module implements a demo traversal of the abstract syntax tree that
  * prefixes any variable found by two underscores.
  *
  *****************************************************************************/
@@ -27,34 +27,34 @@
  * Traversal functions
  */
 
-node *RIvarlet( node *arg_node, info *arg_info)
+node *RIvarlet(node *arg_node, info *arg_info)
 {
   char *name;
 
   DBUG_ENTER("RIvarlet");
 
-  DBUG_PRINT( "RI", ("Renaming variable: %s", VARLET_NAME( arg_node)));
+  DBUG_PRINT("RI", ("Renaming variable: %s", VARLET_NAME(arg_node)));
 
-  name = VARLET_NAME( arg_node);
-  VARLET_NAME( arg_node) = STRcat( "__", name);
+  name = VARLET_NAME(arg_node);
+  VARLET_NAME(arg_node) = STRcat("__", name);
   MEMfree(name);
 
-  DBUG_RETURN( arg_node);
+  DBUG_RETURN(arg_node);
 }
 
-node *RIvar( node *arg_node, info *arg_info)
+node *RIvar(node *arg_node, info *arg_info)
 {
   char *name;
 
   DBUG_ENTER("RIvar");
 
-  DBUG_PRINT( "RI", ("Renaming variable: %s", VAR_NAME( arg_node)));
+  DBUG_PRINT("RI", ("Renaming variable: %s", VAR_NAME(arg_node)));
 
-  name = VAR_NAME( arg_node);
-  VAR_NAME( arg_node) = STRcat( "__", name);
+  name = VAR_NAME(arg_node);
+  VAR_NAME(arg_node) = STRcat("__", name);
   MEMfree(name);
 
-  DBUG_RETURN( arg_node);
+  DBUG_RETURN(arg_node);
 }
 
 
@@ -62,15 +62,15 @@ node *RIvar( node *arg_node, info *arg_info)
  * Traversal start function
  */
 
-node *RIdoRenameIdentifiers( node *syntaxtree)
+node *RIdoRenameIdentifiers(node *syntaxtree)
 {
   DBUG_ENTER("RIdoRenameIdentifiers");
 
-  TRAVpush( TR_ri);   // Push traversal "ri" as defined in ast.xml
+  TRAVpush(TR_ri);   // Push traversal "ri" as defined in ast.xml
 
-  syntaxtree = TRAVdo( syntaxtree, NULL);   // Initiate ast traversal
+  syntaxtree = TRAVdo(syntaxtree, NULL);   // Initiate ast traversal
 
   TRAVpop();          // Pop current traversal
 
-  DBUG_RETURN( syntaxtree);
+  DBUG_RETURN(syntaxtree);
 }

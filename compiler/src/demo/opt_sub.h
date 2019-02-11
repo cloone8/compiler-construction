@@ -3,6 +3,6 @@
 #include "types.h"
 
 extern node *OSbinop (node *arg_node, info *arg_info);
-extern node *OSdoOptSub( node *syntaxtree);
+extern node *OSdoOptSub(node *syntaxtree);
 
 #endif

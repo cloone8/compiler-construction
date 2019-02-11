@@ -3,7 +3,7 @@
  * @file print.h
  *
  * Functions to print node structures
- * 
+ *
  */
 
 #ifndef _SAC_PRT_NODE_H_
@@ -23,6 +23,6 @@ extern node *PRTsymboltableentry (node * arg_node, info * arg_info);
 extern node *PRTerror (node * arg_node, info * arg_info);
 extern node *PRTmodule (node * arg_node, info * arg_info);
 
-extern node *PRTdoPrint( node *syntaxtree);
+extern node *PRTdoPrint(node *syntaxtree);
 
 #endif /* _SAC_PRT_NODE_H_ */

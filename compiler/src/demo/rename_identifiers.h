@@ -4,6 +4,6 @@
 
 extern node *RIvarlet (node *arg_node, info *arg_info);
 extern node *RIvar (node *arg_node, info *arg_info);
-extern node *RIdoRenameIdentifiers( node *syntaxtree);
+extern node *RIdoRenameIdentifiers(node *syntaxtree);
 
 #endif

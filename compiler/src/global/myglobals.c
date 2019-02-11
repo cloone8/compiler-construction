@@ -9,12 +9,12 @@ myglobals_t myglobal;
  * Initialize my global variables from myglobals.mac
  */
 
-void MYGLBinitializeGlobals( void)
+void MYGLBinitializeGlobals(void)
 {
   DBUG_ENTER("MYGLBinitializeGlobals");
 
-#define GLOBALname( name) myglobal.name = 
-#define GLOBALinit( init) init ;
+#define GLOBALname(name) myglobal.name =
+#define GLOBALinit(init) init ;
 
 #include "myglobals.mac"
 

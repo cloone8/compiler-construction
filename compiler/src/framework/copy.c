@@ -1,37 +1,37 @@
 /* ---------------------------------------------------------------------------
- * 
+ *
  * SAC Compiler Construction Framework
- * 
+ *
  * ---------------------------------------------------------------------------
- * 
+ *
  * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
- * 
+ *
  * (c) Copyright 1994 - 2011 by
- * 
+ *
  *   SAC Development Team
  *   SAC Research Foundation
- * 
+ *
  *   http://www.sac-home.org
  *   email:info@sac-home.org
- * 
+ *
  *   All rights reserved
- * 
+ *
  * ---------------------------------------------------------------------------
- * 
- * The SAC compiler construction framework, all accompanying 
+ *
+ * The SAC compiler construction framework, all accompanying
  * software and documentation (in the following named this software)
  * is developed by the SAC Development Team (in the following named
  * the developer) which reserves all rights on this software.
- * 
+ *
  * Permission to use this software is hereby granted free of charge
- * exclusively for the duration and purpose of the course 
- *   "Compilers and Operating Systems" 
+ * exclusively for the duration and purpose of the course
+ *   "Compilers and Operating Systems"
  * of the MSc programme Grid Computing at the University of Amsterdam.
  * Redistribution of the software or any parts thereof as well as any
- * alteration  of the software or any parts thereof other than those 
+ * alteration  of the software or any parts thereof other than those
  * required to use the compiler construction framework for the purpose
  * of the above mentioned course are not permitted.
- * 
+ *
  * The developer disclaims all warranties with regard to this software,
  * including all implied warranties of merchantability and fitness.  In no
  * event shall the developer be liable for any special, indirect or
@@ -41,9 +41,9 @@
  * performance of this software. The entire risk as to the quality and
  * performance of this software is with you. Should this software prove
  * defective, you assume the cost of all servicing, repair, or correction.
- * 
+ *
  * ---------------------------------------------------------------------------
- */ 
+ */
 
 
 
@@ -64,7 +64,7 @@
  ******************************************************************************/
 
 static info *
-MakeInfo( void)
+MakeInfo(void)
 {
   info *result;
 
@@ -77,11 +77,11 @@ MakeInfo( void)
 }
 
 static info *
-FreeInfo( info *info)
+FreeInfo(info *info)
 {
   DBUG_ENTER ("FreeInfo");
 
-  INFO_LUT( info) = LUTremoveLut( INFO_LUT( info));
+  INFO_LUT(info) = LUTremoveLut(INFO_LUT(info));
   info = MEMfree (info);
 
   DBUG_RETURN (info);
@@ -90,28 +90,28 @@ FreeInfo( info *info)
 
 /** <!-- ****************************************************************** -->
  * @brief Returns a (shallow) copy of the given node.
- * 
+ *
  * @param arg_node node to copy
- * 
+ *
  * @return the copied node
  ******************************************************************************/
 
-node *COPYdoCopy( node *arg_node) 
+node *COPYdoCopy(node *arg_node)
 {
   node *result = NULL;
   info *info = NULL;
-  
+
   DBUG_ENTER("COPYdoCopy");
 
   if (arg_node != NULL) {
     info = MakeInfo();
-    TRAVpush( TR_copy);
+    TRAVpush(TR_copy);
 
-    result = TRAVdo( arg_node, info);
+    result = TRAVdo(arg_node, info);
 
     TRAVpop();
-    info = FreeInfo( info);
+    info = FreeInfo(info);
   }
 
-  DBUG_RETURN( result);
+  DBUG_RETURN(result);
 }

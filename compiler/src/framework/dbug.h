@@ -16,7 +16,7 @@
  *                                                                     *
  ***********************************************************************
  */
- 
+
 /************************************************************************
  *                                                                      *
  * Note that this file has undergone substantial rewriting by the       *
@@ -24,10 +24,10 @@
  *                                                                      *
  ************************************************************************
  */
- 
+
 
 /*
- *  FILE 
+ *  FILE
  *
  *     dbug.h    user include file for programs using the dbug package
  *
@@ -71,12 +71,12 @@
  *     (602) 438-5976
  *
  */
- 
+
 
 /*
  *     Internally used dbug variables which must be global.
  */
- 
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -96,14 +96,14 @@
     extern void _db_pargs_ (int, char*);   /* Remember args for line */
     extern void _db_doprnt_ (char *, ...);
                                            /* Print debug output */
-    extern void _db_doprnt_assert_1_ (char *, int, char *);   
+    extern void _db_doprnt_assert_1_ (char *, int, char *);
                                            /* Print debug output */
     extern void _db_doprnt_assert_2_ (char *, ...);
                                            /* Print debug output */
     extern void _db_setjmp_ (void);        /* Save debugger environment */
     extern void _db_longjmp_ (void);       /* Restore debugger environment */
 # endif
- 
+
 
 /*
  *     These macros provide a user interface into functions in the
@@ -119,7 +119,7 @@
  *     statements in the user function.
  *
  */
- 
+
 #ifdef DBUG_OFF
 #define DBUG_ENTER(a1)
 #define DBUG_RETURN(a1) return(a1)
@@ -137,7 +137,7 @@
 #define DBUG_ASSERTF(p,q)
 #define DBUG_ASSERT_EXPR(p,q,r) (r)
 #define DBUG_LPRINT(key1,key2,arglist)
-#define DBUG_PRINTE( keyword, arglist ) \
+#define DBUG_PRINTE(keyword, arglist ) \
     {printf arglist;printf("\n");fflush(stdout);}
 #else
 #define NOOP _db_dummy_=0
@@ -169,19 +169,19 @@
 
 #define DBUG_ASSERTF(expr,text)                                 \
         if (!(expr)) {                                          \
-          _db_doprnt_assert_1_( __FILE__,__LINE__, NULL);       \
+          _db_doprnt_assert_1_(__FILE__,__LINE__, NULL);       \
           _db_doprnt_assert_2_ text ;                           \
           abort();                                              \
         } else NOOP
 
 #define DBUG_ASSERT(expr,text)                                  \
         if (!(expr)) {                                          \
-          _db_doprnt_assert_1_( __FILE__,__LINE__, text);       \
+          _db_doprnt_assert_1_(__FILE__,__LINE__, text);       \
           abort();                                              \
         } else NOOP
 
 #define DBUG_ASSERT_EXPR(expr,text,val)                                              \
-        (!(expr) ? ( fprintf(stderr,     	                                     \
+        (!(expr) ? (fprintf(stderr,     	                                     \
                              "Assertion 'expr' failed: file '%s', line %d\n** %s\n", \
                              __FILE__,__LINE__,text ),                               \
                      exit(1), val)                                                   \
@@ -189,8 +189,8 @@
 
 #define DBUG_LPRINT(key1,key2,arglist) \
        {if (_db_on_) {_db_lpargs_(__LINE__, key1, key2); _db_ldoprnt_ arglist;}}
-#define DBUG_PRINTE( keyword, arglist ) \
-        ( printf arglist,printf("\n"),fflush(stdout) )
+#define DBUG_PRINTE(keyword, arglist ) \
+        (printf arglist,printf("\n"),fflush(stdout) )
 # endif
 
 

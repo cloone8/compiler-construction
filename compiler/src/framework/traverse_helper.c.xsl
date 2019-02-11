@@ -4,39 +4,39 @@
 <!--
 
 ****************************************************************************
-* 
+*
 * SAC Compiler Construction Framework
-* 
+*
 ****************************************************************************
-* 
+*
 * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
-* 
+*
 * (c) Copyright 1994 - 2011 by
-* 
+*
 *   SAC Development Team
 *   SAC Research Foundation
-* 
+*
 *   http://www.sac-home.org
 *   email:info@sac-home.org
-* 
+*
 *   All rights reserved
-* 
+*
 ****************************************************************************
-* 
-* The SAC compiler construction framework, all accompanying 
+*
+* The SAC compiler construction framework, all accompanying
 * software and documentation (in the following named this software)
 * is developed by the SAC Development Team (in the following named
 * the developer) which reserves all rights on this software.
-* 
+*
 * Permission to use this software is hereby granted free of charge
-* exclusively for the duration and purpose of the course 
-*   "Compilers and Operating Systems" 
+* exclusively for the duration and purpose of the course
+*   "Compilers and Operating Systems"
 * of the MSc programme Grid Computing at the University of Amsterdam.
 * Redistribution of the software or any parts thereof as well as any
-* alteration  of the software or any parts thereof other than those 
+* alteration  of the software or any parts thereof other than those
 * required to use the compiler construction framework for the purpose
 * of the above mentioned course are not permitted.
-* 
+*
 * The developer disclaims all warranties with regard to this software,
 * including all implied warranties of merchantability and fitness.  In no
 * event shall the developer be liable for any special, indirect or
@@ -46,9 +46,9 @@
 * performance of this software. The entire risk as to the quality and
 * performance of this software is with you. Should this software prove
 * defective, you assume the cost of all servicing, repair, or correction.
-* 
+*
 ****************************************************************************
- 
+
  -->
 
 
@@ -56,7 +56,7 @@
 
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-  
+
   <xsl:import href="common-travfun.xsl"/>
   <xsl:import href="common-key-tables.xsl"/>
   <xsl:import href="common-name-to-nodeenum.xsl"/>
@@ -85,7 +85,7 @@
 #include "tree_basic.h"
 #include "traverse.h"
 
-#define TRAV( son, info)    if (son != NULL) { son = TRAVdo( son, info); }
+#define TRAV(son, info)    if (son != NULL) { son = TRAVdo(son, info); }
 
 node *TRAVnone(node *arg_node, info *arg_info)
 {
@@ -94,62 +94,62 @@ node *TRAVnone(node *arg_node, info *arg_info)
 
 node *TRAVerror(node *arg_node, info *arg_info)
 {
-  DBUG_ASSERT( (FALSE), "Illegal node type found.");
+  DBUG_ASSERT((FALSE), "Illegal node type found.");
 
-  return( arg_node);
+  return(arg_node);
 }
 
 node *TRAVsons(node *arg_node, info *arg_info)
-{ 
-  switch (NODE_TYPE( arg_node)) {
+{
+  switch (NODE_TYPE(arg_node)) {
   </xsl:text>
   <xsl:apply-templates select="/definition/syntaxtree" mode="travsons" />
   <xsl:text>
     default:
-      DBUG_ASSERT( (FALSE), 
+      DBUG_ASSERT((FALSE),
          "Illegal nodetype found!" );
       break;
   }
 
-  return( arg_node);
+  return(arg_node);
 }
 
-int TRAVnumSons( node *node)
+int TRAVnumSons(node *node)
 {
   int result = 0;
 
   DBUG_ENTER("TRAVnumSons");
 
-  switch (NODE_TYPE( node)) {
+  switch (NODE_TYPE(node)) {
   </xsl:text>
   <xsl:apply-templates select="/definition/syntaxtree" mode="travnumsons" />
   <xsl:text>
     default:
-      DBUG_ASSERT( (FALSE),
+      DBUG_ASSERT((FALSE),
          "Illegal nodetype found!" );
       break;
   }
 
-  DBUG_RETURN( result);
+  DBUG_RETURN(result);
 }
 
-node *TRAVgetSon( int no, node *parent)
+node *TRAVgetSon(int no, node *parent)
 {
   node * result = NULL;
 
   DBUG_ENTER("TRAVgetSon");
 
-  switch (NODE_TYPE( parent)) {
+  switch (NODE_TYPE(parent)) {
   </xsl:text>
   <xsl:apply-templates select="/definition/syntaxtree" mode="travgetson" />
   <xsl:text>
     default:
-      DBUG_ASSERT( (FALSE),
+      DBUG_ASSERT((FALSE),
          "Illegal nodetype found!" );
       break;
   }
 
-  DBUG_RETURN( result);
+  DBUG_RETURN(result);
 }
     </xsl:text>
   </xsl:template>
@@ -165,7 +165,7 @@ node *TRAVgetSon( int no, node *parent)
   </xsl:template>
 
   <xsl:template match="sons/son" mode="travsons" >
-    <xsl:value-of select="'TRAV( '" />
+    <xsl:value-of select="'TRAV('" />
     <xsl:call-template name="node-access">
       <xsl:with-param name="node">
         <xsl:value-of select="'arg_node'" />
@@ -187,7 +187,7 @@ node *TRAVgetSon( int no, node *parent)
     </xsl:call-template>
     <xsl:value-of select="': '" />
     <xsl:value-of select="'result = '" />
-    <xsl:value-of select="count( sons/son)" />
+    <xsl:value-of select="count(sons/son)" />
     <xsl:value-of select="';'" />
     <xsl:value-of select="'break;'" />
   </xsl:template>
@@ -199,7 +199,7 @@ node *TRAVgetSon( int no, node *parent)
     </xsl:call-template>
     <xsl:value-of select="': switch (no) { '" />
     <xsl:apply-templates select="sons/son" mode="travgetson" />
-    <xsl:value-of select="'default: DBUG_ASSERT( (FALSE), &quot;index out of range!&quot;); break; } break;'" />
+    <xsl:value-of select="'default: DBUG_ASSERT((FALSE), &quot;index out of range!&quot;); break; } break;'" />
   </xsl:template>
 
   <xsl:template match="son" mode="travgetson" >

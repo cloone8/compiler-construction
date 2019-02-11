@@ -8,82 +8,82 @@
 /******************************************************************************/
 
 
-PHASE( ld,
+PHASE(ld,
        "Loading CiviC program",
        ALWAYS)
 
-SUBPHASE( cpp,
+SUBPHASE(cpp,
           "Running C preprocessor",
           SPdoRunPreProcessor,
           NEVER,
           ld)
 
-SUBPHASE( scp,
+SUBPHASE(scp,
           "Reading input file",
           SPdoScanParse,
           ALWAYS,
           ld)
 
-ENDPHASE( ld)
+ENDPHASE(ld)
 
 
 /******************************************************************************/
 
 
-PHASE( pet,
+PHASE(pet,
        "Perform example transformations",
        ALWAYS)
 
-SUBPHASE( co,
+SUBPHASE(co,
             "Count all present operators",
             COdoCount,
             ALWAYS,
             pet)
 
-SUBPHASE( ci,
+SUBPHASE(ci,
             "Count all present identifiers",
             CIdoCount,
             ALWAYS,
             pet)
 
-SUBPHASE( ri,
+SUBPHASE(ri,
           "Rename identifiers",
           RIdoRenameIdentifiers,
           ALWAYS,
           pet)
 
-SUBPHASE( si,
+SUBPHASE(si,
           "Sum Integers",
           SIdoSumInts,
           ALWAYS,
           pet)
 
-SUBPHASE( os,
+SUBPHASE(os,
           "Optimise subtraction",
           OSdoOptSub,
           ALWAYS,
           pet)
 
-ENDPHASE( pet)
+ENDPHASE(pet)
 
 
 /******************************************************************************/
 
 
-PHASE( cg,
+PHASE(cg,
        "Generating Code",
        ALWAYS)
 
-SUBPHASE( prt, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)
-SUBPHASE( prt_ast, "Print ast", PRTdoPrint, ALWAYS, cg)
+SUBPHASE(prt, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)
+SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ALWAYS, cg)
 
-SUBPHASE( frtr,
+SUBPHASE(frtr,
           "De-allocating syntax tree representation",
           FREEdoFreeTree,
           ALWAYS,
           cg)
 
-ENDPHASE( cg)
+ENDPHASE(cg)
 
 
 /******************************************************************************/

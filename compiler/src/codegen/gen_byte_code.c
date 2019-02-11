@@ -10,7 +10,7 @@
  * Traversal start function
  */
 
-node *GBCdoGenByteCode( node *syntaxtree)
+node *GBCdoGenByteCode(node *syntaxtree)
 {
   DBUG_ENTER("GBCdoGenByteCode");
 
@@ -18,5 +18,5 @@ node *GBCdoGenByteCode( node *syntaxtree)
    * Your work here....
    */
 
-  DBUG_RETURN( syntaxtree);
+  DBUG_RETURN(syntaxtree);
 }

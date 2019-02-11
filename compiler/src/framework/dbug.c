@@ -16,7 +16,7 @@
  *                                                                      *
  ************************************************************************
  */
- 
+
 
 /************************************************************************
  *                                                                      *
@@ -25,14 +25,14 @@
  *                                                                      *
  ************************************************************************
  */
- 
+
 
 /*
- *  FILE 
+ *  FILE
  *
  *     dbug.c   runtime support routines for dbug package
  *
- *  SCCS 
+ *  SCCS
  *
  *     @(#)dbug.c      1.14 10/29/86
  *
@@ -56,7 +56,7 @@
  */
 
 
-#ifndef DBUG_OFF 
+#ifndef DBUG_OFF
 
 #include <stdio.h>
 #include <string.h>
@@ -74,25 +74,25 @@
 /*
  *     Manifest constants that should not require any changes.
  */
- 
+
 #define FALSE          0       /* Boolean FALSE */
 #define TRUE           1       /* Boolean TRUE */
 #define EOS            '\000'  /* End Of String marker */
- 
+
 /*
  *     Manifest constants which may be "tuned" if desired.
  */
- 
+
 #define PRINTBUF       1024    /* Print buffer size */
 #define INDENT         1       /* Indentation per trace level */
 #define MAXDEPTH       400000  /* Maximum trace depth default */
- 
+
 /*
  *     The following flags are used to determine which
  *     capabilities the user has enabled with the state
  *     push macro.
  */
- 
+
 #define TRACE_ON       000001  /* Trace enabled */
 #define DEBUG_ON       000002  /* Debug enabled */
 #define FILE_ON        000004  /* File name print enabled */
@@ -100,34 +100,34 @@
 #define DEPTH_ON       000020  /* Function nest level print enabled */
 #define PROCESS_ON     000040  /* Process name print enabled */
 #define NUMBER_ON      000100  /* Number each line of output */
- 
+
 #define TRACING0 (stack -> flags & TRACE_ON)
 #define DEBUGGING (stack -> flags & DEBUG_ON)
 #define STREQ(a,b) (strcmp(a,b) == 0)
- 
+
 /*
  *     Typedefs to make things more obvious.
  */
- 
+
 #define VOID void              /* Can't use typedef for most compilers */
 typedef int BOOLEAN;
- 
+
 /*
  *     Make it easy to change storage classes if necessary.
  */
- 
+
 #define LOCAL static           /* Names not needed by outside world */
 #define IMPORT extern          /* Names defined externally */
 #define EXPORT                 /* Allocated here, available globally */
 #define AUTO auto              /* Names to be allocated on stack */
 #define REGISTER register      /* Names to be placed in registers */
- 
- 
+
+
 /*
  *     Variables which are available externally but should only
  *     be accessed via the macro package facilities.
  */
- 
+
 
 #ifdef STDERR_IS_CONSTANT
 
@@ -142,14 +142,14 @@ EXPORT FILE *_db_fp_;         /* Output stream, default stderr */
 EXPORT char *_db_process_ = "dbug";    /* Pointer to process name; argv[0] */
 EXPORT BOOLEAN _db_on_ = FALSE;                /* TRUE if debugging currently on */
 EXPORT int _db_dummy_;
- 
+
 
 /*
  *     The user may specify a list of functions to trace or
  *     debug.  These lists are kept in a linear linked list,
  *     a very simple implementation.
  */
- 
+
 struct link {
     char *string;              /* Pointer to link's contents */
     struct link *next_link;    /* Pointer to the next link */
@@ -161,11 +161,11 @@ LOCAL void FreeList(struct link *linkp);
 LOCAL void DoPrefix(int _line_);
 LOCAL int DelayArg(int value);
 
- 
+
 #ifndef fflush                 /* This is sometimes a macro */
   IMPORT int fflush ();                /* Flush output for stream */
 #endif
- 
+
 
 
 
@@ -176,7 +176,7 @@ LOCAL int DelayArg(int value);
  *     stack is pushed by adding a new state to the head of the
  *     list or popped by removing the first link.
  */
- 
+
 struct state {
     int flags;                         /* Current state flags */
     int maxdepth;                      /* Current maximum trace depth */
@@ -188,22 +188,22 @@ struct state {
     struct link *processes;            /* List of process names */
     struct state *next_state;          /* Next state in the list */
 };
- 
+
 LOCAL struct state *stack = NULL;      /* Linked list of stacked states */
- 
+
 /*
  *     Local variables not seen by user.
  */
- 
+
 LOCAL int lineno = 0;          /* Current debugger output line number */
 LOCAL char *func = "?func";    /* Name of current user function */
 LOCAL char *file = "?file";    /* Name of current user file */
 LOCAL BOOLEAN init_done = FALSE;/* Set to TRUE when initialization done */
- 
+
 LOCAL int jmplevel;            /* Remember nesting level at setjmp () */
 LOCAL char *jmpfunc;           /* Remember current function for setjmp */
 LOCAL char *jmpfile;           /* Remember current file for setjmp */
- 
+
 LOCAL struct link *ListParse (char *ctlp);/* Parse a debug command string */
 LOCAL char *StrDup (char *string);         /* Make a fresh copy of a string */
 LOCAL VOID OpenFile (char *name);                /* Open debug output stream */
@@ -218,7 +218,7 @@ LOCAL BOOLEAN DoTrace (void);      /* Test for TRACING enabled */
 LOCAL BOOLEAN Writable (char *pathname);     /* Test to see if file is writable */
 LOCAL char *DbugMalloc (int size);     /* Allocate memory for runtime support */
 LOCAL char *BaseName (char *pathname);       /* Remove leading pathname components */
- 
+
 
                                /* Supplied in Sys V runtime environ */
 #ifndef HAVE_STRTOK
@@ -227,7 +227,7 @@ LOCAL char *strtok (char *s1, char *s2);         /* Break string into tokens */
 #ifndef HAVE_STRRCHR
 LOCAL char *strrchr (char *s, char c);                /* Find last occurance of char */
 #endif
- 
+
 /*
  *     The following local variables are used to hold the state information
  *     between the call to _db_pargs_() and _db_doprnt_(), during
@@ -239,26 +239,26 @@ LOCAL char *strrchr (char *s, char c);                /* Find last occurance of 
  *     These variables are currently used only by _db_pargs_() and
  *     _db_doprnt_().
  */
- 
+
 LOCAL int u_line = 0;           /* User source code line number */
 LOCAL char *u_keyword = "?";    /* Keyword for current macro */
 LOCAL char *u_keyword2 = "?";   /* Keyword for current macro */
- 
+
 /*
  *     Miscellaneous printf format strings.
  */
- 
+
 #define ERR_MISSING_RETURN "%s: missing DBUG_RETURN or DBUG_VOID_RETURN macro in function \"%s\"\n"
 #define ERR_OPEN "%s: can't open debug output stream \"%s\": "
 #define ERR_CLOSE "%s: can't close debug file: "
 #define ERR_ABORT "%s: debugger aborting because %s\n"
 #define ERR_CHOWN "%s: can't change owner/group of \"%s\": "
 #define ERR_PRINTF "%s: obsolete object file for '%s', please recompile!\n"
- 
+
 /*
  *     Macros and defines for testing file accessibility under UNIX.
  */
- 
+
 #ifdef unix
 #  define A_EXISTS     00              /* Test for file existance */
 #  define A_EXECUTE    01              /* Test for execute permission */
@@ -274,7 +274,7 @@ LOCAL char *u_keyword2 = "?";   /* Keyword for current macro */
 /*
  *     jd/ks  Specials for us for use in _db_ldoprnt / _db_doprnt.
  *
- */ 
+ */
 
 #if SHM
 IMPORT int processid;
@@ -302,7 +302,7 @@ IMPORT int processid;
 
 void Delay(int d_time)
 {
-  if ( d_time != 0 )
+  if (d_time != 0 )
     sleep(d_time);
 }
 
@@ -314,7 +314,7 @@ void Delay(int d_time)
 
 
 IMPORT unsigned sleep ();      /* Pause for given number of seconds */
- 
+
 
 
 /*
@@ -411,17 +411,17 @@ IMPORT unsigned sleep ();      /* Pause for given number of seconds */
  *     For convenience, any leading "-#" is stripped off.
  *
  */
- 
+
 
 VOID _db_push_ (char *control)
 {
     REGISTER char *scan;
     REGISTER struct link *temp;
- 
+
     if (control && *control == '-') {
        if (*++control == '#') {
            control++;
-       } 
+       }
     }
     control = StrDup (control);
     PushState ();
@@ -488,12 +488,12 @@ VOID _db_push_ (char *control)
                    FreeList (temp);
                }
                break;
-       } 
+       }
     }
     free (control);
 }
- 
- 
+
+
 
 /*
  *  FUNCTION
@@ -511,29 +511,29 @@ VOID _db_push_ (char *control)
  *     user tries to pop too many states.
  *
  */
- 
+
 VOID _db_pop_ (VOID)
 {
     REGISTER struct state *discard;
- 
+
     discard = stack;
     if (discard != NULL && discard -> next_state != NULL) {
        stack = discard -> next_state;
        _db_fp_ = stack -> out_file;
        if (discard -> keywords != NULL) {
            FreeList (discard -> keywords);
-       } 
+       }
        if (discard -> functions != NULL) {
            FreeList (discard -> functions);
-       } 
+       }
        if (discard -> processes != NULL) {
            FreeList (discard -> processes);
-       } 
+       }
        CloseFile (discard -> out_file);
        free ((char *) discard);
     }
 }
- 
+
 
 /*
  *  FUNCTION
@@ -570,8 +570,8 @@ VOID _db_pop_ (VOID)
  *     maintaining an internal stack for the function names.
  *
  */
- 
-VOID _db_enter_ (char *_func_, char *_file_, int _line_, 
+
+VOID _db_enter_ (char *_func_, char *_file_, int _line_,
                  char **_sfunc_, char **_sfile_, int *_slevel_)
 {
     if (!init_done) {
@@ -582,11 +582,11 @@ VOID _db_enter_ (char *_func_, char *_file_, int _line_,
     func = _func_;
     file = BaseName (_file_);
     stack -> level++;
-    if( stack -> level == stack -> maxdepth+1 ) {
-      fprintf( _db_fp_, "WARNING: dbug-maxdepth %d too low\n", stack -> maxdepth);
+    if(stack -> level == stack -> maxdepth+1 ) {
+      fprintf(_db_fp_, "WARNING: dbug-maxdepth %d too low\n", stack -> maxdepth);
 #if 0
       /**
-       * automatic tracing is a good idea for detecting the reason for the 
+       * automatic tracing is a good idea for detecting the reason for the
        * overflow, but it sometimes kills the masterrun. Therefore, we decided
        * NOT to automatically trace anymore.....
        */
@@ -602,7 +602,7 @@ VOID _db_enter_ (char *_func_, char *_file_, int _line_,
        (VOID) Delay (stack -> delay);
     }
 }
- 
+
 
 /*
  *  FUNCTION
@@ -625,7 +625,7 @@ VOID _db_enter_ (char *_func_, char *_file_, int _line_,
  *     file names from the defunct function's stack.
  *
  */
- 
+
 VOID _db_return_ (int _line_, char **_sfunc_, char **_sfile_, int *_slevel_)
 {
     if (!init_done) {
@@ -644,7 +644,7 @@ VOID _db_return_ (int _line_, char **_sfunc_, char **_sfile_, int *_slevel_)
     func = *_sfunc_;
     file = *_sfile_;
 }
- 
+
 
 /*
  *  FUNCTION
@@ -666,14 +666,14 @@ VOID _db_return_ (int _line_, char **_sfunc_, char **_sfile_, int *_slevel_)
  *     that are used by the subsequent call to _db_doprnt_().
 *
  */
- 
+
 VOID _db_lpargs_ (int _line_, char *key1, char *key2)
 {
     u_line = _line_;
     u_keyword = key1;
     u_keyword2 = key2;
 }
- 
+
 
 /*
  *  FUNCTION
@@ -712,17 +712,17 @@ VOID _db_lpargs_ (int _line_, char *key1, char *key2)
  *
  */
 
- 
+
 VOID _db_ldoprnt_ (char *format, ...)
 {
     va_list args;
 
-    va_start( args, format);
+    va_start(args, format);
 
-    if ( (_db_keyword_ (u_keyword)) && (_db_keyword_ (u_keyword2)) )
+    if ((_db_keyword_ (u_keyword)) && (_db_keyword_ (u_keyword2)) )
     {
 #if SHM
-      (VOID) fprintf ( _db_fp_, "m%2d: ", processid);
+      (VOID) fprintf (_db_fp_, "m%2d: ", processid);
 #endif
       DoPrefix (u_line);
       if (TRACING0)
@@ -732,7 +732,7 @@ VOID _db_ldoprnt_ (char *format, ...)
       else
       {
         (VOID) fprintf (_db_fp_, "%12.12s: ", func);
-      } 
+      }
       (VOID) fprintf (_db_fp_, "%s(%s): ", u_keyword, u_keyword2);
       (VOID) vfprintf (_db_fp_, format, args);
       (VOID) fprintf (_db_fp_, "\n");
@@ -744,8 +744,8 @@ VOID _db_ldoprnt_ (char *format, ...)
 
 VOID _db_doprnt_assert_1_ (char *file, int line, char *text)
 {
-  fprintf(_db_fp_,                                               
-          "ASSERTION FAILED: file '%s', line %d\n",        
+  fprintf(_db_fp_,
+          "ASSERTION FAILED: file '%s', line %d\n",
           file, line);
   if (text != NULL) {
     fprintf(_db_fp_, "%s\n", text);
@@ -758,14 +758,14 @@ VOID _db_doprnt_assert_2_ (char *format, ...)
 {
   va_list args;
 
-  va_start( args, format);
+  va_start(args, format);
 
   vfprintf (_db_fp_, format, args);
   fprintf (_db_fp_, "\n");
   fprintf(_db_fp_, "EXECUTION TERMINATED\n");
   fflush (_db_fp_);
 
-  va_end( args);
+  va_end(args);
 }
 
 
@@ -788,13 +788,13 @@ VOID _db_doprnt_assert_2_ (char *format, ...)
  *     that are used by the subsequent call to _db_doprnt_().
 *
  */
- 
+
 VOID _db_pargs_ (int _line_, char *keyword)
 {
     u_line = _line_;
     u_keyword = keyword;
 }
- 
+
 
 /*
  *  FUNCTION
@@ -832,24 +832,24 @@ VOID _db_pargs_ (int _line_, char *keyword)
  *     convert to it quite yet...
  *
  */
- 
+
 /*VARARGS1*/
 VOID _db_doprnt_ (char *format, ...)
 {
     va_list args;
 
-    va_start( args, format);
+    va_start(args, format);
 
     if (_db_keyword_ (u_keyword)) {
 #if SHM
-      (VOID) fprintf ( _db_fp_, "m%2d: ", processid);
+      (VOID) fprintf (_db_fp_, "m%2d: ", processid);
 #endif
        DoPrefix (u_line);
        if (TRACING0) {
            Indent (stack -> level + 1);
        } else {
            (VOID) fprintf (_db_fp_, "%12.12s: ", func);
-       } 
+       }
        (VOID) fprintf (_db_fp_, "%s: ", u_keyword);
        (VOID) vfprintf (_db_fp_, format, args);
        (VOID) fprintf (_db_fp_, "\n");
@@ -857,9 +857,9 @@ VOID _db_doprnt_ (char *format, ...)
        (VOID) Delay (stack -> delay);
     }
 
-    va_end( args);
+    va_end(args);
 }
- 
+
 
 
 /*
@@ -885,22 +885,22 @@ VOID _db_doprnt_ (char *format, ...)
  *     significant for our usage here.
  *
  */
- 
+
 LOCAL struct link *ListParse (char *ctlp)
 {
     REGISTER char *start;
     REGISTER struct link *new;
     REGISTER struct link *head;
- 
+
     head = NULL;
     while (*ctlp != EOS) {
        start = ctlp;
        while (*ctlp != EOS && *ctlp != ',') {
            ctlp++;
-       } 
+       }
        if (*ctlp == ',') {
            *ctlp++ = EOS;
-       } 
+       }
        new = (struct link *) DbugMalloc (sizeof (struct link));
        new -> string = StrDup (start);
        new -> next_link = head;
@@ -908,7 +908,7 @@ LOCAL struct link *ListParse (char *ctlp)
     }
     return (head);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -933,12 +933,12 @@ LOCAL struct link *ListParse (char *ctlp)
  *     is a list, only those strings in the list will be accepted.
  *
  */
- 
+
 LOCAL BOOLEAN InList (struct link *linkp, char *cp)
 {
     REGISTER struct link *scan;
     REGISTER BOOLEAN accept;
- 
+
     if (linkp == NULL) {
        accept = TRUE;
     } else {
@@ -948,11 +948,11 @@ LOCAL BOOLEAN InList (struct link *linkp, char *cp)
                accept = TRUE;
                break;
            }
-       } 
+       }
     }
     return (accept);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -975,11 +975,11 @@ LOCAL BOOLEAN InList (struct link *linkp, char *cp)
  *     to the limits of memory if necessary.
  *
  */
- 
+
 LOCAL VOID PushState (VOID)
 {
     REGISTER struct state *new;
- 
+
     new = (struct state *) DbugMalloc (sizeof (struct state));
     new -> flags = 0;
     new -> delay = 0;
@@ -1000,7 +1000,7 @@ LOCAL VOID PushState (VOID)
     stack = new;
     init_done = TRUE;
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1020,11 +1020,11 @@ LOCAL VOID PushState (VOID)
  *     tracing is enabled, FALSE otherwise.
  *
  */
- 
+
 LOCAL BOOLEAN DoTrace (VOID)
 {
     REGISTER BOOLEAN trace;
- 
+
     trace = FALSE;
     if (TRACING0) {
        if (stack -> level <= stack -> maxdepth) {
@@ -1033,11 +1033,11 @@ LOCAL BOOLEAN DoTrace (VOID)
                    trace = TRUE;
                }
            }
-       } 
+       }
     }
     return (trace);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1063,11 +1063,11 @@ LOCAL BOOLEAN DoTrace (VOID)
  *     Returns TRUE if keyword accepted, FALSE otherwise.
  *
  */
- 
+
 BOOLEAN _db_keyword_ (char *keyword)
 {
     REGISTER BOOLEAN accept;
- 
+
     if (!init_done) {
        _db_push_ ("");
     }
@@ -1081,11 +1081,11 @@ BOOLEAN _db_keyword_ (char *keyword)
                    }
                }
            }
-       } 
+       }
     }
     return (accept);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1107,25 +1107,25 @@ BOOLEAN _db_keyword_ (char *keyword)
  *     of character positions per nesting level.
  *
  */
- 
+
 LOCAL void Indent (int indent)
 {
     REGISTER int count;
     AUTO char buffer[PRINTBUF];
- 
+
     indent *= INDENT;
     for (count = 0; (count < (indent - INDENT)) && (count < (PRINTBUF - 1)); count++) {
        if ((count % INDENT) == 0) {
            buffer[count] = '|';
        } else {
            buffer[count] = ' ';
-       } 
+       }
     }
     buffer[count] = EOS;
     (VOID) fprintf (_db_fp_, "%s", buffer);
     (VOID) fflush (_db_fp_);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1143,21 +1143,21 @@ LOCAL void Indent (int indent)
  *     memory held by the list and the members of the list.
  *
  */
- 
+
 LOCAL void FreeList (struct link *linkp)
 {
     REGISTER struct link *old;
- 
+
     while (linkp != NULL) {
        old = linkp;
        linkp = linkp -> next_link;
        if (old -> string != NULL) {
            free (old -> string);
-       } 
+       }
        free ((char *) old);
     }
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1177,17 +1177,17 @@ LOCAL void FreeList (struct link *linkp)
  *     fatal.
  *
  */
- 
+
 
 LOCAL char *StrDup (char *string)
 {
     REGISTER char *new;
- 
+
     new = DbugMalloc (strlen (string) + 1);
     (VOID) strcpy (new, string);
     return (new);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1207,8 +1207,8 @@ LOCAL char *StrDup (char *string)
  *     and current function nesting depth.
  *
  */
- 
- 
+
+
 LOCAL void DoPrefix (int _line_)
 {
     lineno++;
@@ -1229,7 +1229,7 @@ LOCAL void DoPrefix (int _line_)
     }
     (VOID) fflush (_db_fp_);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1247,11 +1247,11 @@ LOCAL void DoPrefix (int _line_)
  *     and sets the output stream to the new file.
  *
  */
- 
+
 LOCAL VOID OpenFile (char *name)
 {
     REGISTER FILE *fp;
- 
+
     if (name != NULL) {
        if (strcmp (name, "-") == 0) {
            _db_fp_ = stdout;
@@ -1286,10 +1286,10 @@ LOCAL VOID OpenFile (char *name)
 */
                }
            }
-       } 
+       }
     }
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1307,7 +1307,7 @@ LOCAL VOID OpenFile (char *name)
  *     or standard error.
  *
  */
- 
+
 LOCAL VOID CloseFile (FILE *fp)
 {
     if (fp != stderr && fp != stdout) {
@@ -1316,10 +1316,10 @@ LOCAL VOID CloseFile (FILE *fp)
            perror ("");
            (VOID) fflush (stderr);
            (VOID) Delay (stack -> delay);
-       } 
+       }
     }
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1339,7 +1339,7 @@ LOCAL VOID CloseFile (FILE *fp)
  *     defined in the user's debugger include file.
  *
  */
- 
+
 LOCAL VOID DbugExit (char *why)
 {
     (VOID) fprintf (stderr, ERR_ABORT, _db_process_, why);
@@ -1347,7 +1347,7 @@ LOCAL VOID DbugExit (char *why)
     (VOID) Delay (stack -> delay);
     exit (1);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1369,30 +1369,30 @@ LOCAL VOID DbugExit (char *why)
  *     and continue execution.
  *
  */
- 
+
 LOCAL char *DbugMalloc (int size)
 {
     register char *new;
- 
+
     new = malloc ((unsigned int) size);
     if (new == NULL) {
        DbugExit ("out of memory");
     }
     return (new);
 }
- 
+
 
 /*
  *     This function may be eliminated when strtok is available
  *     in the runtime environment (missing from BSD4.1).
  */
- 
+
 #ifndef HAVE_STRTOK
 LOCAL char *strtok (char *s1, char *s2)
 {
     static char *end = NULL;
     REGISTER char *rtnval;
- 
+
     rtnval = NULL;
     if (s2 != NULL) {
        if (s1 != NULL) {
@@ -1406,12 +1406,12 @@ LOCAL char *strtok (char *s1, char *s2)
                    *end++ = EOS;
                }
            }
-       } 
+       }
     }
     return (rtnval);
 }
 #endif
- 
+
 
 /*
  *  FUNCTION
@@ -1430,18 +1430,18 @@ LOCAL char *strtok (char *s1, char *s2)
  *     it.
  *
  */
- 
+
 LOCAL char *BaseName (char *pathname)
 {
     register char *base;
- 
+
     base = strrchr (pathname, '/');
     if (base++ == NULL) {
        base = pathname;
     }
     return (base);
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1465,14 +1465,14 @@ LOCAL char *BaseName (char *pathname)
  *     create access to the named file.  Returns FALSE otherwise.
  *
  */
- 
+
 LOCAL BOOLEAN Writable (char *pathname)
 {
     REGISTER BOOLEAN granted;
 #ifdef unix
     REGISTER char *lastslash;
 #endif
- 
+
 #ifndef unix
     granted = TRUE;
 #else
@@ -1480,37 +1480,37 @@ LOCAL BOOLEAN Writable (char *pathname)
     if (EXISTS(pathname)) {
        if (WRITABLE(pathname)) {
            granted = TRUE;
-       } 
+       }
     } else {
        lastslash = strrchr (pathname, '/');
        if (lastslash != NULL) {
            *lastslash = EOS;
        } else {
            pathname = ".";
-       } 
+       }
        if (WRITABLE(pathname)) {
            granted = TRUE;
-       } 
+       }
        if (lastslash != NULL) {
            *lastslash = '/';
-       } 
+       }
     }
 #endif
     return (granted);
 }
- 
+
 
 /*
  *     This function may be eliminated when strrchr is available
  *     in the runtime environment (missing from BSD4.1).
  *     Alternately, you can use rindex() on BSD systems.
  */
- 
+
 #ifndef HAVE_STRRCHR
 LOCAL char *strrchr (char *s, char c)
 {
     REGISTER char *scan;
- 
+
     for (scan = s; *scan != EOS; scan++) {;}
     while (scan > s && *--scan != c) {;}
     if (*scan != c) {
@@ -1519,7 +1519,7 @@ LOCAL char *strrchr (char *s, char c)
     return (scan);
 }
 #endif
- 
+
 
 #if 0
 /*
@@ -1544,7 +1544,7 @@ LOCAL char *strrchr (char *s, char c)
  *     harmless).
  *
  */
- 
+
 LOCAL VOID ChangeOwner (char *pathname)
 {
 #ifdef unix
@@ -1557,7 +1557,7 @@ LOCAL VOID ChangeOwner (char *pathname)
 #endif
 }
 #endif
- 
+
 
 /*
  *  FUNCTION
@@ -1575,14 +1575,14 @@ LOCAL VOID ChangeOwner (char *pathname)
  *     environment.
  *
  */
- 
+
 EXPORT void _db_setjmp_ (VOID)
 {
    jmplevel = stack -> level;
    jmpfunc = func;
    jmpfile = file;
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1600,7 +1600,7 @@ EXPORT void _db_setjmp_ (VOID)
  *     previously saved environment.
  *
  */
- 
+
 EXPORT void _db_longjmp_ (VOID)
 {
     stack -> level = jmplevel;
@@ -1611,7 +1611,7 @@ EXPORT void _db_longjmp_ (VOID)
        file = jmpfile;
     }
 }
- 
+
 
 /*
  *  FUNCTION
@@ -1635,16 +1635,16 @@ EXPORT void _db_longjmp_ (VOID)
  *     on unix.  Other systems will need to use a timing loop.
  *
  */
- 
+
 #ifdef AMIGA
 #define HZ (50)                        /* Probably in some header somewhere */
 #endif
- 
+
 /*ARGSUSED*/ /* lint: value used */
 LOCAL int DelayArg (int value)
 {
     int delayarg;
-#define UNIX 
+#define UNIX
 #ifdef UNIX
     delayarg = value / 10;             /* Delay is in seconds for sleep () */
 #else
@@ -1655,11 +1655,11 @@ LOCAL int DelayArg (int value)
 #endif
     return (delayarg);
 }
- 
- 
+
+
 void postmortem(char * s)
 {
-  fprintf( stderr, "\n\nPostMortem: %s\n",s);
+  fprintf(stderr, "\n\nPostMortem: %s\n",s);
   exit(99);
 }
 
@@ -1669,7 +1669,7 @@ int DBUG_almost_useless_dummy_var=0;
 
 /*
  * This dummy variable avoids the compilation of an entirely empty file in the
- * case of generating a product version of sac2c. It turned out to be the easiest 
+ * case of generating a product version of sac2c. It turned out to be the easiest
  * way to avoid nasty warnings on some systems.
  */
 

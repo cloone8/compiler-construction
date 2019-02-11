@@ -5,6 +5,6 @@
 
 extern node *CObinop (node *arg_node, info *arg_info);
 extern node *COmodule(node *arg_node, info *arg_info);
-extern node *COdoCount( node *syntaxtree);
+extern node *COdoCount(node *syntaxtree);
 
 #endif

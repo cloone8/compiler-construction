@@ -14,15 +14,15 @@ void PrintGeneralInfo(void)
 {
   DBUG_ENTER("PrintGeneralInfo");
 
-  printf( "\n\n"
+  printf("\n\n"
           "      civicc  --  Programming C,  the civilised way\n"
           "    ------------------------------------------------\n");
 
-  printf( "\n\nSPECIAL OPTIONS:\n\n"
+  printf("\n\nSPECIAL OPTIONS:\n\n"
 
           "    -h              Display this helptext.\n");
 
-  printf( "\n\nGENERAL OPTIONS:\n\n"
+  printf("\n\nGENERAL OPTIONS:\n\n"
 
           "    <filename>      Name of program file to compile.\n\n"
           "    -o <filename>   Name of output file.\n\n"
@@ -43,7 +43,7 @@ void PrintAuthorInfo(void)
 {
   DBUG_ENTER("PrintAuthorInfo");
 
-  printf( "\n\nAUTHORS:\n\n"
+  printf("\n\nAUTHORS:\n\n"
 
           "SAC Development Team for the Compiler Framework.\n\n"
           "Wouter de Bruijn (11239050) & Maurits Ouwerkerk (11289287) for the CiviC compiler.\n\n");
@@ -53,11 +53,11 @@ void PrintAuthorInfo(void)
 }
 
 static
-void PrintBreakOptions( void)
+void PrintBreakOptions(void)
 {
   DBUG_ENTER("PrintBreakOptions");
 
-  printf( "\n\nBREAK OPTIONS:\n\n"
+  printf("\n\nBREAK OPTIONS:\n\n"
 
           "    Break options allow you to stop the compilation process\n"
           "    after a particular phase, subphase or cycle optimisation.\n"
@@ -79,11 +79,11 @@ void PrintBreakOptions( void)
 
 
 static
-void PrintBreakoptionSpecifier( void)
+void PrintBreakoptionSpecifier(void)
 {
   DBUG_ENTER("PrintBreakoptionSpecifier");
 
-  printf( "\n\nBREAK OPTION SPECIFIERS:\n");
+  printf("\n\nBREAK OPTION SPECIFIERS:\n");
 
   PHOprintPhases();
 

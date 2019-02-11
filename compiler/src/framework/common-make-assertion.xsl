@@ -4,39 +4,39 @@
 <!--
 
 ****************************************************************************
-* 
+*
 * SAC Compiler Construction Framework
-* 
+*
 ****************************************************************************
-* 
+*
 * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
-* 
+*
 * (c) Copyright 1994 - 2011 by
-* 
+*
 *   SAC Development Team
 *   SAC Research Foundation
-* 
+*
 *   http://www.sac-home.org
 *   email:info@sac-home.org
-* 
+*
 *   All rights reserved
-* 
+*
 ****************************************************************************
-* 
-* The SAC compiler construction framework, all accompanying 
+*
+* The SAC compiler construction framework, all accompanying
 * software and documentation (in the following named this software)
 * is developed by the SAC Development Team (in the following named
 * the developer) which reserves all rights on this software.
-* 
+*
 * Permission to use this software is hereby granted free of charge
-* exclusively for the duration and purpose of the course 
-*   "Compilers and Operating Systems" 
+* exclusively for the duration and purpose of the course
+*   "Compilers and Operating Systems"
 * of the MSc programme Grid Computing at the University of Amsterdam.
 * Redistribution of the software or any parts thereof as well as any
-* alteration  of the software or any parts thereof other than those 
+* alteration  of the software or any parts thereof other than those
 * required to use the compiler construction framework for the purpose
 * of the above mentioned course are not permitted.
-* 
+*
 * The developer disclaims all warranties with regard to this software,
 * including all implied warranties of merchantability and fitness.  In no
 * event shall the developer be liable for any special, indirect or
@@ -46,9 +46,9 @@
 * performance of this software. The entire risk as to the quality and
 * performance of this software is with you. Should this software prove
 * defective, you assume the cost of all servicing, repair, or correction.
-* 
+*
 ****************************************************************************
- 
+
  -->
 
 
@@ -82,7 +82,7 @@ version="1.0">
 <!-- check for mandatory sons to be set to a value other than NULL -->
 <xsl:template match="son[@mandatory = 'yes']" mode="make-assertion-nonnull">
   <xsl:param name="self"/>
-  <xsl:value-of select="'DBUG_ASSERT( '" />
+  <xsl:value-of select="'DBUG_ASSERT('" />
   <xsl:call-template name="node-access">
     <xsl:with-param name="node">
       <xsl:value-of select="$self" />
@@ -94,7 +94,7 @@ version="1.0">
       <xsl:value-of select="@name" />
     </xsl:with-param>
   </xsl:call-template>
-  <xsl:value-of select="' != NULL, ( &quot;Field '" />
+  <xsl:value-of select="' != NULL, (&quot;Field '" />
   <xsl:value-of select="@name" />
   <xsl:value-of select="' of node N_'" />
   <xsl:value-of select="../../@name" />
@@ -110,7 +110,7 @@ version="1.0">
 <xsl:template match="son" mode="make-assertion-target">
   <xsl:param name="self"/>
   <xsl:call-template name="newline" />
-  <xsl:value-of select="'if ( ( '"/>
+  <xsl:value-of select="'if (('"/>
   <!-- check non-zero -->
   <xsl:call-template name="node-access">
     <xsl:with-param name="node">
@@ -129,7 +129,7 @@ version="1.0">
     <xsl:with-param name="self" select="$self" />
   </xsl:apply-templates>
   <!-- a reasonable errormessage -->
-  <xsl:value-of select="') { CTIwarn( &quot;Field '" />
+  <xsl:value-of select="') { CTIwarn(&quot;Field '" />
   <xsl:value-of select="@name" />
   <xsl:value-of select="' of node N_'" />
   <xsl:value-of select="../../@name" />
@@ -139,7 +139,7 @@ version="1.0">
 <!-- for each target node we generate one N_xxx for the conditional -->
 <xsl:template match="target/node" mode="make-assertion-target">
   <xsl:param name="self"/>
-  <xsl:value-of select="'&amp;&amp; ( NODE_TYPE( '" />
+  <xsl:value-of select="'&amp;&amp; (NODE_TYPE('" />
   <xsl:call-template name="node-access">
     <xsl:with-param name="node">
       <xsl:value-of select="$self" />
@@ -171,7 +171,7 @@ version="1.0">
   </xsl:variable>
   <!-- iterate over all nodeset members -->
   <xsl:for-each select="//nodesets/nodeset[@name = current()/@name]/target/node">
-    <xsl:value-of select="'&amp;&amp; ( NODE_TYPE( '" />
+    <xsl:value-of select="'&amp;&amp; (NODE_TYPE('" />
     <xsl:call-template name="node-access">
       <xsl:with-param name="node">
         <xsl:value-of select="$self" />

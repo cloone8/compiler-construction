@@ -6,7 +6,7 @@
  *
  * Description:
  *
- * This module implements a demo traversal of the abstract syntax tree that 
+ * This module implements a demo traversal of the abstract syntax tree that
  * sums up all integer constants and prints the result at the end of the traversal.
  *
  *****************************************************************************/
@@ -47,22 +47,22 @@ static info *MakeInfo(void)
 {
   info *result;
 
-  DBUG_ENTER( "MakeInfo");
+  DBUG_ENTER("MakeInfo");
 
   result = (info *)MEMmalloc(sizeof(info));
 
-  INFO_SUM( result) = 0;
+  INFO_SUM(result) = 0;
 
-  DBUG_RETURN( result);
+  DBUG_RETURN(result);
 }
 
-static info *FreeInfo( info *info)
+static info *FreeInfo(info *info)
 {
   DBUG_ENTER ("FreeInfo");
 
-  info = MEMfree( info);
+  info = MEMfree(info);
 
-  DBUG_RETURN( info);
+  DBUG_RETURN(info);
 }
 
 
@@ -74,9 +74,9 @@ node *SInum (node *arg_node, info *arg_info)
 {
   DBUG_ENTER("SInum");
 
-  INFO_SUM( arg_info) += NUM_VALUE(arg_node);
+  INFO_SUM(arg_info) += NUM_VALUE(arg_node);
 
-  DBUG_RETURN( arg_node);
+  DBUG_RETURN(arg_node);
 }
 
 
@@ -84,7 +84,7 @@ node *SInum (node *arg_node, info *arg_info)
  * Traversal start function
  */
 
-node *SIdoSumInts( node *syntaxtree)
+node *SIdoSumInts(node *syntaxtree)
 {
   info *arg_info;
 
@@ -92,13 +92,13 @@ node *SIdoSumInts( node *syntaxtree)
 
   arg_info = MakeInfo();
 
-  TRAVpush( TR_si);
-  syntaxtree = TRAVdo( syntaxtree, arg_info);
+  TRAVpush(TR_si);
+  syntaxtree = TRAVdo(syntaxtree, arg_info);
   TRAVpop();
 
-  CTInote( "Sum of integer constants: %d", INFO_SUM( arg_info));
+  CTInote("Sum of integer constants: %d", INFO_SUM(arg_info));
 
-  arg_info = FreeInfo( arg_info);
+  arg_info = FreeInfo(arg_info);
 
-  DBUG_RETURN( syntaxtree);
+  DBUG_RETURN(syntaxtree);
 }

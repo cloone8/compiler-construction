@@ -2,39 +2,39 @@
 
 <!--
 ****************************************************************************
-* 
+*
 * SAC Compiler Construction Framework
-* 
+*
 ****************************************************************************
-* 
+*
 * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
-* 
+*
 * (c) Copyright 1994 - 2011 by
-* 
+*
 *   SAC Development Team
 *   SAC Research Foundation
-* 
+*
 *   http://www.sac-home.org
 *   email:info@sac-home.org
-* 
+*
 *   All rights reserved
-* 
+*
 ****************************************************************************
-* 
-* The SAC compiler construction framework, all accompanying 
+*
+* The SAC compiler construction framework, all accompanying
 * software and documentation (in the following named this software)
 * is developed by the SAC Development Team (in the following named
 * the developer) which reserves all rights on this software.
-* 
+*
 * Permission to use this software is hereby granted free of charge
-* exclusively for the duration and purpose of the course 
-*   "Compilers and Operating Systems" 
+* exclusively for the duration and purpose of the course
+*   "Compilers and Operating Systems"
 * of the MSc programme Grid Computing at the University of Amsterdam.
 * Redistribution of the software or any parts thereof as well as any
-* alteration  of the software or any parts thereof other than those 
+* alteration  of the software or any parts thereof other than those
 * required to use the compiler construction framework for the purpose
 * of the above mentioned course are not permitted.
-* 
+*
 * The developer disclaims all warranties with regard to this software,
 * including all implied warranties of merchantability and fitness.  In no
 * event shall the developer be liable for any special, indirect or
@@ -44,7 +44,7 @@
 * performance of this software. The entire risk as to the quality and
 * performance of this software is with you. Should this software prove
 * defective, you assume the cost of all servicing, repair, or correction.
-* 
+*
 ****************************************************************************
  -->
 
@@ -61,7 +61,7 @@ version="1.0">
 <xsl:output method="text" indent="no"/>
 <xsl:strip-space elements="*"/>
 
-<!-- 
+<!--
      This stylesheet generates a check_node.c file implementing all
      functions needed to touch a specific node
 
@@ -117,9 +117,9 @@ version="1.0">
 #include "traverse.h"
 #include "dbug.h"
 
-#define CHKMTRAV( node, info) (node != NULL) ? TRAVdo( node, info) : node
-#define CHKMCOND( node, info)                                    \
-    ? CHKMTRAV( node, info)                                      \
+#define CHKMTRAV(node, info) (node != NULL) ? TRAVdo(node, info) : node
+#define CHKMCOND(node, info)                                    \
+    ? CHKMTRAV(node, info)                                      \
     : (node)
 
 
@@ -128,14 +128,14 @@ version="1.0">
  *
  * @fn CHKMpostfun
  *
- * This is the postfun function of the CHKM Traversal  
+ * This is the postfun function of the CHKM Traversal
  *
  ******************************************************************************/
-node *CHKMpostfun( node * arg_node, info * arg_info)
+node *CHKMpostfun(node * arg_node, info * arg_info)
 {
-DBUG_ENTER( "CHKMpostfun");
+DBUG_ENTER("CHKMpostfun");
 
-DBUG_RETURN( arg_node);
+DBUG_RETURN(arg_node);
 }
   </xsl:text>
   <!-- functions -->
@@ -159,7 +159,7 @@ DBUG_RETURN( arg_node);
      - function body
        - call templates for sons
        - call templates for attributes
-     
+
      remarks:
 
      the body contains calls to touch for all nodes and attributes.
@@ -177,13 +177,13 @@ DBUG_RETURN( arg_node);
   <xsl:apply-templates select="@name"/>
   <!-- start of body -->
   <xsl:value-of select="'{'"/>
-  <!-- if there is a for loop for initialising attributes, we 
+  <!-- if there is a for loop for initialising attributes, we
        need a variable cnt, which is created here -->
   <xsl:if test="attributes/attribute[key(&quot;arraytypes&quot;, ./type/@name)]">
     <xsl:value-of select="'int cnt;'" />
   </xsl:if>
   <!-- DBUG_ENTER statement -->
-  <xsl:value-of select="'DBUG_ENTER( &quot;CHKM'"/>
+  <xsl:value-of select="'DBUG_ENTER(&quot;CHKM'"/>
   <xsl:call-template name="lowercase" >
     <xsl:with-param name="string" >
       <xsl:value-of select="@name"/>
@@ -192,16 +192,16 @@ DBUG_RETURN( arg_node);
   <xsl:value-of select="'&quot;);'"/>
 
   <!-- trav the node error -->
-  <xsl:value-of select="'NODE_ERROR( arg_node) = CHKMTRAV( NODE_ERROR( arg_node), arg_info);'"/>
+  <xsl:value-of select="'NODE_ERROR(arg_node) = CHKMTRAV(NODE_ERROR(arg_node), arg_info);'"/>
 
   <xsl:apply-templates select="sons/son[@name = &quot;Next&quot;]"/>
   <!-- call touch for attributes -->
   <xsl:apply-templates select="attributes/attribute"/>
   <!-- call touch for all other sons -->
-  <xsl:apply-templates select="sons/son[not( @name= &quot;Next&quot;)]"/>
+  <xsl:apply-templates select="sons/son[not(@name= &quot;Next&quot;)]"/>
 
   <!-- DBUG_RETURN call -->
-  <xsl:value-of select="'DBUG_RETURN( arg_node);'"/>
+  <xsl:value-of select="'DBUG_RETURN(arg_node);'"/>
   <!-- end of body -->
   <xsl:value-of select="'}'"/>
 </xsl:template>
@@ -213,7 +213,7 @@ DBUG_RETURN( arg_node);
      generates a comment and function head
 
      layout:
-   
+
      - call travfun-comment template
      - call travfun-head template
 -->
@@ -223,7 +223,7 @@ DBUG_RETURN( arg_node);
     <xsl:with-param name="prefix">CHKM</xsl:with-param>
     <xsl:with-param name="name"><xsl:value-of select="." /></xsl:with-param>
     <xsl:with-param name="text">Touched the node and its sons/attributes</xsl:with-param>
-  </xsl:call-template>  
+  </xsl:call-template>
   <xsl:call-template name="travfun-head">
     <xsl:with-param name="prefix">CHKM</xsl:with-param>
     <xsl:with-param name="name"><xsl:value-of select="." /></xsl:with-param>
@@ -238,13 +238,13 @@ DBUG_RETURN( arg_node);
 
      example:
 
-     ARG_NEXT( arg_node) = CHKMTRAV( ARG_NEXT( arg_node), arg_info);
+     ARG_NEXT(arg_node) = CHKMTRAV(ARG_NEXT(arg_node), arg_info);
 
      remarks:
- 
+
      for all sons, the macro CHKTRAV is called.x
 -->
-     
+
 <xsl:template match="son">
   <xsl:call-template name="node-access">
     <xsl:with-param name="node">arg_node</xsl:with-param>
@@ -255,7 +255,7 @@ DBUG_RETURN( arg_node);
       <xsl:value-of select="@name"/>
     </xsl:with-param>
   </xsl:call-template>
-  <xsl:value-of select="' = CHKMTRAV( '" />
+  <xsl:value-of select="' = CHKMTRAV('" />
   <xsl:call-template name="node-access">
     <xsl:with-param name="node">arg_node</xsl:with-param>
     <xsl:with-param name="nodetype">
@@ -297,7 +297,7 @@ DBUG_RETURN( arg_node);
     <xsl:otherwise>
       <!-- if it is an array, we have to build a for loop over its elements -->
       <xsl:if test="key(&quot;arraytypes&quot;, ./type/@name)">
-        <xsl:value-of select="'for( cnt = 0; cnt &lt; '" />
+        <xsl:value-of select="'for(cnt = 0; cnt &lt; '" />
         <xsl:value-of select="key(&quot;types&quot;, ./type/@name)/@size"/>
         <xsl:value-of select="'; cnt++) { '" />
       </xsl:if>

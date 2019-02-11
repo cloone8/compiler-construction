@@ -4,39 +4,39 @@
 <!--
 
 ****************************************************************************
-* 
+*
 * SAC Compiler Construction Framework
-* 
+*
 ****************************************************************************
-* 
+*
 * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
-* 
+*
 * (c) Copyright 1994 - 2011 by
-* 
+*
 *   SAC Development Team
 *   SAC Research Foundation
-* 
+*
 *   http://www.sac-home.org
 *   email:info@sac-home.org
-* 
+*
 *   All rights reserved
-* 
+*
 ****************************************************************************
-* 
-* The SAC compiler construction framework, all accompanying 
+*
+* The SAC compiler construction framework, all accompanying
 * software and documentation (in the following named this software)
 * is developed by the SAC Development Team (in the following named
 * the developer) which reserves all rights on this software.
-* 
+*
 * Permission to use this software is hereby granted free of charge
-* exclusively for the duration and purpose of the course 
-*   "Compilers and Operating Systems" 
+* exclusively for the duration and purpose of the course
+*   "Compilers and Operating Systems"
 * of the MSc programme Grid Computing at the University of Amsterdam.
 * Redistribution of the software or any parts thereof as well as any
-* alteration  of the software or any parts thereof other than those 
+* alteration  of the software or any parts thereof other than those
 * required to use the compiler construction framework for the purpose
 * of the above mentioned course are not permitted.
-* 
+*
 * The developer disclaims all warranties with regard to this software,
 * including all implied warranties of merchantability and fitness.  In no
 * event shall the developer be liable for any special, indirect or
@@ -46,9 +46,9 @@
 * performance of this software. The entire risk as to the quality and
 * performance of this software is with you. Should this software prove
 * defective, you assume the cost of all servicing, repair, or correction.
-* 
+*
 ****************************************************************************
- 
+
  -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -59,11 +59,11 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
   <xsl:import href="common-name-to-nodeenum.xsl" />
 
   <!-- this xslt script generates a nice html view given the ast xml
-       definition file. It is no good example to get an overview, as 
+       definition file. It is no good example to get an overview, as
        it is pretty ugly. Refer to the c code generating scripts
        instead -->
-  <xsl:output method="xml" version="1.0" indent="yes" 
-              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
+  <xsl:output method="xml" version="1.0" indent="yes"
+              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
               doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" />
   <xsl:strip-space elements="*" />
 
@@ -75,29 +75,29 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
         <link rel="SHORTCUT ICON" href="http://www.sac-home.org/images/icons/favicon.ico" />
         <title>SaC Syntax Tree</title>
         <style type="text/css">
-          body { font-family: sans-serif } 
+          body { font-family: sans-serif }
           table { border-width: 1pt; border-style: solid;
-                  border-color: #000000; background-color: #cccccc; 
-                  padding: 0pt; margin: 20pt; width: 90% } 
+                  border-color: #000000; background-color: #cccccc;
+                  padding: 0pt; margin: 20pt; width: 90% }
           table.inner { border-width: 1pt; border-style: solid;
-                        border-color: #000000; background-color: #cccccc; 
-                        padding: 0pt; margin: 20pt; width: 100% } 
-          tr { padding: 10pt; margin: 0pt; border-style: none} 
-          td { vertical-align: top; padding: 4pt; margin: 0pt; 
-               border-style: none } 
-          td.title { background-color: #000000; color: #ffffff; 
-                     font-weight: bold } 
+                        border-color: #000000; background-color: #cccccc;
+                        padding: 0pt; margin: 20pt; width: 100% }
+          tr { padding: 10pt; margin: 0pt; border-style: none}
+          td { vertical-align: top; padding: 4pt; margin: 0pt;
+               border-style: none }
+          td.title { background-color: #000000; color: #ffffff;
+                     font-weight: bold }
           td.heading { background-color: #999999; font-weight:
-                       bold } 
+                       bold }
           div.description { font-size: smaller; }
           td.subheading { background-color: #999999; padding: 2pt;
-                          margin: 0pt } 
-          td.toclink { text-align: right; font-size: smaller; } 
-          td.hidden { padding: 0pt } 
+                          margin: 0pt }
+          td.toclink { text-align: right; font-size: smaller; }
+          td.hidden { padding: 0pt }
           td.ccode { font-family: courier; }
-          table.hidden { border-style: none; margin: 0pt; width: 100%; 
-                         padding: 2pt } 
-          tr.nonmandatory { color: #666666; font-style: italic } 
+          table.hidden { border-style: none; margin: 0pt; width: 100%;
+                         padding: 2pt }
+          tr.nonmandatory { color: #666666; font-style: italic }
           div.alert { display: inline; color: #ff0000 }
           a:link { text-decoration: underline }
           a:visited { text-decoration: underline }
@@ -105,36 +105,36 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
           tr.footnote-heading { background-color: #999999; font-weight:
                        bold; font-size: small }
           tr.footnote { font-size: small }
-          #Nav { position:fixed; top:0px; left:0px; padding:0px; 
+          #Nav { position:fixed; top:0px; left:0px; padding:0px;
                  margin:0px; font-size: smaller; background-color: #AAAAAA; }
-          #miniNav { position:fixed; top:0px; right:0px; padding:0px; 
-                     margin:0px; font-size: smaller; 
+          #miniNav { position:fixed; top:0px; right:0px; padding:0px;
+                     margin:0px; font-size: smaller;
                      background-color: #AAAAAA; display: none; }
           #NavPhases{ position:fixed; padding: 0px;
-                      margin:0px; font-size: smaller; 
+                      margin:0px; font-size: smaller;
                       background-color: #AAAAAA; display: none;
                       width: 200pt; max-height: 90%; overflow: scroll; }
           #NavSets{ position:fixed; padding: 0px;
-                    margin:0px; font-size: smaller; 
+                    margin:0px; font-size: smaller;
                     background-color: #AAAAAA; display: none;
                     width: 200pt; max-height: 90%; overflow: scroll; }
           #NavNodes{ position:fixed; padding: 0px;
-                     margin:0px; font-size: smaller; 
+                     margin:0px; font-size: smaller;
                      background-color: #AAAAAA; display: none;
                      width: 200pt; max-height: 90%; overflow: scroll; }
           #TOC{ display: none; }
           table.nav { border-width: 1pt; border-style: solid;
-                      border-color: #000000; background-color: #cccccc; 
-                      padding: 0pt; margin: 0pt; width: 100% } 
+                      border-color: #000000; background-color: #cccccc;
+                      padding: 0pt; margin: 0pt; width: 100% }
           table.mininav { border-width: 1pt; border-style: solid;
-                          border-color: #000000; background-color: #cccccc; 
+                          border-color: #000000; background-color: #cccccc;
                           padding: 0pt; margin: 0pt; width: 10pt;}
           table.sub { border-width: 1pt; border-style: solid;
-                      border-color: #000000; background-color: #cccccc; 
+                      border-color: #000000; background-color: #cccccc;
                       padding: 0pt; margin: 0pt; width: 100%;}
         </style>
         <script type="text/javascript" language="JavaScript1.2">
-          function toggle( id) {
+          function toggle(id) {
             if (document.getElementById(id).style.display != "block") {
               document.getElementById(id).style.display = "block";
             } else {
@@ -205,7 +205,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
               </td>
               <td>
                 <div style="text-align: right;">
-                  <a href="javascript:void( noNav())">hide &gt;&gt;</a>
+                  <a href="javascript:void(noNav())">hide &gt;&gt;</a>
                 </div>
               </td>
             </tr>
@@ -214,7 +214,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
         <div id="miniNav">
           <table class="mininav">
             <tr><td>
-              <a href="javascript: void( showNav())">&lt;&lt;</a>
+              <a href="javascript: void(showNav())">&lt;&lt;</a>
             </td></tr>
           </table>
         </div>
@@ -400,7 +400,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
       <td>
         <xsl:value-of select="@ctype" />
         <xsl:if test="@size">
-          <xsl:value-of select="concat( concat( '[', @size), ']')"/>
+          <xsl:value-of select="concat(concat('[', @size), ']')"/>
         </xsl:if>
       </td>
       <td>
@@ -473,8 +473,8 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
       </tr>
     </table>
   </xsl:template>
-  
-    
+
+
   <!-- each nodeset is transformed into a table -->
   <xsl:template match="nodeset" mode="table">
     <xsl:element name="a">
@@ -484,7 +484,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
     </xsl:element>
     <table>
       <tr>
-        <td class="title">Nodeset 
+        <td class="title">Nodeset
           <xsl:value-of select="@name" />
           <xsl:apply-templates select="description" mode="table" />
         </td>
@@ -501,7 +501,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
       </tr>
     </table>
   </xsl:template>
- 
+
   <!-- sort all nodes -->
   <xsl:template match="syntaxtree" mode="table">
     <xsl:apply-templates select="node" mode="table">
@@ -586,7 +586,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
                 <td class="subheading">Default</td>
                 <td class="subheading">Comment</td>
               </tr>
-              <xsl:apply-templates select="attributes/attribute[not( type/targets/target/phases/all)]" mode="table" />
+              <xsl:apply-templates select="attributes/attribute[not(type/targets/target/phases/all)]" mode="table" />
             </table>
           </td>
         </tr>
@@ -728,7 +728,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
   <!-- target is transformed into a small list -->
   <xsl:template match="target" mode="attrib-table">
-    <xsl:value-of select="' ( '" />
+    <xsl:value-of select="' ('" />
     <xsl:apply-templates select="target" mode="table-target" />
     <xsl:value-of select="' ) '" />
   </xsl:template>
@@ -742,12 +742,12 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
     <xsl:value-of select="' ]'" />
   </xsl:template>
   <xsl:template match="phases/phase" mode="table-node">
-    <xsl:value-of select="concat( concat( '[ ', @name ), ' ]')" />
+    <xsl:value-of select="concat(concat('[ ', @name ), ' ]')" />
   </xsl:template>
   <xsl:template match="phases/range" mode="table-node">
     <xsl:value-of select="'[ '" />
-    <xsl:value-of select="concat( @from, ' - ')" />
-    <xsl:value-of select="concat( @to, ' ]')" />
+    <xsl:value-of select="concat(@from, ' - ')" />
+    <xsl:value-of select="concat(@to, ' ]')" />
   </xsl:template>
 
   <!-- flags are matched into a row of a table -->
@@ -757,7 +757,7 @@ xmlns="http://www.w3.org/1999/xhtml" version="1.0">
         <xsl:value-of select="@name" />
       </td>
       <td class="ccode" >
-        <xsl:if test="not( @default)" >
+        <xsl:if test="not(@default)" >
           <xsl:value-of select="'FALSE'" />
         </xsl:if>
         <xsl:value-of select="@default" />

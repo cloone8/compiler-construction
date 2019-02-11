@@ -4,39 +4,39 @@
 <!--
 
 ****************************************************************************
-* 
+*
 * SAC Compiler Construction Framework
-* 
+*
 ****************************************************************************
-* 
+*
 * SAC COPYRIGHT NOTICE, LICENSE, AND DISCLAIMER
-* 
+*
 * (c) Copyright 1994 - 2011 by
-* 
+*
 *   SAC Development Team
 *   SAC Research Foundation
-* 
+*
 *   http://www.sac-home.org
 *   email:info@sac-home.org
-* 
+*
 *   All rights reserved
-* 
+*
 ****************************************************************************
-* 
-* The SAC compiler construction framework, all accompanying 
+*
+* The SAC compiler construction framework, all accompanying
 * software and documentation (in the following named this software)
 * is developed by the SAC Development Team (in the following named
 * the developer) which reserves all rights on this software.
-* 
+*
 * Permission to use this software is hereby granted free of charge
-* exclusively for the duration and purpose of the course 
-*   "Compilers and Operating Systems" 
+* exclusively for the duration and purpose of the course
+*   "Compilers and Operating Systems"
 * of the MSc programme Grid Computing at the University of Amsterdam.
 * Redistribution of the software or any parts thereof as well as any
-* alteration  of the software or any parts thereof other than those 
+* alteration  of the software or any parts thereof other than those
 * required to use the compiler construction framework for the purpose
 * of the above mentioned course are not permitted.
-* 
+*
 * The developer disclaims all warranties with regard to this software,
 * including all implied warranties of merchantability and fitness.  In no
 * event shall the developer be liable for any special, indirect or
@@ -46,9 +46,9 @@
 * performance of this software. The entire risk as to the quality and
 * performance of this software is with you. Should this software prove
 * defective, you assume the cost of all servicing, repair, or correction.
-* 
+*
 ****************************************************************************
- 
+
  -->
 
 
@@ -66,7 +66,7 @@ version="1.0">
 <xsl:output method="text" indent="no"/>
 <xsl:strip-space elements="*"/>
 
-<!-- 
+<!--
      This stylesheet generates a free_node.c file implementing all
      functions needed to free a specific node
 
@@ -127,10 +127,10 @@ version="1.0">
 #include "memory.h"
 #include "dbug.h"
 
-#define FREETRAV( node, info) (node != NULL) ? TRAVdo( node, info) : node
-#define FREECOND( node, info)                                    \
-  (INFO_FREE_FLAG( info) != arg_node)                            \
-    ? FREETRAV( node, info)                                      \
+#define FREETRAV(node, info) (node != NULL) ? TRAVdo(node, info) : node
+#define FREECOND(node, info)                                    \
+  (INFO_FREE_FLAG(info) != arg_node)                            \
+    ? FREETRAV(node, info)                                      \
     : (node)
 
   </xsl:text>
@@ -154,7 +154,7 @@ version="1.0">
      - function body
        - call templates for sons
        - call templates for attributes
-     
+
      remarks:
 
      the body contains calls to free for all nodes and attributes.
@@ -165,7 +165,7 @@ version="1.0">
      function for array attributes has to free one element only!
 
      The return value is the value of the NEXT son, or if no NEXT son
-     is present the result of Free. This way, depending on the 
+     is present the result of Free. This way, depending on the
      TRAVCOND macro, the full chain of nodes or only one node can
      be freed.
 -->
@@ -175,7 +175,7 @@ version="1.0">
   <xsl:apply-templates select="@name"/>
   <!-- start of body -->
   <xsl:value-of select="'{'"/>
-  <!-- if there is a for loop for initialising attributes, we 
+  <!-- if there is a for loop for initialising attributes, we
        need a variable cnt, which is created here -->
   <xsl:if test="attributes/attribute[key(&quot;arraytypes&quot;, ./type/@name)]">
     <xsl:value-of select="'int cnt;'" />
@@ -183,7 +183,7 @@ version="1.0">
   <!-- variable for result -->
   <xsl:value-of select="'node *result = NULL;'"/>
   <!-- DBUG_ENTER statement -->
-  <xsl:value-of select="'DBUG_ENTER( &quot;FREE'"/>
+  <xsl:value-of select="'DBUG_ENTER(&quot;FREE'"/>
   <xsl:call-template name="lowercase" >
     <xsl:with-param name="string" >
       <xsl:value-of select="@name"/>
@@ -191,7 +191,7 @@ version="1.0">
   </xsl:call-template>
   <xsl:value-of select="'&quot;);'"/>
   <!-- give hint we start to free now -->
-  <xsl:value-of select="'DBUG_PRINT( &quot;FREE&quot;, (&quot;Processing node '" />
+  <xsl:value-of select="'DBUG_PRINT(&quot;FREE&quot;, (&quot;Processing node '" />
   <xsl:call-template name="name-to-nodeenum" >
     <xsl:with-param name="name" >
       <xsl:value-of select="@name"/>
@@ -203,7 +203,7 @@ version="1.0">
   <!-- call free for attributes -->
   <xsl:apply-templates select="attributes/attribute"/>
   <!-- call free for all other sons -->
-  <xsl:apply-templates select="sons/son[not( @name= &quot;Next&quot;)]"/>
+  <xsl:apply-templates select="sons/son[not(@name= &quot;Next&quot;)]"/>
   <!-- rescue NEXT element -->
   <xsl:choose>
     <xsl:when test="sons/son[@name = &quot;Next&quot;]">
@@ -226,7 +226,7 @@ version="1.0">
   <xsl:call-template name="name-to-nodeenum" >
     <xsl:with-param name="name" select="@name"/>
   </xsl:call-template>
-  <xsl:value-of select="' = MEMfree( arg_node->sons.'"/>
+  <xsl:value-of select="' = MEMfree(arg_node->sons.'"/>
   <xsl:call-template name="name-to-nodeenum" >
     <xsl:with-param name="name" select="@name"/>
   </xsl:call-template>
@@ -236,13 +236,13 @@ version="1.0">
   <xsl:call-template name="name-to-nodeenum" >
     <xsl:with-param name="name" select="@name"/>
   </xsl:call-template>
-  <xsl:value-of select="' = MEMfree( arg_node->attribs.'"/>
+  <xsl:value-of select="' = MEMfree(arg_node->attribs.'"/>
   <xsl:call-template name="name-to-nodeenum" >
     <xsl:with-param name="name" select="@name"/>
   </xsl:call-template>
   <xsl:value-of select="');'"/>
   <!-- calculate return value and free node -->
-  <xsl:value-of select="'DBUG_PRINT( &quot;FREE&quot;, (&quot;Processing node '" />
+  <xsl:value-of select="'DBUG_PRINT(&quot;FREE&quot;, (&quot;Processing node '" />
   <xsl:call-template name="name-to-nodeenum" >
     <xsl:with-param name="name" >
       <xsl:value-of select="@name"/>
@@ -251,14 +251,14 @@ version="1.0">
   <xsl:value-of select="' at &quot; F_PTR, arg_node));'"/>
   <xsl:choose>
     <xsl:when test="sons/son[@name = &quot;Next&quot;]">
-      <xsl:value-of select="'arg_node = MEMfree( arg_node);'"/>
+      <xsl:value-of select="'arg_node = MEMfree(arg_node);'"/>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:value-of select="'result = MEMfree( arg_node);'"/>
+      <xsl:value-of select="'result = MEMfree(arg_node);'"/>
     </xsl:otherwise>
   </xsl:choose>
   <!-- DBUG_RETURN call -->
-  <xsl:value-of select="'DBUG_RETURN( result);'"/>
+  <xsl:value-of select="'DBUG_RETURN(result);'"/>
   <!-- end of body -->
   <xsl:value-of select="'}'"/>
 </xsl:template>
@@ -269,7 +269,7 @@ version="1.0">
      generates a comment and function head
 
      layout:
-   
+
      - call travfun-comment template
      - call travfun-head template
 -->
@@ -279,7 +279,7 @@ version="1.0">
     <xsl:with-param name="prefix">FREE</xsl:with-param>
     <xsl:with-param name="name"><xsl:value-of select="." /></xsl:with-param>
     <xsl:with-param name="text">Frees the node and its sons/attributes</xsl:with-param>
-  </xsl:call-template>  
+  </xsl:call-template>
   <xsl:call-template name="travfun-head">
     <xsl:with-param name="prefix">FREE</xsl:with-param>
     <xsl:with-param name="name"><xsl:value-of select="." /></xsl:with-param>
@@ -293,15 +293,15 @@ version="1.0">
 
      example:
 
-     ARG_NEXT( arg_node) = FREETRAV( ARG_NEXT( arg_node), arg_info);
+     ARG_NEXT(arg_node) = FREETRAV(ARG_NEXT(arg_node), arg_info);
 
      remarks:
- 
+
      for sons named NEXT, the macro FREECONT is called, for all other
      sons FREETRAV is called. This allows to delete only one son in
      a chain of nodes.
 -->
-     
+
 <xsl:template match="son">
   <xsl:call-template name="node-access">
     <xsl:with-param name="node">arg_node</xsl:with-param>
@@ -314,10 +314,10 @@ version="1.0">
   </xsl:call-template>
   <xsl:choose>
     <xsl:when test="@name = &quot;Next&quot;">
-      <xsl:value-of select="' = FREECOND( '"/>
+      <xsl:value-of select="' = FREECOND('"/>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:value-of select="' = FREETRAV( '"/>
+      <xsl:value-of select="' = FREETRAV('"/>
     </xsl:otherwise>
   </xsl:choose>
   <xsl:call-template name="node-access">
@@ -360,7 +360,7 @@ version="1.0">
     <xsl:otherwise>
       <!-- if it is an array, we have to build a for loop over its elements -->
       <xsl:if test="key(&quot;arraytypes&quot;, ./type/@name)">
-        <xsl:value-of select="'for( cnt = 0; cnt &lt; '" />
+        <xsl:value-of select="'for(cnt = 0; cnt &lt; '" />
         <xsl:value-of select="key(&quot;types&quot;, ./type/@name)/@size"/>
         <xsl:value-of select="'; cnt++) { '" />
       </xsl:if>
