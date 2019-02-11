@@ -60,6 +60,19 @@
 "int"                      { FILTER( INTTYPE); }
 "float"                    { FILTER( FLOATTYPE); }
 "bool"                     { FILTER( BOOLTYPE); }
+"void"                     { FILTER( VOIDTYPE); }
+
+"extern"                   { FILTER( EXTERN); }
+"export"                   { FILTER( EXPORT); }
+"static"                   { FILTER( STATIC); }
+
+"["                        { FILTER( SQR_BRACKET_L)}
+"]"                        { FILTER( SQR_BRACKET_R)}
+
+"for"                      { FILTER( FOR)}
+"do"                       { FILTER( DO)}
+"while"                    { FILTER( WHILE)}
+
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
                              FILTER( ID);
