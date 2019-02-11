@@ -148,6 +148,18 @@ binop: PLUS      { $$ = BO_add; }
      | AND       { $$ = BO_and; }
      ;
 
+vartype: INTTYPE
+       | FLOATTYPE
+       | BOOLTYPE
+       ;
+
+
+funtype: INTTYPE
+       | FLOATTYPE
+       | BOOLTYPE
+       | VOIDTYPE
+       ;
+
 %%
 
 static int yyerror(char *error)
