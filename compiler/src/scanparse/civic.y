@@ -32,6 +32,7 @@ static int yyerror( char *errname);
 %token BRACKET_L BRACKET_R COMMA SEMICOLON
 %token MINUS PLUS STAR SLASH PERCENT LE LT GE GT EQ NE OR AND
 %token TRUEVAL FALSEVAL LET
+%token INTTYPE FLOATTYPE BOOLTYPE
 
 %token <cint> NUM
 %token <cflt> FLOAT
@@ -45,7 +46,7 @@ static int yyerror( char *errname);
 
 %%
 
-program: stmts 
+program: stmts
          {
            parseresult = $1;
          }
@@ -143,12 +144,12 @@ binop: PLUS      { $$ = BO_add; }
      | OR        { $$ = BO_or; }
      | AND       { $$ = BO_and; }
      ;
-      
+
 %%
 
 static int yyerror( char *error)
 {
-  CTIabort( "line %d, col %d\nError parsing source code: %s\n", 
+  CTIabort( "line %d, col %d\nError parsing source code: %s\n",
             global.line, global.col, error);
 
   return( 0);

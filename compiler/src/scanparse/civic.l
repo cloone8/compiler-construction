@@ -39,12 +39,12 @@
 
 "-"                        { FILTER( MINUS); }
 "+"                        { FILTER( PLUS);  }
-"*"                        { FILTER( STAR);  } 
-"/"                        { FILTER( SLASH);  } 
-"%"                        { FILTER( PERCENT);  } 
+"*"                        { FILTER( STAR);  }
+"/"                        { FILTER( SLASH);  }
+"%"                        { FILTER( PERCENT);  }
 
 "<="                       { FILTER( LE);    }
-"<"                        { FILTER( LT);    } 
+"<"                        { FILTER( LT);    }
 ">="                       { FILTER( GE);    }
 ">"                        { FILTER( GT);    }
 "=="                       { FILTER( EQ);    }
@@ -57,6 +57,10 @@
 "true"                     { FILTER( TRUEVAL); }
 "false"                    { FILTER( FALSEVAL); }
 
+"int"                      { FILTER( INTTYPE); }
+"float"                    { FILTER( FLOATTYPE); }
+"bool"                     { FILTER( BOOLTYPE); }
+
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
                              FILTER( ID);
                            }
@@ -65,10 +69,14 @@
                              FILTER( NUM);
                            }
 
+[0-9]*\.[0-9]+             { yylval.cflt=atof(yytext);
+                             FILTER( FLOAT);
+                           }
+
 \n.*                       { global.line += 1;
                              global.col = 0;
                              yyless(1);
                            }
 
 [ \t]                      { global.col += yyleng;
-                           } 
+                           }
