@@ -1,0 +1,47 @@
+#include "civic.h"
+
+extern void printIntVec(int[n] vec);
+extern void printFloatVec(float[n] vec);
+extern void printIntMat(int[m, n] vec);
+extern void printFloatMat(float[m, n] vec);
+extern void scanIntVec(int[n] vec);
+extern void scanFloatVec(float[n] vec);
+extern void scanIntMat(int[m, n] vec);
+extern void scanFloatMat(float[m, n] vec);
+extern void matMul(float[m, k] a, float[k, n] b, float[m, n] c);
+
+export int main() {
+    int[4] testInt = [1, 2, 3, 4];
+    float[4] testFloat = [1.2, 2.3, 3.4, 4.5];
+    int[2, 2] testIntMat = [[1, 2], [3, 4]];
+    float[2, 2] testFloatMat = [[1.2, 2.3], [3.4, 4.5]];
+    int[3] testScanIntVec;
+    float[3] testScanFloatVec;
+    int[2,2] testScanIntMat;
+    float[2,2] testScanFloatMat;
+    float[2,2] multTest = [[2.0,2.0],[2.0,2.0]];
+    float[2,2] multResult;
+
+    printIntVec(testInt);
+    printFloatVec(testFloat);
+
+    printIntMat(testIntMat);
+    printFloatMat(testFloatMat);
+
+    scanIntVec(testScanIntVec);
+    scanFloatVec(testScanFloatVec);
+
+    printIntVec(testScanIntVec);
+    printFloatVec(testScanFloatVec);
+
+    scanIntMat(testScanIntMat);
+    scanFloatMat(testScanFloatMat);
+
+    printIntMat(testScanIntMat);
+    printFloatMat(testScanFloatMat);
+
+    matMul(multTest, testScanFloatMat, multResult);
+    printFloatMat(multResult);
+
+    return 0;
+}
