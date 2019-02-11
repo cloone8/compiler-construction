@@ -46,7 +46,7 @@ void PrintAuthorInfo(void)
   printf( "\n\nAUTHORS:\n\n"
 
           "SAC Development Team for the Compiler Framework.\n\n"
-          "Wouter de Bruijn (11239050) for the CiviC compiler.\n\n");
+          "Wouter de Bruijn (11239050) & Maurits Ouwerkerk (11289287) for the CiviC compiler.\n\n");
 
 
   DBUG_VOID_RETURN;
