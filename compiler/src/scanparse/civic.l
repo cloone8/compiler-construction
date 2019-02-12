@@ -101,6 +101,6 @@
                              global.line += 1;
                            }
 
-\*([^*]|\*+[^\/])*\*+      { global.col += yyleng;
+\/\*([^*]|\*+[^\/])*\*+\/      { global.col += yyleng;
                              global.line += countNewlines(yytext, yyleng);
                            }
