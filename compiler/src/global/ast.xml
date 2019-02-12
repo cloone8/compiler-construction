@@ -36,20 +36,20 @@
             include the include file needed for the traversal
         -->
         <general>
-        <traversal id="PRT" name="Print Syntax Tree" default="user" include="print.h" />
-        <traversal id="COPY" name="Copy Syntax Tree" default="user" include="copy_node.h" />
-        <traversal id="FREE" name="Free Syntax Tree" default="user" include="free_node.h" />
-        <traversal id="CHK" name="Check Syntax Tree" default="user" include="check.h" />
+            <traversal id="PRT" name="Print Syntax Tree" default="user" include="print.h" />
+            <traversal id="COPY" name="Copy Syntax Tree" default="user" include="copy_node.h" />
+            <traversal id="FREE" name="Free Syntax Tree" default="user" include="free_node.h" />
+            <traversal id="CHK" name="Check Syntax Tree" default="user" include="check.h" />
 
-        <traversal id="CO" name="Count operators" default="sons" include="count_ops.h">
-            <travuser>
-            </travuser>
-        </traversal>
+            <traversal id="CO" name="Count operators" default="sons" include="count_ops.h">
+                <travuser>
+                </travuser>
+            </traversal>
 
-        <traversal id="CI" name="Count identifiers" default="sons" include="count_ids.h">
-            <travuser>
-            </travuser>
-        </traversal>
+            <traversal id="CI" name="Count identifiers" default="sons" include="count_ids.h">
+                <travuser>
+                </travuser>
+            </traversal>
 
         </general>
     </phases>
@@ -66,48 +66,48 @@
     -->
 
     <syntaxtree>
-    <!--
-    Node Error:
-    -->
+        <!--
+        Node Error:
+        -->
         <node name="Error">
-        <description>represents internal Error representation constructor</description>
-        <sons>
-            <son name="Next">
-            <targets>
-                <target mandatory="no" >
-                <node name="Error" />
-                    <phases>
-                    <all />
-                    </phases>
-                </target>
-            </targets>
-            </son>
-        </sons>
-        <attributes>
-            <attribute name="message">
-            <type name="String">
-                <targets>
-                <target mandatory="yes">
-                    <phases>
-                    <all />
-                    </phases>
-                </target>
-                </targets>
-            </type>
-            </attribute>
-            <attribute name="anyphase">
-            <type name="CompilerPhase">
-                <targets>
-                <target mandatory="yes">
-                    <phases>
-                    <all />
-                    </phases>
-                </target>
-                </targets>
-            </type>
-            </attribute>
-        </attributes>
-        <flags></flags>
+            <description>represents internal Error representation constructor</description>
+            <sons>
+                <son name="Next">
+                    <targets>
+                        <target mandatory="no" >
+                        <node name="Error" />
+                        <phases>
+                            <all />
+                        </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="message">
+                    <type name="String">
+                        <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="anyphase">
+                    <type name="CompilerPhase">
+                        <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+            <flags></flags>
         </node>
 
     </syntaxtree>
