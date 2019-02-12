@@ -71,6 +71,7 @@
 "for"                      { FILTER(FOR); }
 "do"                       { FILTER(DO); }
 "while"                    { FILTER(WHILE); }
+"return"                   { FILTER(RETURN); }
 
 "if"                       { FILTER(IF); }
 "else"                     { FILTER(ELSE); }

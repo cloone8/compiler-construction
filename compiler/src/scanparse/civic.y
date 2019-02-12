@@ -37,6 +37,7 @@ static int yyerror(char *errname);
 %token SQR_BRACKET_L SQR_BRACKET_R
 %token FOR DO WHILE
 %token IF ELSE
+%token RETURN
 
 %token <cint> NUM
 %token <cflt> FLOAT
