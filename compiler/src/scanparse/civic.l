@@ -72,6 +72,7 @@
 "for"                      { FILTER(FOR); }
 "do"                       { FILTER(DO); }
 "while"                    { FILTER(WHILE); }
+"return"                   { FILTER(RETURN); }
 
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);

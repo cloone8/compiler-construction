@@ -36,6 +36,7 @@ static int yyerror(char *errname);
 %token EXTERN EXPORT STATIC
 %token SQR_BRACKET_L SQR_BRACKET_R
 %token FOR DO WHILE
+%token RETURN
 
 %token <cint> NUM
 %token <cflt> FLOAT

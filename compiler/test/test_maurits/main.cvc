@@ -1,0 +1,90 @@
+extern void printInt(int val);
+extern void printNewlines(int val);
+extern int gcd(int a, int b);
+extern int fac(int n);
+extern int fib(int n);
+extern bool isprime(int n);
+extern int printBool(bool b);
+extern void fibs(int n);
+extern void primes(int n);
+extern void printIntVec(int[n] vec);
+extern void printFloatVec(float[n] vec);
+extern void printIntMat(int[m, n] mat);
+extern void printFloatMat(float[m, n] mat);
+extern void scanIntVec(int[n] vec);
+extern void scanFloatVec(float[n] vec);
+extern void scanIntMat(int[m, n] mat);
+extern void scanFloatMat(float[m, n] mat);
+extern void matMul(float[x, y] a, float[v, w] b, float[m, n] c);
+
+export int main() {
+    int[3] intVec = [1, 2, 3];
+    float[3] floatVec = [1.5, 2.5, 3.9999];
+
+    int[3,3] intMat = [[1, 2, 3],
+                       [4, 5, 6],
+                       [7, 8, 9]];
+
+    float[3,3] floatMat = [[1.5, 2.5, 3.5],
+                           [4.5, 5.5, 6.5],
+                           [7.5, 8.5, 9.5]];
+
+    int[3] scanIntVec;
+    float[3] scanFloatVec;
+
+    int[3,3] scanIntMat;
+    float[3,3] scanFloatMat;
+
+    float[3,3] mult;
+
+    printInt(gcd(20, 10));
+    printNewlines(2);
+
+    printInt(fac(10));
+    printNewlines(2);
+
+    printInt(fib(10));
+    printNewlines(2);
+
+    printInt(printBool(isprime(30)));
+    printNewlines(2);
+
+    fibs(10);
+    printNewlines(1);
+    primes(200);
+    printNewlines(2);
+
+    printIntVec(intVec);
+    printNewlines(1);
+
+    printFloatVec(floatVec);
+    printNewlines(2);
+
+    printIntMat(intMat);
+    printNewlines(2);
+
+    printFloatMat(floatMat);
+    printNewlines(2);
+
+    scanIntVec(scanIntVec);
+    printIntVec(scanIntVec);
+    printNewlines(2);
+
+    scanFloatVec(scanFloatVec);
+    printFloatVec(scanFloatVec);
+    printNewlines(2);
+
+    scanIntMat(scanIntMat);
+    printIntMat(scanIntMat);
+    printNewlines(2);
+
+    scanFloatMat(scanFloatMat);
+    printFloatMat(scanFloatMat);
+    printNewlines(2);
+
+    matMul(scanFloatMat, floatMat, mult);
+    printFloatMat(mult);
+    printNewlines(2);
+
+    return 0;
+}
