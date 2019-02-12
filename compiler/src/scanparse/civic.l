@@ -11,16 +11,15 @@
 #include "civic.tab.h"
 #include "globals.h"
 #include "ctinfo.h"
-
+#include "parsehelper.h"
 
 #define FILTER(token) \
-  global.col += yyleng;  \
-  return(token);
+    global.col += yyleng;  \
+    return(token);
 
 #define LINEBUF_SIZE 256
 #define YY_NO_UNPUT
 #define YY_NO_INPUT
-
 
 %}
 
@@ -74,6 +73,9 @@
 "while"                    { FILTER(WHILE); }
 "return"                   { FILTER(RETURN); }
 
+"if"                       { FILTER(IF); }
+"else"                     { FILTER(ELSE); }
+
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
                              FILTER(ID);
@@ -93,4 +95,12 @@
                            }
 
 [ \t]                      { global.col += yyleng;
+                           }
+
+\/\/[^\n]*[\n|\r\n|\r]     { global.col += yyleng;
+                             global.line += 1;
+                           }
+
+\*([^*]|\*+[^\/])*\*+      { global.col += yyleng;
+                             global.line += countNewlines(yytext, yyleng);
                            }
