@@ -97,7 +97,7 @@
 [ \t]                      { global.col += yyleng;
                            }
 
-\/\/[^\n]*[\n|\r\n|\r]     { global.col = 0;
+\/\/[^\n]*(\r\n|\r|\n)     { global.col = 0;
                              global.line += 1;
                            }
 
