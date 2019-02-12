@@ -33,6 +33,8 @@
 
 "("                        { FILTER(BRACKET_L); }
 ")"                        { FILTER(BRACKET_R); }
+"{"                        { FILTER(BRACE_L); }
+"}"                        { FILTER(BRACE_R); }
 ","                        { FILTER(COMMA); }
 ";"                        { FILTER(SEMICOLON); }
 
@@ -41,6 +43,7 @@
 "*"                        { FILTER(STAR);  }
 "/"                        { FILTER(SLASH);  }
 "%"                        { FILTER(PERCENT);  }
+"!"                        { FILTER(NEG); }
 
 "<="                       { FILTER(LE);    }
 "<"                        { FILTER(LT);    }

@@ -59,6 +59,14 @@
     -->
 
     <nodesets>
+        <nodeset name="Declaration">
+            <target>
+                <node name="FunDec" />
+                <node name="FunDef" />
+                <node name="GlobalDec" />
+                <node name="GlobalDef" />
+            </target>
+        </nodeset>
     </nodesets>
 
     <!--
@@ -66,6 +74,59 @@
     -->
 
     <syntaxtree>
+        <!--
+        Node Statement:
+         -->
+        <node name="Statement">
+            <description>
+                Sequence of statements
+            </description>
+            <sons>
+                <son name="Declarations">
+                    <targets>
+                            <target mandatory="yes" >
+                            <set name="Declaration" />
+                            <phases>
+                                <all />
+                            </phases>
+                            </target>
+                    </targets>
+                </son>
+                <son name="Next">
+                    <targets>
+                            <target mandatory="no" >
+                            <node name="Statement" />
+                            <phases>
+                                <all />
+                            </phases>
+                            </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!--
+        Node FunDec
+         -->
+
+        <node name="FunDec">
+            <description>
+                Function declaration
+            </description>
+            <sons>
+                <son name="Declarations">
+                    <targets>
+                            <target mandatory="yes" >
+                            <set name="Declaration" />
+                            <phases>
+                                <all />
+                            </phases>
+                            </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
         <!--
         Node Error:
         -->

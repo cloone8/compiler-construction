@@ -38,6 +38,8 @@ static int yyerror(char *errname);
 %token FOR DO WHILE
 %token IF ELSE
 %token RETURN
+%token BRACE_L BRACE_R
+%token NEG
 
 %token <cint> NUM
 %token <cflt> FLOAT
@@ -51,21 +53,400 @@ static int yyerror(char *errname);
 
 %%
 
+program: declarations
+            {
+                parseresult = $1
+            }
+            ;
+
+declarations: declaration declarations
+                {
+
+                }
+            | declaration
+                {
+
+                }
+                ;
+
+declaration: fundec
+                {
+
+                }
+            | fundef
+                {
+
+                }
+            | globaldec
+                {
+
+                }
+            | globaldef
+                {
+
+                }
+                ;
+
+fundec: EXTERN funheader SEMICOLON
+        {
+
+        }
+        ;
+
+fundef: EXPORT funheader BRACE_L funbody BRACE_R
+        {
+
+        }
+    | funheader BRACE_L funbody BRACE_R
+        {
+
+        }
+        ;
+
+funheader: rettype ID BRACKET_L params BRACKET_R
+        {
+
+        }
+        | rettype ID BRACKET_L BRACKET_R
+        {
+
+        }
+        ;
+
+params: param params
+        {
+
+        }
+        |
+        param
+        {
+
+        }
+        ;
+
+param: type ID
+    {
+
+    }
+    ;
+
+rettype: VOIDTYPE
+        {
+
+        }
+        | basictype
+        {
+
+        };
+
+basictype: BOOLTYPE
+        {
+
+        }
+        | INTTYPE
+        {
+
+        }
+        | FLOATTYPE
+        {
+
+        }
+        ;
+
+globaldec: EXTERN basictype ID SEMICOLON
+        {
+
+        }
+        ;
+
+globaldef: EXPORT basictype ID LET expr SEMICOLON
+            {
+
+            }
+        | basictype ID LET expr SEMICOLON
+            {
+
+            }
+        | EXPORT basictype ID SEMICOLON
+            {
+
+            }
+        | basictype ID SEMICOLON
+            {
+
+            }
+            ;
+
+funbody: vardecs statements
+        {
+
+        }
+        | vardecs
+        {
+
+        }
+        | statements
+        {
+
+        }
+        |
+        {
+
+        }
+        ;
+
+vardecs: vardec
+        {
+
+        }
+    | vardec vardecs
+        {
+
+        }
+        ;
+
+statements: statement
+        {
+
+        }
+    | statement statements
+       {
+
+       }
+       ;
+
+vardec: basictype ID SEMICOLON
+        {
+
+        }
+    | basictype ID LET expr SEMICOLON
+        {
+
+        }
+
+statement: ID LET expr SEMICOLON
+        {
+
+        }
+        | ID BRACKET_L BRACKET_R SEMICOLON
+        {
+
+        }
+        | ID BRACKET_L exprs BRACKET_R SEMICOLON
+        {
+
+        }
+        | IF BRACKET_L expr BRACKET_R block
+        {
+
+        }
+        | IF BRACKET_L expr BRACKET_R block ELSE block
+        {
+
+        }
+        | WHILE BRACKET_L expr BRACKET_R block
+        {
+
+        }
+        | DO block WHILE BRACKET_L expr BRACKET_R SEMICOLON
+        {
+
+        }
+        | FOR BRACKET_L INTTYPE ID LET expr COMMA expr BRACKET_R block
+        {
+
+        }
+        | FOR BRACKET_L INTTYPE ID LET expr COMMA expr COMMA expr BRACKET_R block
+        {
+
+        }
+        | RETURN SEMICOLON
+        {
+
+        }
+        | RETURN expr SEMICOLON
+        {
+
+        }
+        ;
+
+block: BRACE_L BRACE_R
+        {
+
+        }
+    | BRACE_L statements BRACE_R
+        {
+
+        }
+    | statement
+        {
+
+        }
+        ;
+
+exprs: expr exprs
+    {
+
+    }
+    | expr
+    {
+
+    }
+    ;
+
+expr: BRACKET_L expr BRACKET_R
+        {
+
+        }
+    | expr binop expr
+        {
+
+        }
+    | monop expr
+        {
+
+        }
+    | BRACKET_L basictype BRACKET_R expr
+        {
+
+        }
+    | ID BRACKET_L BRACKET_R
+        {
+
+        }
+    | ID BRACKET_L exprs BRACKET_R
+        {
+
+        }
+    | ID
+        {
+
+        }
+    | const
+        {
+
+        }
+        ;
+
+binop: arithop
+        {
+
+        }
+    | relop
+        {
+
+        }
+    | logicop
+        {
+
+        }
+        ;
+
+arithop: PLUS
+        {
+
+        }
+        | MINUS
+        {
+
+        }
+        | STAR
+        {
+
+        }
+        | SLASH
+        {
+
+        }
+        | PERCENT
+        {
+
+        }
+        ;
+
+relop: EQ
+        {
+
+        }
+    | NE
+        {
+
+        }
+    | LT
+        {
+
+        }
+    | LE
+        {
+
+        }
+    | GT
+        {
+
+        }
+    | GE
+        {
+
+        }
+        ;
+
+logicop: AND
+        {
+
+        }
+        | OR
+        {
+
+        }
+        ;
+
+monop: MINUS
+        {
+
+        }
+    | NEG
+        {
+
+        }
+        ;
+
+const: boolconst
+        {
+
+        }
+    | NUM
+        {
+
+        }
+    | FLOAT
+        {
+
+        }
+        ;
+
+boolconst: TRUE
+            {
+
+            }
+        | FALSE
+            {
+
+            }
+            ;
+
 %%
 
-static int yyerror(char *error)
-{
-  CTIabort("line %d, col %d\nError parsing source code: %s\n",
+static int yyerror(char *error) {
+    CTIabort("line %d, col %d\nError parsing source code: %s\n",
             global.line + 1, global.col + 1, error);
 
-  return(0);
+    return(0);
 }
 
-node *YYparseTree(void)
-{
-  DBUG_ENTER("YYparseTree");
+node *YYparseTree(void) {
+    DBUG_ENTER("YYparseTree");
 
-  yyparse();
+    yyparse();
 
-  DBUG_RETURN(parseresult);
+    DBUG_RETURN(parseresult);
 }
