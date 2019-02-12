@@ -73,7 +73,7 @@ framework   = memory.o str.o ctinfo.o main_args.o dbug.o globals.o \
 
 global      = options.o usage.o myglobals.o
 
-scanparse   = civic.tab.o civic.lex.o
+scanparse   = civic.tab.o civic.lex.o parsehelper.o
 
 print       = print.o
 
