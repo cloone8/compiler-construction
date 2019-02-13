@@ -100,9 +100,9 @@
 [ \t]                      { global.col += yyleng;
                            }
 
-\/\/[^\n]*(\r\n|\r|\n)     { global.col = 0;
-                             global.line += 1;
-                           }
+\/\/[^(\r\n|\r|\n)]*(\r\n|\r|\n)    { global.col = 0;
+                                      global.line += 1;
+                                    }
 
 \/\*([^*]|\*+[^\/])*\*+\/  { global.col += yyleng;
                              global.line += countNewlines(yytext, yyleng);
