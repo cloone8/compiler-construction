@@ -80,20 +80,20 @@
 "else"                     { FILTER(ELSE); }
 
 
-[A-Za-z][A-Za-z0-9_]*      {
+[A-Za-z][A-Za-z0-9_]*       {
                                 yylval.id = STRcpy(yytext);
                                 FILTER(ID);
-                           }
+                            }
 
-[0-9]+                     {
+[0-9]+                      {
                                 yylval.cint=atoi(yytext);
-                                FILTER(NUM);
-                           }
+                                 FILTER(NUM);
+                            }
 
-[0-9]*\.[0-9]+             {
+[0-9]*\.[0-9]+              {
                                 yylval.cflt=atof(yytext);
                                 FILTER(FLOAT);
-                           }
+                            }
 
 \r\n[^\r\n]*                {
                                 global.line += 1;
