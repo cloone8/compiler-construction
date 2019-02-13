@@ -101,6 +101,11 @@ fundef: EXPORT funheader BRACE_L funbody BRACE_R
         {
 
         }
+    | EXPORT funheader BRACE_L BRACE_R
+        {
+
+        }
+    | funheader BRACE_L BRACE_R
         ;
 
 funheader: rettype ID BRACKET_L params BRACKET_R
@@ -186,10 +191,6 @@ funbody: vardecs statements
 
         }
         | statements
-        {
-
-        }
-        |
         {
 
         }
