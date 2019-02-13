@@ -230,6 +230,18 @@
         </node>
 
         <!--
+        Node GlobalDefinition
+         -->
+
+        <node name="GlobalDefinition">
+            <description>
+                Global definition. This includes the actual value for the global.
+            </description>
+            <sons>
+            </sons>
+        </node>
+
+        <!--
         Node Global
          -->
 
@@ -238,7 +250,41 @@
                 Global declaration
             </description>
             <sons>
+                <son name="definition">
+                    <targets>
+                            <target mandatory="no" >
+                                <node name="GlobalDefinition" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                    </targets>
+                </son>
             </sons>
+            <attributes>
+                <attribute name="name">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
         </node>
 
         <!--
