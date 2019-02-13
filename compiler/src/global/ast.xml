@@ -19,6 +19,7 @@
         <type name="BinOp" ctype="binop" init="BO_unknown" copy="literal" />
         <type name="Link" ctype="node*" init="NULL" copy="lookup" />
         <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
+        <type name="Type" ctype="type" init="FT_void" copy="literal" />
     </attributetypes>
 
 <!--
@@ -59,12 +60,10 @@
     -->
 
     <nodesets>
-        <nodeset name="Declaration">
+        <nodeset name="DeclarationType">
             <target>
-                <node name="FunDec" />
-                <node name="FunDef" />
-                <node name="GlobalDec" />
-                <node name="GlobalDef" />
+                <node name="Function" />
+                <node name="Global" />
             </target>
         </nodeset>
     </nodesets>
@@ -77,28 +76,28 @@
         <!--
         Node Statement:
          -->
-        <node name="Statement">
+        <node name="Declaration">
             <description>
                 Sequence of statements
             </description>
             <sons>
-                <son name="Declarations">
+                <son name="current">
                     <targets>
                             <target mandatory="yes" >
-                            <set name="Declaration" />
-                            <phases>
-                                <all />
-                            </phases>
+                                <set name="DeclarationType" />
+                                <phases>
+                                    <all />
+                                </phases>
                             </target>
                     </targets>
                 </son>
-                <son name="Next">
+                <son name="next">
                     <targets>
                             <target mandatory="no" >
-                            <node name="Statement" />
-                            <phases>
-                                <all />
-                            </phases>
+                                <node name="Declaration" />
+                                <phases>
+                                    <all />
+                                </phases>
                             </target>
                     </targets>
                 </son>
@@ -106,24 +105,139 @@
         </node>
 
         <!--
-        Node FunDec
+        Node Function
          -->
 
-        <node name="FunDec">
+        <node name="Function">
             <description>
                 Function declaration
             </description>
             <sons>
-                <son name="Declarations">
+                <son name="parameters">
                     <targets>
-                            <target mandatory="yes" >
-                            <set name="Declaration" />
-                            <phases>
-                                <all />
-                            </phases>
+                            <target mandatory="no" >
+                                <node name="Parameter" />
+                                <phases>
+                                    <all />
+                                </phases>
                             </target>
                     </targets>
                 </son>
+                <son name="definition">
+                    <targets>
+                            <target mandatory="no" >
+                                <node name="FunctionDefinition" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="isextern">
+                    <type name="Bool">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="name">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node Parameter
+         -->
+
+        <node name="Parameter">
+            <description>
+                Function parameter
+            </description>
+            <sons>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no" >
+                            <node name="Parameter" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="name">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node FunctionDefinition
+         -->
+
+        <node name="FunctionDefinition">
+            <description>
+                Function definition. This includes the actual code for the function.
+            </description>
+            <sons>
+            </sons>
+        </node>
+
+        <!--
+        Node Global
+         -->
+
+        <node name="Global">
+            <description>
+                Global declaration
+            </description>
+            <sons>
             </sons>
         </node>
 
@@ -136,10 +250,10 @@
                 <son name="Next">
                     <targets>
                         <target mandatory="no" >
-                        <node name="Error" />
-                        <phases>
-                            <all />
-                        </phases>
+                            <node name="Error" />
+                            <phases>
+                                <all />
+                            </phases>
                         </target>
                     </targets>
                 </son>
@@ -148,22 +262,22 @@
                 <attribute name="message">
                     <type name="String">
                         <targets>
-                        <target mandatory="yes">
-                            <phases>
-                                <all />
-                            </phases>
-                        </target>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
                         </targets>
                     </type>
                 </attribute>
                 <attribute name="anyphase">
                     <type name="CompilerPhase">
                         <targets>
-                        <target mandatory="yes">
-                            <phases>
-                                <all />
-                            </phases>
-                        </target>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
                         </targets>
                     </type>
                 </attribute>
