@@ -425,11 +425,11 @@ const: boolconst
         }
         ;
 
-boolconst: TRUE
+boolconst: TRUEVAL
             {
 
             }
-        | FALSE
+        | FALSEVAL
             {
 
             }
