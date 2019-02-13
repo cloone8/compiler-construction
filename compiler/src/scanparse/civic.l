@@ -81,35 +81,41 @@
 
 
 [A-Za-z][A-Za-z0-9_]*      {
-                             yylval.id = STRcpy(yytext);
-                             FILTER(ID);
+                                yylval.id = STRcpy(yytext);
+                                FILTER(ID);
                            }
 
 [0-9]+                     {
-                             yylval.cint=atoi(yytext);
-                             FILTER(NUM);
+                                yylval.cint=atoi(yytext);
+                                FILTER(NUM);
                            }
 
 [0-9]*\.[0-9]+             {
-                             yylval.cflt=atof(yytext);
-                             FILTER(FLOAT);
+                                yylval.cflt=atof(yytext);
+                                FILTER(FLOAT);
                            }
 
-\r\n.*                       {
-                             global.line += 1;
-                             global.col = 0;
-                             yyless(2);
-                             }
+\r\n[^\r\n]*                {
+                                global.line += 1;
+                                global.col = 0;
+                                yyless(2);
+                            }
 
-(\n|\r).*                   {
-                             global.line += 1;
-                             global.col = 0;
-                             yyless(1);
+\n.*                        {
+                                global.line += 1;
+                                global.col = 0;
+                                yyless(1);
+                            }
+
+\r[^\r]*                    {
+                                global.line += 1;
+                                global.col = 0;
+                                yyless(1);
                             }
 
 [ \t]                      { global.col += yyleng; }
 
-\/\/[^(\r\n|\r|\n)]*(\r\n|\r|\n)    {
+\/\/[^\r\n]*(\r\n|\r|\n)            {
                                         global.col = 0;
                                         global.line += 1;
                                     }
