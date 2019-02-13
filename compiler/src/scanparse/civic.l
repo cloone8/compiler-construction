@@ -80,30 +80,41 @@
 "else"                     { FILTER(ELSE); }
 
 
-[A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
+[A-Za-z][A-Za-z0-9_]*      {
+                             yylval.id = STRcpy(yytext);
                              FILTER(ID);
                            }
 
-[0-9]+                     { yylval.cint=atoi(yytext);
+[0-9]+                     {
+                             yylval.cint=atoi(yytext);
                              FILTER(NUM);
                            }
 
-[0-9]*\.[0-9]+             { yylval.cflt=atof(yytext);
+[0-9]*\.[0-9]+             {
+                             yylval.cflt=atof(yytext);
                              FILTER(FLOAT);
                            }
 
-\n.*                       { global.line += 1;
+\r\n.*                       {
+                             global.line += 1;
+                             global.col = 0;
+                             yyless(2);
+                             }
+
+(\n|\r).*                   {
+                             global.line += 1;
                              global.col = 0;
                              yyless(1);
-                           }
+                            }
 
-[ \t]                      { global.col += yyleng;
-                           }
+[ \t]                      { global.col += yyleng; }
 
-\/\/[^(\r\n|\r|\n)]*(\r\n|\r|\n)    { global.col = 0;
-                                      global.line += 1;
+\/\/[^(\r\n|\r|\n)]*(\r\n|\r|\n)    {
+                                        global.col = 0;
+                                        global.line += 1;
                                     }
 
-\/\*([^*]|\*+[^\/])*\*+\/  { global.col += yyleng;
-                             global.line += countNewlines(yytext, yyleng);
+\/\*([^*]|\*+[^\/])*\*+\/  {
+                                global.col += yyleng;
+                                global.line += countNewlines(yytext, yyleng);
                            }
