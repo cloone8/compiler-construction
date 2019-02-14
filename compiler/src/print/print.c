@@ -333,6 +333,28 @@ PRTvarlet (node * arg_node, info * arg_info)
 
 /** <!--******************************************************************-->
  *
+ * @fn PRTdeclaration
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTdeclaration (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTdeclaration");
+
+  printf("%s", DECLARATION_NAME(arg_node));
+
+  DBUG_RETURN(arg_node);
+}
+
+/** <!--******************************************************************-->
+ *
  * @fn PRTsymboltableentry
  *
  * @brief Prints the node and its sons/attributes
