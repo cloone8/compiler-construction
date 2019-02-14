@@ -68,6 +68,9 @@
         </nodeset>
         <nodeset name="StatementTypes">
             <target>
+                <node name="Return" />
+                <node name="Branch" />
+                <node name="FunCall" />
             </target>
         </nodeset>
     </nodesets>
@@ -245,7 +248,7 @@
             </attributes>
         </node>
 
-        <!-- 
+        <!--
         Node FunctionBody
          -->
 
@@ -279,7 +282,7 @@
             </attributes>
         </node>
 
-        <!-- 
+        <!--
         Node Statements
         -->
 
@@ -311,7 +314,7 @@
             </sons>
         </node>
 
-        <!-- 
+        <!--
         Node FunctionVarDeclaration
         -->
 
@@ -421,6 +424,147 @@
                 </attribute>
             </attributes>
             <flags></flags>
+        </node>
+
+        <!--
+        Node FunCall
+         -->
+        <node name="FunCall">
+            <description>
+                Function call. Includes the name of the function and the parameters
+            </description>
+            <sons>
+                <son name="params">
+                    <targets>
+                        <target mandatory="no" >
+                            <node name="FunCallParameter" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="functionname">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node FunCallParameter
+         -->
+
+        <node name="FunCallParameter">
+            <description>
+                Function call parameter. Includes the expression that determines this value and a link to a
+                potential next parameter
+            </description>
+            <sons>
+                <son name="value">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no" >
+                            <node name="FunCallParameter" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!--
+        Node Return
+         -->
+        <node name="Return">
+            <description>
+                Return statement. Includes the return value
+            </description>
+            <sons>
+                <son name="value">
+                    <targets>
+                        <target mandatory="no" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!--
+        Node Branch
+         -->
+        <node name="Branch">
+            <description>
+                Branch statements. Includes the condition and the one or two possible branches.
+            </description>
+            <sons>
+                <son name="condition">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="if">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Statements" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="else">
+                    <targets>
+                        <target mandatory="no" >
+                            <node name="Statements" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!--
+        Node Expr
+         -->
+
+        <node name="Expr">
+            <description>
+                Single expression
+            </description>
+            <sons>
+            </sons>
         </node>
 
     </syntaxtree>
