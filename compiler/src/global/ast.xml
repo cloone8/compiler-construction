@@ -532,7 +532,7 @@
                         </target>
                     </targets>
                 </son>
-                <son name="if">
+                <son name="truebranch">
                     <targets>
                         <target mandatory="yes" >
                             <node name="Statements" />
@@ -542,7 +542,7 @@
                         </target>
                     </targets>
                 </son>
-                <son name="else">
+                <son name="falsebranch">
                     <targets>
                         <target mandatory="no" >
                             <node name="Statements" />
