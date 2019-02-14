@@ -68,6 +68,9 @@
         </nodeset>
         <nodeset name="StatementTypes">
             <target>
+                <node name="For" />
+                <node name="While" />
+                <node name="DoWhile" />
             </target>
         </nodeset>
     </nodesets>
@@ -334,8 +337,87 @@
         </node>
 
         <!--
-        Node Global
+        Node For
          -->
+
+        <node name="For">
+            <description>
+                For loop.
+            </description>
+            <sons>
+                <son name="Expr">
+                    <node name="Expr" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="Counter">
+                    <type name="Int">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node While
+         -->
+
+        <node name="While">
+            <description>
+                While loop.
+            </description>
+            <sons>
+                <son name="Expr">
+                    <node name="Expr" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!--
+        Node Do while
+         -->
+
+        <node name="Dowhile">
+            <description>
+                Do while loop.
+            </description>
+            <sons>
+                <son name="Expr">
+                    <node name="Expr" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!-- 
+        Node Global
+        -->
 
         <node name="Global">
             <description>
