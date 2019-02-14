@@ -348,7 +348,7 @@
                 For loop.
             </description>
             <sons>
-                <son name="Expr">
+                <son name="counterinit">
                     <node name="Expr" />
                     <targets>
                         <target mandatory="yes">
@@ -358,20 +358,47 @@
                         </target>
                     </targets>
                 </son>
+                <son name="condition">
+                    <node name="Expr" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="step">
+                    <node name="Expr" />
+                    <targets>
+                        <target mandatory="no">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="code">
+                    <node name="Statements" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="countervar">
+                    <node name="FuncionVarDeclaration" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
             </sons>
-            <attributes>
-                <attribute name="Counter">
-                    <type name="Int">
-                        <targets>
-                            <target mandatory="yes">
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
-                        </targets>
-                    </type>
-                </attribute>
-            </attributes>
         </node>
 
         <!--
@@ -383,8 +410,18 @@
                 While loop.
             </description>
             <sons>
-                <son name="Expr">
+                <son name="condition">
                     <node name="Expr" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="code">
+                    <node name="Statements" />
                     <targets>
                         <target mandatory="yes">
                             <phases>
@@ -405,8 +442,18 @@
                 Do while loop.
             </description>
             <sons>
-                <son name="Expr">
+                <son name="condition">
                     <node name="Expr" />
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="code">
+                    <node name="Statements" />
                     <targets>
                         <target mandatory="yes">
                             <phases>
