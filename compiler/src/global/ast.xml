@@ -66,6 +66,10 @@
                 <node name="Global" />
             </target>
         </nodeset>
+        <nodeset name="StatementTypes">
+            <target>
+            </target>
+        </nodeset>
     </nodesets>
 
     <!--
@@ -280,6 +284,31 @@
         -->
 
         <node name="Statements">
+            <description>
+                A single or collection of statements.
+            </description>
+            <sons>
+                <son name="current">
+                    <targets>
+                        <target mandatory="yes">
+                            <set name="StatementTypes" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="Statements" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
         </node>
 
         <!-- 
