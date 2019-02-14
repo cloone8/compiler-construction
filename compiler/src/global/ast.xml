@@ -17,6 +17,7 @@
         <type name="Bool" ctype="bool" init="FALSE" copy="literal" />
         <type name="Float" ctype="float" init="0.0" copy="literal" />
         <type name="BinOp" ctype="binop" init="BO_unknown" copy="literal" />
+        <type name="MonOp" ctype="monop" init="MO_unknown" copy="literal" />
         <type name="Link" ctype="node*" init="NULL" copy="lookup" />
         <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
         <type name="Type" ctype="type" init="FT_void" copy="literal" />
@@ -74,6 +75,7 @@
                 <node name="For" />
                 <node name="While" />
                 <node name="DoWhile" />
+                <node name="VarLet">
             </target>
         </nodeset>
         <nodeset name="BinOP">
@@ -88,9 +90,16 @@
                 <node name="Var" />
                 <node name="BinOp" />
                 <node name="MonOp" />
-                <node name="VarCast" />
-                <node name="Const" />
+                <node name="Cast" />
+                <node name="Constant" />
                 <node name="FunCall" />
+            </target>
+        </nodeset>
+        <nodeset name="ConstantTypes">
+            <target>
+                <node name="FloatConst" />
+                <node name="IntConst" />
+                <node name="BoolConst" />
             </target>
         </nodeset>
     </nodesets>
@@ -342,6 +351,42 @@
             <description>
                 Variable declaration inside a function.
             </description>
+            <sons>
+                <son name="initval">
+                    <targets>
+                        <target mandatory="no">
+                        <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="varname">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
         </node>
 
         <!--
@@ -365,10 +410,10 @@
                 For loop.
             </description>
             <sons>
-                <son name="counterinit">
+                <son name="counter">
                     <targets>
                         <target mandatory="yes">
-                        <node name="Expr" />
+                        <node name="VarLet" />
                             <phases>
                                 <all />
                             </phases>
@@ -710,7 +755,236 @@
                 Single expression
             </description>
             <sons>
+                <son name="current">
+                    <targets>
+                        <target mandatory="yes" >
+                            <set name="ExprTypes" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
             </sons>
+        </node>
+
+        <!--
+        Node MonOp
+         -->
+
+         <node name="MonOp">
+            <description>
+                Operation which acts on a single expression
+            </description>
+            <sons>
+                <son name="target">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="type">
+                    <type name="MonOp">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node Constant
+         -->
+
+         <node name="Constant">
+            <description>
+                A single literal value
+            </description>
+            <sons>
+                <son name="current">
+                    <targets>
+                        <target mandatory="yes" >
+                            <set name="ConstantTypes" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+         <!--
+        Node FloatConst
+         -->
+
+         <node name="FloatConst">
+            <description>
+                A single literal float value
+            </description>
+            <attributes>
+                <attribute name="value">
+                    <type name="Float">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+         <!--
+        Node IntConst
+         -->
+
+         <node name="IntConst">
+            <description>
+                A single literal integer value
+            </description>
+            <attributes>
+                <attribute name="value">
+                    <type name="Int">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+         <!--
+        Node BoolConst
+         -->
+
+         <node name="BoolConst">
+            <description>
+                A single literal Boolean value
+            </description>
+            <attributes>
+                <attribute name="value">
+                    <type name="Bool">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+         <!--
+        Node Cast
+         -->
+
+         <node name="Cast">
+            <description>
+                An expression typecast
+            </description>
+            <sons>
+                <son name="target">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="castto">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node Var
+         -->
+
+         <node name="Var">
+            <description>
+                A variable read
+            </description>
+            <attributes>
+                <attribute name="varname">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node VarAssign
+         -->
+
+         <node name="VarAssign">
+            <description>
+                A variable assignment
+            </description>
+            <sons>
+                <son name="value">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="varname">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
         </node>
 
     </syntaxtree>
