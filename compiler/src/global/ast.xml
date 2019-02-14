@@ -76,6 +76,13 @@
                 <node name="DoWhile" />
             </target>
         </nodeset>
+        <nodeset name="BinOP">
+            <target>
+                <node name="ArithOp" />
+                <node name="RelOp" />
+                <node name="LogicOp" />
+            </target>
+        </nodeset>
     </nodesets>
 
     <!--
