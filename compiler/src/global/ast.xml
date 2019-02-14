@@ -226,7 +226,70 @@
                 Function definition. This includes the actual code for the function.
             </description>
             <sons>
+                <son name="FunctionBody">
+                    <targets>
+                        <target mandatory="yes">
+                            <node name="FunctionBody" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
             </sons>
+            <attributes>
+            </attributes>
+        </node>
+
+        <!-- 
+        Node FunctionBody
+         -->
+
+        <node name="FunctionBody">
+            <description>
+                The body of a function.
+            </description>
+            <sons>
+                <son name="FunctionVarDeclaration">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="FunctionVarDeclaration" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="FunctionStatements">
+                    <targets>
+                        <target mandatory="yes">
+                            <node name="Statements" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+            </attributes>
+        </node>
+
+        <!-- 
+        Node Statements
+        -->
+
+        <node name="Statements">
+        </node>
+
+        <!-- 
+        Node FunctionVarDeclaration
+        -->
+
+        <node name="FunctionVarDeclaration">
+            <description>
+                Variable declaration inside a function.
+            </description>
         </node>
 
         <!--
