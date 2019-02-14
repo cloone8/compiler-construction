@@ -349,9 +349,9 @@
             </description>
             <sons>
                 <son name="counterinit">
-                    <node name="Expr" />
                     <targets>
                         <target mandatory="yes">
+                        <node name="Expr" />
                             <phases>
                                 <all />
                             </phases>
@@ -359,9 +359,9 @@
                     </targets>
                 </son>
                 <son name="condition">
-                    <node name="Expr" />
                     <targets>
                         <target mandatory="yes">
+                        <node name="Expr" />
                             <phases>
                                 <all />
                             </phases>
@@ -369,9 +369,9 @@
                     </targets>
                 </son>
                 <son name="step">
-                    <node name="Expr" />
                     <targets>
                         <target mandatory="no">
+                        <node name="Expr" />
                             <phases>
                                 <all />
                             </phases>
@@ -379,9 +379,9 @@
                     </targets>
                 </son>
                 <son name="code">
-                    <node name="Statements" />
                     <targets>
                         <target mandatory="yes">
+                        <node name="Statements" />
                             <phases>
                                 <all />
                             </phases>
@@ -411,9 +411,9 @@
             </description>
             <sons>
                 <son name="condition">
-                    <node name="Expr" />
                     <targets>
                         <target mandatory="yes">
+                        <node name="Expr" />
                             <phases>
                                 <all />
                             </phases>
@@ -437,15 +437,15 @@
         Node Do while
          -->
 
-        <node name="Dowhile">
+        <node name="DoWhile">
             <description>
                 Do while loop.
             </description>
             <sons>
                 <son name="condition">
-                    <node name="Expr" />
                     <targets>
                         <target mandatory="yes">
+                            <node name="Expr" />
                             <phases>
                                 <all />
                             </phases>
