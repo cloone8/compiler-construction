@@ -10,11 +10,14 @@ typedef enum { MO_not, MO_neg, MO_unknown } monop;
 /*
  * This enumeration defines all binops
  */
-typedef enum { BO_add, BO_sub, BO_mul, BO_div, BO_mod,
-               BO_lt, BO_le, BO_gt, BO_ge, BO_eq, BO_ne,
-               BO_and, BO_or, BO_unknown } binop;
 
-typedef enum { FT_void, FT_int, FT_float, FT_bool } type;
+typedef enum { AO_add, AO_sub, AO_mul, AO_div, AO_mod, AO_unknown } arithop;
+
+typedef enum { RO_lt, RO_le, RO_gt, RO_ge, RO_eq, RO_ne, RO_unknown } relop;
+
+typedef enum { LO_and, LO_or, LO_unknown } logop;
+
+typedef enum { TP_void, TP_int, TP_float, TP_bool, TP_unknown } type;
 
 
 #endif  /* _CIVCC_MYTYPES_H_ */

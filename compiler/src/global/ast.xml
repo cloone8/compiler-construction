@@ -16,11 +16,13 @@
         <type name="Int" ctype="int" init="0" copy="literal" />
         <type name="Bool" ctype="bool" init="FALSE" copy="literal" />
         <type name="Float" ctype="float" init="0.0" copy="literal" />
-        <type name="BinOp" ctype="binop" init="BO_unknown" copy="literal" />
         <type name="MonOp" ctype="monop" init="MO_unknown" copy="literal" />
+        <type name="ArithOp" ctype="arithop" init="AO_unknown" copy="literal" />
+        <type name="LogicOp" ctype="logop" init="LO_unknown" copy="literal" />
+        <type name="RelOp" ctype="relop" init="RO_unknown" copy="literal" />
         <type name="Link" ctype="node*" init="NULL" copy="lookup" />
         <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
-        <type name="Type" ctype="type" init="FT_void" copy="literal" />
+        <type name="Type" ctype="type" init="TP_void" copy="literal" />
     </attributetypes>
 
 <!--
@@ -75,10 +77,10 @@
                 <node name="For" />
                 <node name="While" />
                 <node name="DoWhile" />
-                <node name="VarLet">
+                <node name="VarAssign" />
             </target>
         </nodeset>
-        <nodeset name="BinOP">
+        <nodeset name="BinOpTypes">
             <target>
                 <node name="ArithOp" />
                 <node name="RelOp" />
@@ -87,7 +89,7 @@
         </nodeset>
         <nodeset name="ExprTypes">
             <target>
-                <node name="Var" />
+                <node name="VarRead" />
                 <node name="BinOp" />
                 <node name="MonOp" />
                 <node name="Cast" />
@@ -413,7 +415,7 @@
                 <son name="counter">
                     <targets>
                         <target mandatory="yes">
-                        <node name="VarLet" />
+                        <node name="VarAssign" />
                             <phases>
                                 <all />
                             </phases>
@@ -933,7 +935,7 @@
         Node Var
          -->
 
-         <node name="Var">
+         <node name="VarRead">
             <description>
                 A variable read
             </description>
@@ -975,6 +977,160 @@
             <attributes>
                 <attribute name="varname">
                     <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node BinOp
+         -->
+
+        <node name="BinOp">
+            <description>
+                The collection of binary operators.
+            </description>
+            <sons>
+                <son name="operators">
+                    <targets>
+                        <target mandatory="yes" >
+                            <set name="BinOpTypes" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!--
+        Node ArithOp
+        -->
+        <node name="ArithOp">
+            <description>
+                The five arithmetic operators
+            </description>
+            <sons>
+                <son name="left">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="right">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="ArithOperators">
+                    <type name="ArithOp">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node RelOp
+        -->
+        <node name="RelOp">
+            <description>
+                The five arithmetic operators
+            </description>
+            <sons>
+                <son name="left">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="right">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="RelOperators">
+                    <type name="RelOp">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node LogicOp
+        -->
+        <node name="LogicOp">
+            <description>
+                The five arithmetic operators
+            </description>
+            <sons>
+                <son name="left">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="right">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="LogicOperators">
+                    <type name="LogicOp">
                         <targets>
                             <target mandatory="yes">
                                 <phases>
