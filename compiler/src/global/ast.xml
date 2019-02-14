@@ -83,6 +83,16 @@
                 <node name="LogicOp" />
             </target>
         </nodeset>
+        <nodeset name="ExprTypes">
+            <target>
+                <node name="Var" />
+                <node name="BinOp" />
+                <node name="MonOp" />
+                <node name="VarCast" />
+                <node name="Const" />
+                <node name="FunCall" />
+            </target>
+        </nodeset>
     </nodesets>
 
     <!--
