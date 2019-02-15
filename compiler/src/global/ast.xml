@@ -276,6 +276,17 @@
                 </son>
             </sons>
             <attributes>
+                <attribute name="isexport">
+                    <type name="Bool">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -400,7 +411,41 @@
                 Global definition. This includes the actual value for the global.
             </description>
             <sons>
+                <son name="value">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
             </sons>
+            <attributes>
+                <attribute name="name">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="isexport">
+                    <type name="Bool">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
         </node>
 
         <!--
