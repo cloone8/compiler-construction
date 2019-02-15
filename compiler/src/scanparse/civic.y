@@ -133,6 +133,10 @@ param: type ID
     {
 
     }
+    | type SQR_BRACKET_L ID SQR_BRACKET_R ID
+    {
+
+    }
     ;
 
 rettype: VOIDTYPE
@@ -162,6 +166,10 @@ globaldec: EXTERN basictype ID SEMICOLON
         {
 
         }
+        | EXTERN basictype SQR_BRACKET_L ID SQR_BRACKET_R ID SEMICOLON
+        {
+
+        }
         ;
 
 globaldef: EXPORT basictype ID LET expr SEMICOLON
@@ -177,6 +185,22 @@ globaldef: EXPORT basictype ID LET expr SEMICOLON
 
             }
         | basictype ID SEMICOLON
+            {
+
+            }
+        | EXPORT basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
+            {
+
+            }
+        | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
+            {
+
+            }
+        | EXPORT basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
+            {
+
+            }
+        | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
             {
 
             }
@@ -256,6 +280,15 @@ vardec: basictype ID SEMICOLON
         {
 
         }
+    | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
+        {
+
+        }
+    | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
+        {
+
+        }
+        ;
 
 statement: ID LET expr SEMICOLON
         {
@@ -298,6 +331,20 @@ statement: ID LET expr SEMICOLON
 
         }
         | RETURN expr SEMICOLON
+        {
+
+        }
+        | ID SQR_BRACKET_L expr SQR_BRACKET_R LET expr SEMICOLON
+        {
+
+        }
+        ;
+
+arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
+        {
+
+        }
+    | expr
         {
 
         }
@@ -356,6 +403,10 @@ expr: BRACKET_L expr BRACKET_R
 
         }
     | const
+        {
+
+        }
+    | ID SQR_BRACKET_L expr SQR_BRACKET_R
         {
 
         }

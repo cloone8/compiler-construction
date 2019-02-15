@@ -104,6 +104,12 @@
                 <node name="BoolConst" />
             </target>
         </nodeset>
+        <nodeset name="FunctionParameterTypes">
+            <target>
+                <node name="BasicParameter" />
+                <node name="ArrayParameter" />
+            </target>
+        </nodeset>
     </nodesets>
 
     <!--
@@ -153,28 +159,28 @@
             <sons>
                 <son name="parameters">
                     <targets>
-                            <target mandatory="no" >
-                                <node name="Parameter" />
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
+                        <target mandatory="no" >
+                            <set name="FunctionParameterTypes" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
                     </targets>
                 </son>
                 <son name="definition">
                     <targets>
-                            <target mandatory="no" >
-                                <node name="FunctionDefinition" />
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
+                        <target mandatory="yes" >
+                            <node name="FunctionDefinition" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
                     </targets>
                 </son>
             </sons>
             <attributes>
-                <attribute name="isextern">
-                    <type name="Bool">
+                <attribute name="name">
+                    <type name="String">
                         <targets>
                             <target mandatory="yes">
                                 <phases>
@@ -184,6 +190,30 @@
                         </targets>
                     </type>
                 </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node BasicParameter
+         -->
+
+        <node name="BasicParameter">
+            <description>
+                Basic (non-array) function parameter
+            </description>
+            <sons>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no" >
+                            <set name="FunctionParameterTypes" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
                 <attribute name="name">
                     <type name="String">
                         <targets>
@@ -210,18 +240,74 @@
         </node>
 
         <!--
-        Node Parameter
+        Node ArrayParameter
          -->
 
-        <node name="Parameter">
+        <node name="ArrayParameter">
             <description>
-                Function parameter
+                Array function parameter
             </description>
             <sons>
                 <son name="next">
                     <targets>
                         <target mandatory="no" >
-                            <node name="Parameter" />
+                            <set name="FunctionParameterTypes" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="dimensions">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="ArrayParamDimensions" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="name">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node ArrayParamDimensions
+         -->
+
+        <node name="ArrayParamDimensions">
+            <description>
+                Array function parameter dimension linked list
+            </description>
+            <sons>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no" >
+                            <node name="ArrayParamDimensions" />
                             <phases>
                                 <all />
                             </phases>
@@ -299,7 +385,7 @@
                 The body of a function.
             </description>
             <sons>
-                <son name="FunctionVarDeclaration">
+                <son name="VarDeclarations">
                     <targets>
                         <target mandatory="no">
                             <node name="FunctionVarDeclaration" />
@@ -309,7 +395,17 @@
                         </target>
                     </targets>
                 </son>
-                <son name="FunctionStatements">
+                <son name="LocalFunctions">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="Function" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="Statements">
                     <targets>
                         <target mandatory="yes">
                             <node name="Statements" />
