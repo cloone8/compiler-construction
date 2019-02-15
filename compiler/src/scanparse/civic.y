@@ -182,7 +182,7 @@ globaldef: EXPORT basictype ID LET expr SEMICOLON
             }
             ;
 
-funbody: vardecs statements
+funbody: vardecs localfundefs statements
         {
 
         }
@@ -191,6 +191,38 @@ funbody: vardecs statements
 
         }
         | statements
+        {
+
+        }
+        | localfundefs
+        {
+
+        }
+        | vardecs statements
+        {
+
+        }
+        | vardecs localfundefs
+        {
+
+        }
+        | localfundefs statements
+        {
+
+        }
+        ;
+
+localfundefs: localfundef
+        {
+
+        }
+        | localfundef localfundefs
+        {
+
+        }
+        ;
+
+localfundef: funheader BRACE_L funbody BRACE_R
         {
 
         }
