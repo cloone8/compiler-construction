@@ -78,6 +78,7 @@
                 <node name="While" />
                 <node name="DoWhile" />
                 <node name="VarAssign" />
+                <node name="ArrayVarAssign" />
             </target>
         </nodeset>
         <nodeset name="BinOpTypes">
@@ -90,6 +91,7 @@
         <nodeset name="ExprTypes">
             <target>
                 <node name="VarRead" />
+                <node name="ArrayVarRead" />
                 <node name="BinOp" />
                 <node name="MonOp" />
                 <node name="Cast" />
@@ -108,6 +110,12 @@
             <target>
                 <node name="BasicParameter" />
                 <node name="ArrayParameter" />
+            </target>
+        </nodeset>
+        <nodeset name="FunctionVarDeclarations">
+            <target>
+                <node name="BasicVarDeclaration" />
+                <node name="ArrayVarDeclaration" />
             </target>
         </nodeset>
     </nodesets>
@@ -385,10 +393,10 @@
                 The body of a function.
             </description>
             <sons>
-                <son name="VarDeclarations">
+                <son name="vardeclarations">
                     <targets>
                         <target mandatory="no">
-                            <node name="FunctionVarDeclaration" />
+                            <set name="FunctionVarDeclarations" />
                                 <phases>
                                     <all />
                                 </phases>
@@ -405,7 +413,7 @@
                         </target>
                     </targets>
                 </son>
-                <son name="Statements">
+                <son name="statements">
                     <targets>
                         <target mandatory="yes">
                             <node name="Statements" />
@@ -453,10 +461,10 @@
         </node>
 
         <!--
-        Node FunctionVarDeclaration
+        Node BasicVarDeclaration
         -->
 
-        <node name="FunctionVarDeclaration">
+        <node name="BasicVarDeclaration">
             <description>
                 Variable declaration inside a function.
             </description>
@@ -496,6 +504,94 @@
                     </type>
                 </attribute>
             </attributes>
+        </node>
+
+        <!--
+        Node ArrayVarDeclaration
+        -->
+
+        <node name="ArrayVarDeclaration">
+            <description>
+                Array declaration inside a function.
+            </description>
+            <sons>
+                <son name="initval">
+                    <targets>
+                        <target mandatory="no">
+                        <node name="ExprArray" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="dimensions">
+                    <targets>
+                        <target mandatory="yes">
+                        <node name="ExprArray" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="varname">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node ExprArray
+         -->
+
+        <node name="ExprArray">
+            <description>
+                While loop.
+            </description>
+            <sons>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no">
+                        <node name="ExprArray" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="current">
+                    <targets>
+                        <target mandatory="yes">
+                        <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
         </node>
 
         <!--
@@ -626,9 +722,9 @@
                     </targets>
                 </son>
                 <son name="code">
-                    <node name="Statements" />
                     <targets>
                         <target mandatory="yes">
+                        <node name="Statements" />
                             <phases>
                                 <all />
                             </phases>
@@ -1102,6 +1198,64 @@
          <node name="VarAssign">
             <description>
                 A variable assignment
+            </description>
+            <sons>
+                <son name="value">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="varname">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node ArrayVarRead
+         -->
+
+         <node name="ArrayVarRead">
+            <description>
+                An array variable read
+            </description>
+            <attributes>
+                <attribute name="arrayvarname">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
+        </node>
+
+        <!--
+        Node ArrayVarAssign
+         -->
+
+         <node name="ArrayVarAssign">
+            <description>
+                An array variable assignment
             </description>
             <sons>
                 <son name="value">
