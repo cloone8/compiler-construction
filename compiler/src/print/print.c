@@ -353,6 +353,286 @@ PRTdeclaration (node * arg_node, info * arg_info)
   DBUG_RETURN(arg_node);
 }
 
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTlogicop
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTlogicop (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTlogicop");
+
+  LOGICOP_LEFT(arg_node) = TRAVdo(LOGICOP_LEFT(arg_node), arg_info);
+  LOGICOP_RIGHT(arg_node) = TRAVdo(LOGICOP_RIGHT(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTrelop
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTrelop (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTrelop");
+
+  RELOP_LEFT(arg_node) = TRAVdo(ARITHOP_LEFT(arg_node), arg_info);
+  RELOP_RIGHT(arg_node) = TRAVdo(ARITHOP_RIGHT(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTarithop
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTarithop (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTarithop");
+
+  ARITHOP_LEFT(arg_node) = TRAVdo(ARITHOP_LEFT(arg_node), arg_info);
+  ARITHOP_RIGHT(arg_node) = TRAVdo(ARITHOP_RIGHT(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTarrayvarassign
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTarrayvarassign (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTarrayvarassign");
+
+  ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
+  ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
+  ARRAYVARASSIGN_VARNAME(arg_node) = TRAVdo(ARRAYVARASSIGN_VARNAME(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTarrayvarread
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTarrayvarread (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTarrayvarread");
+
+  ARRAYVARREAD_ARRAYVARNAME(arg_node) = TRAVdo(ARRAYVARREAD_ARRAYVARNAME(arg_node), arg_info);
+  ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTvarassign
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTvarassign (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTvarassign");
+
+  VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
+  VARASSIGN_VARNAME(arg_node) = TRAVdo(VARASSIGN_VARNAME(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTvarread
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTvarread (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTvarread");
+
+  VARREAD_VARNAME(arg_node) = TRAVdo(VARREAD_VARNAME(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTcast
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTcast (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTcast");
+
+  CAST_CASTTO(arg_node) = TRAVdo(CAST_CASTTO(arg_node), arg_info);
+  CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTboolconst
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTboolconst (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTboolconst");
+
+  BOOLCONST_VALUE(arg_node) = TRAVdo(BOOLCONST_VALUE(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTintconst
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTintconst (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTintconst");
+
+  INTCONST_VALUE(arg_node) = TRAVdo(INTCONST_VALUE(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTfloatconst
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTfloatconst (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTfloatconst");
+
+
+  DBUG_RETURN(arg_node);
+}
+
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTconstant
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+node *
+PRTconstant (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER("PRTconstant");
+
+  CONSTANT_CURRENT(arg_node) = TRAVdo(CONSTANT_CURRENT(arg_node), arg_info);
+
+  DBUG_RETURN(arg_node);
+}
+
+
 /** <!--******************************************************************-->
  *
  * @fn PRTsymboltableentry
