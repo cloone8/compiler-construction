@@ -126,7 +126,7 @@
          -->
         <node name="Declaration">
             <description>
-                Sequence of statements
+                Sequence of declarations
             </description>
             <sons>
                 <son name="current">
