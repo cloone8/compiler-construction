@@ -209,6 +209,8 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 	@$(XSLTENGINE) $< $(AST_DIR)/ast.xml | $(INDENT) >$@
 
 %.html: %.html.xsl $(AST_DIR)/ast.xml $(XML_COMMONS)
+	@$(ECHO) "  Checking XML specification against schema:  $(notdir $@)"
+	@xmllint --schema $(XML_DIR)/ast.xsd $(AST_DIR)/ast.xml > /dev/null
 	@$(ECHO) "  Generating html file from XML specification:  $(notdir $@)"
 	@$(XSLTENGINE) $< $(AST_DIR)/ast.xml > $(DOC_DIR)/$(notdir $@)
 

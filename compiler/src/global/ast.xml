@@ -46,13 +46,9 @@
             <traversal id="CHK" name="Check Syntax Tree" default="user" include="check.h" />
 
             <traversal id="CO" name="Count operators" default="sons" include="count_ops.h">
-                <travuser>
-                </travuser>
             </traversal>
 
             <traversal id="CI" name="Count identifiers" default="sons" include="count_ids.h">
-                <travuser>
-                </travuser>
             </traversal>
 
         </general>
@@ -689,16 +685,6 @@
                         </target>
                     </targets>
                 </son>
-                <son name="countervar">
-                    <node name="FuncionVarDeclaration" />
-                    <targets>
-                        <target mandatory="yes">
-                            <phases>
-                                <all />
-                            </phases>
-                        </target>
-                    </targets>
-                </son>
             </sons>
         </node>
 
@@ -754,9 +740,9 @@
                     </targets>
                 </son>
                 <son name="code">
-                    <node name="Statements" />
                     <targets>
                         <target mandatory="yes">
+                            <node name="Statements" />
                             <phases>
                                 <all />
                             </phases>
@@ -1234,6 +1220,18 @@
             <description>
                 An array variable read
             </description>
+            <sons>
+                <son name="position">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="ExprArray" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
             <attributes>
                 <attribute name="arrayvarname">
                     <type name="String">
@@ -1258,10 +1256,20 @@
                 An array variable assignment
             </description>
             <sons>
-                <son name="value">
+                <son name="position">
                     <targets>
                         <target mandatory="yes" >
-                            <node name="Expr" />
+                            <node name="ExprArray" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="values">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="ExprArray" />
                             <phases>
                                 <all />
                             </phases>
