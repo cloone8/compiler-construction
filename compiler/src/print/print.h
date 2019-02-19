@@ -23,6 +23,20 @@ extern node *PRTsymboltableentry (node * arg_node, info * arg_info);
 extern node *PRTerror (node * arg_node, info * arg_info);
 extern node *PRTmodule (node * arg_node, info * arg_info);
 extern node *PRTdeclaration (node * arg_node, info * arg_info);
+extern node *PRTlogicop (node * arg_node, info * arg_info);
+extern node * PRTrelop (node * arg_node, info * arg_info);
+extern node * PRTarithop (node * arg_node, info * arg_info);
+extern node * PRTarrayvarassign (node * arg_node, info * arg_info);
+extern node * PRTarrayvarread (node * arg_node, info * arg_info);
+extern node * PRTvarassign (node * arg_node, info * arg_info);
+extern node * PRTvarread (node * arg_node, info * arg_info);
+extern node * PRTcast (node * arg_node, info * arg_info);
+extern node * PRTboolconst (node * arg_node, info * arg_info);
+extern node * PRTintconst (node * arg_node, info * arg_info);
+extern node * PRTfloatconst (node * arg_node, info * arg_info);
+extern node * PRTconstant (node * arg_node, info * arg_info);     
+
+
 
 extern node *PRTdoPrint(node *syntaxtree);
 
