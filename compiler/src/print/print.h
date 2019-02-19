@@ -23,6 +23,27 @@ extern node *PRTsymboltableentry (node * arg_node, info * arg_info);
 extern node *PRTerror (node * arg_node, info * arg_info);
 extern node *PRTmodule (node * arg_node, info * arg_info);
 extern node *PRTdeclaration (node * arg_node, info * arg_info);
+extern node *PRTfunction (node * arg_node, info * arg_info);
+extern node *PRTbasicparameter (node * arg_node, info * arg_info);
+extern node *PRTarrayparameter (node * arg_node, info * arg_info);
+extern node *PRTarrayparamdimensions (node * arg_node, info * arg_info);
+extern node *PRTfunctiondefinition (node * arg_node, info * arg_info);
+extern node *PRTfunctionbody (node * arg_node, info * arg_info);
+extern node *PRTstatements (node * arg_node, info * arg_info);
+extern node *PRTbasicvardeclaration (node * arg_node, info * arg_info);
+extern node *PRTarrayvardeclaration (node * arg_node, info * arg_info);
+extern node *PRTexprarray (node * arg_node, info * arg_info);
+extern node *PRTglobaldefinition (node * arg_node, info * arg_info);
+extern node *PRTfor (node * arg_node, info * arg_info);
+extern node *PRTwhile (node * arg_node, info * arg_info);
+extern node *PRTdowhile (node * arg_node, info * arg_info);
+extern node *PRTglobal (node * arg_node, info * arg_info);
+extern node *PRTfuncall (node * arg_node, info * arg_info);
+extern node *PRTfuncallparameter (node * arg_node, info * arg_info);
+extern node *PRTreturn (node * arg_node, info * arg_info);
+extern node *PRTbranch (node * arg_node, info * arg_info);
+extern node *PRTexpr (node * arg_node, info * arg_info);
+extern node *PRTmonop (node * arg_node, info * arg_info);
 
 extern node *PRTdoPrint(node *syntaxtree);
 

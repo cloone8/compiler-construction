@@ -399,7 +399,7 @@
                         </target>
                     </targets>
                 </son>
-                <son name="LocalFunctions">
+                <son name="localfunctions">
                     <targets>
                         <target mandatory="no">
                             <node name="Function" />
@@ -564,7 +564,7 @@
 
         <node name="ExprArray">
             <description>
-                While loop.
+                Array of multiple expressions.
             </description>
             <sons>
                 <son name="next">
