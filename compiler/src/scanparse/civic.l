@@ -66,7 +66,6 @@
 
 "extern"                   { FILTER(EXTERN); }
 "export"                   { FILTER(EXPORT); }
-"static"                   { FILTER(STATIC); }
 
 "["                        { FILTER(SQR_BRACKET_L); }
 "]"                        { FILTER(SQR_BRACKET_R); }
