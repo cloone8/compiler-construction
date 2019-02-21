@@ -47,8 +47,7 @@ static int yyerror(char *errname);
 %type <node> declarations declaration
 %type <node> fundec fundef globaldec globaldef
 %type <node> funheader params param
-%type <type> rettype basictype
-// %type <cbinop> binop
+%type <type> basictype
 
 %right LET
 %left MINUS PLUS
@@ -67,9 +66,9 @@ program: declarations
             }
             ;
 
-declarations: declaration declarations
+declarations: declarations declaration
                 {
-                    $$ = TBmakeDeclaration($1, $2);
+                    $$ = TBmakeDeclaration($2, $1);
                 }
             | declaration
                 {
@@ -119,13 +118,21 @@ fundef: EXPORT funheader BRACE_L funbody BRACE_R
         }
         ;
 
-funheader: rettype ID BRACKET_L params BRACKET_R
+funheader: basictype ID BRACKET_L params BRACKET_R
         {
             $$ = TBmakeFunction(STRcpy($2), $1, $4, NULL);
         }
-        | rettype ID BRACKET_L BRACKET_R
+        | basictype ID BRACKET_L BRACKET_R
         {
             $$ = TBmakeFunction(STRcpy($2), $1, NULL, NULL);
+        }
+        | VOIDTYPE ID BRACKET_L params BRACKET_R
+        {
+            $$ = TBmakeFunction(STRcpy($2), TP_void, $4, NULL);
+        }
+        | VOIDTYPE ID BRACKET_L BRACKET_R
+        {
+            $$ = TBmakeFunction(STRcpy($2), TP_void, NULL, NULL);
         }
         ;
 
@@ -151,15 +158,6 @@ param: basictype ID
         $$ = TBmakeArrayparameter($5, $1, NULL, dim);
     }
     ;
-
-rettype: VOIDTYPE
-        {
-            $$ = TP_void;
-        }
-        | basictype
-        {
-            $$ = $1;
-        };
 
 basictype: BOOLTYPE
         {
@@ -269,7 +267,7 @@ vardecs: vardec
         {
 
         }
-    | vardec vardecs
+    | vardecs vardec
         {
 
         }
@@ -279,7 +277,7 @@ statements: statement
         {
 
         }
-    | statement statements
+    | statements statement
         {
 
         }
@@ -377,7 +375,7 @@ block: BRACE_L BRACE_R
         }
         ;
 
-exprs: expr exprs
+exprs: exprs expr
     {
 
     }
