@@ -375,7 +375,7 @@ block: BRACE_L BRACE_R
         }
         ;
 
-exprs: exprs expr
+exprs: exprs COMMA expr
     {
 
     }
