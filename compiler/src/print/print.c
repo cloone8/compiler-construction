@@ -232,7 +232,6 @@ PRTvarassign (node * arg_node, info * arg_info)
     DBUG_ENTER("PRTvarassign");
 
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
-    VARASSIGN_VARNAME(arg_node) = TRAVdo(VARASSIGN_VARNAME(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -255,8 +254,6 @@ PRTvarread (node * arg_node, info * arg_info)
 {
     DBUG_ENTER("PRTvarread");
 
-    VARREAD_VARNAME(arg_node) = TRAVdo(VARREAD_VARNAME(arg_node), arg_info);
-
     DBUG_RETURN(arg_node);
 }
 
@@ -278,7 +275,6 @@ PRTcast (node * arg_node, info * arg_info)
 {
     DBUG_ENTER("PRTcast");
 
-    CAST_CASTTO(arg_node) = TRAVdo(CAST_CASTTO(arg_node), arg_info);
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
@@ -302,8 +298,6 @@ PRTboolconst (node * arg_node, info * arg_info)
 {
     DBUG_ENTER("PRTboolconst");
 
-    BOOLCONST_VALUE(arg_node) = TRAVdo(BOOLCONST_VALUE(arg_node), arg_info);
-
     DBUG_RETURN(arg_node);
 }
 
@@ -324,8 +318,6 @@ node *
 PRTintconst (node * arg_node, info * arg_info)
 {
     DBUG_ENTER("PRTintconst");
-
-    INTCONST_VALUE(arg_node) = TRAVdo(INTCONST_VALUE(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }

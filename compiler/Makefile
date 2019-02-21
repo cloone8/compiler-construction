@@ -191,14 +191,14 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 	@$(YACC) $<
 	@mv y.tab.c $@
 	@$(RM) y.tab.h
-	@mv y.output $(dir $@) 2>/dev/null
+	# @mv y.output $(dir $@) 2>/dev/null
 
 %.tab.h: %.y %.track
 	@$(ECHO) "  Generating header file from YACC specification:  $(notdir $<)"
 	@$(YACC) $<
 	@mv y.tab.h $@
 	@$(RM) y.tab.c
-	@mv y.output $(dir $@) 2>/dev/null
+	# @mv y.output $(dir $@) 2>/dev/null
 
 %.h: %.h.xsl $(AST_DIR)/ast.xml $(XML_COMMONS)
 	@$(ECHO) "  Generating header file from XML specification:  $(notdir $@)"
