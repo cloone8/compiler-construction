@@ -121,11 +121,11 @@ fundef: EXPORT funheader BRACE_L funbody BRACE_R
 
 funheader: rettype ID BRACKET_L params BRACKET_R
         {
-            $$ = TBmakeFunction(STRcopy($2), $1, $4, NULL);
+            $$ = TBmakeFunction(STRcpy($2), $1, $4, NULL);
         }
         | rettype ID BRACKET_L BRACKET_R
         {
-            $$ = TBmakeFunction(STRcopy($2), $1, NULL, NULL);
+            $$ = TBmakeFunction(STRcpy($2), $1, NULL, NULL);
         }
         ;
 
