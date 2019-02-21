@@ -45,9 +45,9 @@ static int yyerror(char *errname);
 %token <cflt> FLOAT
 %token <id> ID
 
-%type <node> intval floatval boolval constant expr
-%type <node> stmts stmt assign varlet program
-%type <cbinop> binop
+// %type <node> intval floatval boolval constant expr
+// %type <node> stmts stmt assign varlet program
+// %type <cbinop> binop
 
 %right LET
 %left MINUS PLUS
