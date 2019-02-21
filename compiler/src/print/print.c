@@ -187,7 +187,6 @@ PRTarrayvarassign (node * arg_node, info * arg_info)
 
     ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
     ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
-    ARRAYVARASSIGN_VARNAME(arg_node) = TRAVdo(ARRAYVARASSIGN_VARNAME(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -209,7 +208,6 @@ PRTarrayvarread (node * arg_node, info * arg_info)
 {
     DBUG_ENTER("PRTarrayvarread");
 
-    ARRAYVARREAD_ARRAYVARNAME(arg_node) = TRAVdo(ARRAYVARREAD_ARRAYVARNAME(arg_node), arg_info);
     ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);

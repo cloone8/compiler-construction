@@ -21,11 +21,9 @@ static int yyerror(char *errname);
 %}
 
 %union {
- nodetype            nodetype;
  char               *id;
  int                 cint;
  float               cflt;
- binop               cbinop;
  node               *node;
 }
 
@@ -45,8 +43,7 @@ static int yyerror(char *errname);
 %token <cflt> FLOAT
 %token <id> ID
 
-// %type <node> intval floatval boolval constant expr
-// %type <node> stmts stmt assign varlet program
+%type <node> declarations declaration
 // %type <cbinop> binop
 
 %right LET
@@ -62,17 +59,17 @@ static int yyerror(char *errname);
 
 program: declarations
             {
-                // parseresult = $1
+                parseresult = $1;
             }
             ;
 
 declarations: declaration declarations
                 {
-
+                    TBmakeDeclaration($1, $2);
                 }
             | declaration
                 {
-
+                    TBmakeDeclaration($1, NULL);
                 }
                 ;
 
