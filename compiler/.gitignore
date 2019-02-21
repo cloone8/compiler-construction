@@ -65,3 +65,4 @@ src/scanparse/civic.tab.h
 src/scanparse/y.output
 make_track
 *.d
+y.output
