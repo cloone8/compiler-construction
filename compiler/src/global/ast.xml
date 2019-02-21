@@ -336,17 +336,6 @@
                         </targets>
                     </type>
                 </attribute>
-                <attribute name="type">
-                    <type name="Type">
-                        <targets>
-                            <target mandatory="yes">
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
-                        </targets>
-                    </type>
-                </attribute>
             </attributes>
         </node>
 

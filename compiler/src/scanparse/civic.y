@@ -46,8 +46,8 @@ static int yyerror(char *errname);
 
 %type <node> declarations declaration
 %type <node> fundec fundef globaldec globaldef
-%type <node> funheader params
-%type <type> rettype
+%type <node> funheader params param
+%type <type> rettype basictype
 // %type <cbinop> binop
 
 %right LET
@@ -131,45 +131,47 @@ funheader: rettype ID BRACKET_L params BRACKET_R
 
 params: param params
         {
-
+            ARRAYPARAMETER_NEXT($1) = $2;
+            $$ = $1;
         }
         |
         param
         {
-
+            $$ = $1;
         }
         ;
 
 param: basictype ID
     {
-
+        $$ = TBmakeBasicparameter($2, $1, NULL);
     }
     | basictype SQR_BRACKET_L ID SQR_BRACKET_R ID
     {
-
+        node* dim = TBmakeArrayparamdimensions($3, NULL);
+        $$ = TBmakeArrayparameter($5, $1, NULL, dim);
     }
     ;
 
 rettype: VOIDTYPE
         {
-
+            $$ = TP_void;
         }
         | basictype
         {
-
+            $$ = $1;
         };
 
 basictype: BOOLTYPE
         {
-
+            $$ = TP_bool;
         }
         | INTTYPE
         {
-
+            $$ = TP_int;
         }
         | FLOATTYPE
         {
-
+            $$ = TP_float;
         }
         ;
 
