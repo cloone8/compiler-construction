@@ -45,12 +45,6 @@
             <traversal id="FREE" name="Free Syntax Tree" default="user" include="free_node.h" />
             <traversal id="CHK" name="Check Syntax Tree" default="user" include="check.h" />
 
-            <traversal id="CO" name="Count operators" default="sons" include="count_ops.h">
-            </traversal>
-
-            <traversal id="CI" name="Count identifiers" default="sons" include="count_ids.h">
-            </traversal>
-
         </general>
     </phases>
 
