@@ -25,6 +25,7 @@ static int yyerror(char *errname);
  int                 cint;
  float               cflt;
  node               *node;
+ type                type;
 }
 
 %token BRACKET_L BRACKET_R COMMA SEMICOLON
@@ -44,6 +45,9 @@ static int yyerror(char *errname);
 %token <id> ID
 
 %type <node> declarations declaration
+%type <node> fundec fundef globaldec globaldef
+%type <node> funheader params
+%type <type> rettype
 // %type <cbinop> binop
 
 %right LET
@@ -65,35 +69,35 @@ program: declarations
 
 declarations: declaration declarations
                 {
-                    TBmakeDeclaration($1, $2);
+                    $$ = TBmakeDeclaration($1, $2);
                 }
             | declaration
                 {
-                    TBmakeDeclaration($1, NULL);
+                    $$ = TBmakeDeclaration($1, NULL);
                 }
                 ;
 
 declaration: fundec
                 {
-
+                    $$ = $1;
                 }
             | fundef
                 {
-
+                    $$ = $1;
                 }
             | globaldec
                 {
-
+                    $$ = $1;
                 }
             | globaldef
                 {
-
+                    $$ = $1;
                 }
                 ;
 
 fundec: EXTERN funheader SEMICOLON
         {
-
+            $$ = $2;
         }
         ;
 
@@ -110,15 +114,18 @@ fundef: EXPORT funheader BRACE_L funbody BRACE_R
 
         }
     | funheader BRACE_L BRACE_R
+        {
+
+        }
         ;
 
 funheader: rettype ID BRACKET_L params BRACKET_R
         {
-
+            $$ = TBmakeFunction(STRcopy($2), $1, $4, NULL);
         }
         | rettype ID BRACKET_L BRACKET_R
         {
-
+            $$ = TBmakeFunction(STRcopy($2), $1, NULL, NULL);
         }
         ;
 
