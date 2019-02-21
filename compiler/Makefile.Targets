@@ -53,7 +53,7 @@
 #
 
 
-src = global scanparse print codegen framework counters
+src = global scanparse print codegen framework
 
 
 
@@ -79,4 +79,3 @@ print       = print.o
 
 codegen     = gen_byte_code.o
 
-counters = count_ids.o count_map.o count_ops.o
