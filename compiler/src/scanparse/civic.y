@@ -49,6 +49,13 @@ static int yyerror(char *errname);
 %type <node> stmts stmt assign varlet program
 %type <cbinop> binop
 
+%right LET
+%left MINUS PLUS
+%left STAR SLASH PERCENT
+%left LE LT GE GT EQ NE
+%left OR AND
+%nonassoc IF ELSE
+
 %start program
 
 %%
