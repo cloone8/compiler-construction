@@ -136,11 +136,11 @@ params: param params
         }
         ;
 
-param: type ID
+param: basictype ID
     {
 
     }
-    | type SQR_BRACKET_L ID SQR_BRACKET_R ID
+    | basictype SQR_BRACKET_L ID SQR_BRACKET_R ID
     {
 
     }
@@ -274,10 +274,10 @@ statements: statement
 
         }
     | statement statements
-       {
+        {
 
-       }
-       ;
+        }
+        ;
 
 vardec: basictype ID SEMICOLON
         {
