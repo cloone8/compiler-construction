@@ -59,6 +59,13 @@ static int yyerror(char *errname);
 
 %nonassoc IF ELSE
 
+%prec PLUS MINUS
+%prec STAR SLASH PERCENT
+%prec LT LE GT GE
+%prec EQ NE
+%prec AND
+%prec OR
+
 %start program
 
 %%
