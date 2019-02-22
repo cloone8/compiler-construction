@@ -158,8 +158,8 @@ param: basictype ID
     }
     | basictype SQR_BRACKET_L ID SQR_BRACKET_R ID
     {
-        node* dim = TBmakeArrayparamdimensions($3, NULL);
-        $$ = TBmakeArrayparameter($5, $1, NULL, dim);
+        node* dimensions_branch = TBmakeArrayparamdimensions($3, NULL);
+        $$ = TBmakeArrayparameter($5, $1, NULL, dimensions_branch);
     }
     ;
 
