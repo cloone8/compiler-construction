@@ -78,6 +78,10 @@
 "if"                       { FILTER(IF); }
 "else"                     { FILTER(ELSE); }
 
+\(\s*int\s*\)              { FILTER(CAST_INT)}
+\(\s*bool\s*\)             { FILTER(CAST_BOOL)}
+\(\s*float\s*\)            { FILTER(CAST_FLOAT)}
+
 
 [A-Za-z][A-Za-z0-9_]*       {
                                 yylval.id = STRcpy(yytext);

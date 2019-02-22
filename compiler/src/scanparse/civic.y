@@ -39,6 +39,7 @@ static int yyerror(char *errname);
 %token RETURN
 %token BRACE_L BRACE_R
 %token NEG
+%token CAST_INT CAST_BOOL CAST_FLOAT
 
 %token <cint> NUM
 %token <cflt> FLOAT
@@ -54,6 +55,7 @@ static int yyerror(char *errname);
 %left STAR SLASH PERCENT
 %left LE LT GE GT EQ NE
 %left OR AND
+%right CAST_BOOL CAST_INT CAST_FLOAT
 %right NEG
 
 %nonassoc IF_NO_ELSE
@@ -453,7 +455,15 @@ expr: BRACKET_L expr BRACKET_R
         {
 
         }
-    | BRACKET_L basictype BRACKET_R expr
+    | CAST_BOOL expr
+        {
+
+        }
+    | CAST_INT expr
+        {
+
+        }
+    | CAST_FLOAT expr
         {
 
         }
