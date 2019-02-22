@@ -54,6 +54,9 @@ static int yyerror(char *errname);
 %left STAR SLASH PERCENT
 %left LE LT GE GT EQ NE
 %left OR AND
+%right NEG
+
+
 %nonassoc IF ELSE
 
 %start program
@@ -393,7 +396,7 @@ expr: BRACKET_L expr BRACKET_R
         {
 
         }
-    | monop expr
+    | monop expr %prec MINUS
         {
 
         }
