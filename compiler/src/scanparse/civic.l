@@ -43,7 +43,7 @@
 "*"                        { FILTER(STAR);  }
 "/"                        { FILTER(SLASH);  }
 "%"                        { FILTER(PERCENT);  }
-"!"                        { FILTER(NEG); }
+"!"                        { FILTER(NOT); }
 
 "<="                       { FILTER(LE);    }
 "<"                        { FILTER(LT);    }

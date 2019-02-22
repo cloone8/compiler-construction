@@ -39,7 +39,7 @@ static int yyerror(char *errname);
 %token IF ELSE
 %token RETURN
 %token BRACE_L BRACE_R
-%token NEG
+%token NOT
 %token CAST_INT CAST_BOOL CAST_FLOAT
 
 %token <cint> NUM
@@ -51,6 +51,8 @@ static int yyerror(char *errname);
 %type <node> funheader params param
 %type <type> basictype
 %type <node> funbody
+%type <node> const boolconst
+%type <node> exprs expr
 
 %right LET
 %left MINUS PLUS
@@ -58,7 +60,7 @@ static int yyerror(char *errname);
 %left LE LT GE GT EQ NE
 %left OR AND
 %right CAST_BOOL CAST_INT CAST_FLOAT
-%right NEG
+%right NOT
 
 %nonassoc IF_NO_ELSE
 %nonassoc ELSE
@@ -420,7 +422,6 @@ arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
 
 block: BRACE_L BRACE_R
         {
-
         }
     | BRACE_L statements BRACE_R
         {
@@ -434,133 +435,133 @@ block: BRACE_L BRACE_R
 
 exprs: exprs COMMA expr
     {
-
+        $$ = TBmakeExprarray($1, $3);
     }
     | expr
     {
-
+        $$ = TBmakeExpr($1);
     }
     ;
 
 expr: BRACKET_L expr BRACKET_R
         {
-
+            $$ = $2;
         }
     | expr PLUS expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_add, $1, $3)));
         }
     | expr MINUS expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_sub, $1, $3)));
         }
     | expr STAR expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_mul, $1, $3)));
         }
     | expr SLASH expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_div, $1, $3)));
         }
     | expr PERCENT expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_mod, $1, $3)));
         }
     | expr EQ expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_eq, $1, $3)));
         }
     | expr NE expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_ne, $1, $3)));
         }
     | expr LT expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_lt, $1, $3)));
         }
     | expr LE expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_le, $1, $3)));
         }
     | expr GT expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_gt, $1, $3)));
         }
     | expr GE expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_ge, $1, $3)));
         }
     | expr AND expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeLogicop(LO_and, $1, $3)));
         }
     | expr OR expr
         {
-
+            $$ = TBmakeExpr(TBmakeBinop(TBmakeLogicop(LO_or, $1, $3)));
         }
     | MINUS expr %prec MINUS
         {
-
+            $$ = TBmakeExpr(TBmakeMonop(MO_neg, $2));
         }
-    | NEG expr
+    | NOT expr
         {
-
+            $$ = TBmakeExpr(TBmakeMonop(MO_not, $2));
         }
     | CAST_BOOL expr
         {
-
+            $$ = TBmakeExpr(TBmakeCast(TP_bool, $2));
         }
     | CAST_INT expr
         {
-
+            $$ = TBmakeExpr(TBmakeCast(TP_int, $2));
         }
     | CAST_FLOAT expr
         {
-
+            $$ = TBmakeExpr(TBmakeCast(TP_float, $2));
         }
     | ID BRACKET_L BRACKET_R
         {
-
+            $$ = TBmakeExpr(TBmakeFuncall(STRcpy($1), NULL));
         }
     | ID BRACKET_L exprs BRACKET_R
         {
-
+            $$ = TBmakeExpr(TBmakeFuncall(STRcpy($1), $3));
         }
     | ID
         {
-
+            $$ = TBmakeExpr(TBmakeVarread(STRcpy($1)));
         }
     | const
         {
-
+            $$ = TBmakeExpr(TBmakeConstant($1));
         }
     | ID SQR_BRACKET_L expr SQR_BRACKET_R
         {
-
+            $$ = TBmakeArrayvarread(STRcpy($1), $3);
         }
         ;
 
 const: boolconst
         {
-
+            $$ = $1;
         }
     | NUM
         {
-
+            $$ = TBmakeIntconst($1);
         }
     | FLOAT
         {
-
+            $$ = TBmakeFloatconst($1);
         }
         ;
 
 boolconst: TRUEVAL
             {
-
+                $$ = TBmakeBoolconst(TRUE);
             }
         | FALSEVAL
             {
-
+                $$ = TBmakeBoolconst(FALSE);
             }
             ;
 
