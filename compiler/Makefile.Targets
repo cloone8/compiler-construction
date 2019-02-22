@@ -53,7 +53,7 @@
 #
 
 
-src = global scanparse print codegen framework
+src = global scanparse print codegen framework counters
 
 
 
@@ -78,4 +78,6 @@ scanparse   = civic.tab.o civic.lex.o parsehelper.o
 print       = print.o
 
 codegen     = gen_byte_code.o
+
+counters    = count_map.o
 
