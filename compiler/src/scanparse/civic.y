@@ -259,7 +259,7 @@ localfundefs: localfundef
         {
 
         }
-        | localfundef localfundefs
+        | localfundefs localfundef
         {
 
         }
