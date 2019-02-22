@@ -59,12 +59,6 @@ static int yyerror(char *errname);
 
 %nonassoc IF ELSE
 
-%prec PLUS MINUS
-%prec STAR SLASH PERCENT
-%prec LT LE GT GE
-%prec EQ NE
-%prec AND
-%prec OR
 
 %start program
 
@@ -399,7 +393,55 @@ expr: BRACKET_L expr BRACKET_R
         {
 
         }
-    | expr binop expr
+    | expr PLUS expr
+        {
+
+        }
+    | expr MINUS expr
+        {
+
+        }
+    | expr STAR expr
+        {
+
+        }
+    | expr SLASH expr
+        {
+
+        }
+    | expr PERCENT expr
+        {
+
+        }
+    | expr EQ expr
+    {
+
+    }
+    | expr NE expr
+        {
+
+        }
+    | expr LT expr
+        {
+
+        }
+    | expr LE expr
+        {
+
+        }
+    | expr GT expr
+        {
+
+        }
+    | expr GE expr
+        {
+
+        }
+    | expr AND expr
+        {
+
+        }
+    | expr OR expr
         {
 
         }
@@ -428,78 +470,6 @@ expr: BRACKET_L expr BRACKET_R
 
         }
     | ID SQR_BRACKET_L expr SQR_BRACKET_R
-        {
-
-        }
-        ;
-
-binop: arithop
-        {
-
-        }
-    | relop
-        {
-
-        }
-    | logicop
-        {
-
-        }
-        ;
-
-arithop: PLUS
-        {
-
-        }
-        | MINUS
-        {
-
-        }
-        | STAR
-        {
-
-        }
-        | SLASH
-        {
-
-        }
-        | PERCENT
-        {
-
-        }
-        ;
-
-relop: EQ
-        {
-
-        }
-    | NE
-        {
-
-        }
-    | LT
-        {
-
-        }
-    | LE
-        {
-
-        }
-    | GT
-        {
-
-        }
-    | GE
-        {
-
-        }
-        ;
-
-logicop: AND
-        {
-
-        }
-        | OR
         {
 
         }
