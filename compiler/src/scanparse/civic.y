@@ -158,8 +158,8 @@ param: basictype ID
     }
     | basictype SQR_BRACKET_L ID SQR_BRACKET_R ID
     {
-        node* dim = TBmakeArrayparamdimensions($3, NULL);
-        $$ = TBmakeArrayparameter($5, $1, NULL, dim);
+        node* dimensions_branch = TBmakeArrayparamdimensions($3, NULL);
+        $$ = TBmakeArrayparameter($5, $1, NULL, dimensions_branch);
     }
     ;
 
@@ -414,9 +414,9 @@ expr: BRACKET_L expr BRACKET_R
 
         }
     | expr EQ expr
-    {
+        {
 
-    }
+        }
     | expr NE expr
         {
 
@@ -445,7 +445,11 @@ expr: BRACKET_L expr BRACKET_R
         {
 
         }
-    | monop expr %prec MINUS
+    | MINUS expr %prec MINUS
+        {
+
+        }
+    | NEG expr
         {
 
         }
@@ -470,16 +474,6 @@ expr: BRACKET_L expr BRACKET_R
 
         }
     | ID SQR_BRACKET_L expr SQR_BRACKET_R
-        {
-
-        }
-        ;
-
-monop: MINUS
-        {
-
-        }
-    | NEG
         {
 
         }
