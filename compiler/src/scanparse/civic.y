@@ -13,6 +13,7 @@
 #include "ctinfo.h"
 #include "free.h"
 #include "globals.h"
+#include "parsehelper.h"
 
 static node *parseresult = NULL;
 extern int yylex();
@@ -49,6 +50,7 @@ static int yyerror(char *errname);
 %type <node> fundec fundef globaldec globaldef
 %type <node> funheader params param
 %type <type> basictype
+%type <node> funbody
 
 %right LET
 %left MINUS PLUS
@@ -60,7 +62,6 @@ static int yyerror(char *errname);
 
 %nonassoc IF_NO_ELSE
 %nonassoc ELSE
-
 
 %start program
 
@@ -74,7 +75,19 @@ program: declarations
 
 declarations: declarations declaration
                 {
-                    $$ = TBmakeDeclaration($2, $1);
+                    node* new_final_node = TBmakeDeclaration($2, NULL);
+
+                    node* current_final_node = $1;
+
+                    // Go to the end of the branch
+                    while(DECLARATION_NEXT(current_final_node) != NULL) {
+                        current_final_node = DECLARATION_NEXT(current_final_node);
+                    }
+
+                    // End found, link the new node to the end
+                    DECLARATION_NEXT(current_final_node) = new_final_node;
+
+                    $$ = $1;
                 }
             | declaration
                 {
@@ -108,19 +121,43 @@ fundec: EXTERN funheader SEMICOLON
 
 fundef: EXPORT funheader BRACE_L funbody BRACE_R
         {
+            // Make a new function definition node, and link the function
+            // declaration from the header to the new definition
+            node* function_definition = TBmakeFunctiondefinition(TRUE, $4);
 
+            FUNCTION_DEFINITION($2) = function_definition;
+
+            $$ = $2;
         }
     | funheader BRACE_L funbody BRACE_R
         {
+            // Make a new function definition node, and link the function
+            // declaration from the header to the new definition
+            node* function_definition = TBmakeFunctiondefinition(FALSE, $3);
 
+            FUNCTION_DEFINITION($1) = function_definition;
+
+            $$ = $1;
         }
     | EXPORT funheader BRACE_L BRACE_R
         {
+            // Make a new function definition node, and link the function
+            // declaration from the header to the new definition
+            node* function_definition = TBmakeFunctiondefinition(TRUE, NULL);
 
+            FUNCTION_DEFINITION($2) = function_definition;
+
+            $$ = $2;
         }
     | funheader BRACE_L BRACE_R
         {
+            // Make a new function definition node, and link the function
+            // declaration from the header to the new definition
+            node* function_definition = TBmakeFunctiondefinition(FALSE, NULL);
 
+            FUNCTION_DEFINITION($1) = function_definition;
+
+            $$ = $1;
         }
         ;
 
@@ -142,9 +179,20 @@ funheader: basictype ID BRACKET_L params BRACKET_R
         }
         ;
 
-params: param params
+params: params param
         {
-            ARRAYPARAMETER_NEXT($1) = $2;
+            node* new_final_node = $2;
+
+            node* current_final_node = $1;
+
+            // Go to the end of the branch
+            while(paramsGetNextNode(current_final_node) != NULL) {
+                current_final_node = paramsGetNextNode(current_final_node);
+            }
+
+            // End found, link the new node to the end
+            paramsSetNextNode(current_final_node, new_final_node);
+
             $$ = $1;
         }
         |
@@ -162,6 +210,7 @@ param: basictype ID
     {
         node* dimensions_branch = TBmakeArrayparamdimensions($3, NULL);
         $$ = TBmakeArrayparameter($5, $1, NULL, dimensions_branch);
+        // TODO: Multi-dimensional arrays
     }
     ;
 
@@ -181,43 +230,45 @@ basictype: BOOLTYPE
 
 globaldec: EXTERN basictype ID SEMICOLON
         {
-
+            $$ = TBmakeGlobal(STRcpy($3), $2, NULL, NULL);
         }
         | EXTERN basictype SQR_BRACKET_L ID SQR_BRACKET_R ID SEMICOLON
         {
-
+            node* dimensions = TBmakeArrayparamdimensions(STRcpy($4), NULL);
+            $$ = TBmakeGlobal(STRcpy($6), $2, NULL, dimensions);
+            // TODO: Multi-dimensional arrays
         }
         ;
 
 globaldef: EXPORT basictype ID LET expr SEMICOLON
             {
-
+                $$ = TBmakeGlobaldefinition(STRcpy($3), TRUE, $2, TBmakeExprarray(NULL, $5), NULL);
             }
         | basictype ID LET expr SEMICOLON
             {
-
+                $$ = TBmakeGlobaldefinition(STRcpy($2), FALSE, $1, TBmakeExprarray(NULL, $4), NULL);
             }
         | EXPORT basictype ID SEMICOLON
             {
-
+                $$ = TBmakeGlobaldefinition(STRcpy($3), TRUE, $2, NULL, NULL);
             }
         | basictype ID SEMICOLON
             {
-
+                $$ = TBmakeGlobaldefinition(STRcpy($2), FALSE, $1, NULL, NULL);
             }
-        | EXPORT basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
+        | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
 
             }
-        | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
+        | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
 
             }
-        | EXPORT basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
+        | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
 
             }
-        | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
+        | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
 
             }

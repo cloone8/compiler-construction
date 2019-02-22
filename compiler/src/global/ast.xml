@@ -593,14 +593,24 @@
                 Global definition. This includes the actual value for the global.
             </description>
             <sons>
-                <son name="value">
+                <son name="values">
                     <targets>
-                        <target mandatory="yes" >
-                            <node name="Expr" />
+                        <target mandatory="no" >
+                            <node name="ExprArray" />
                             <phases>
                                 <all />
                             </phases>
                         </target>
+                    </targets>
+                </son>
+                <son name="dimensions">
+                    <targets>
+                            <target mandatory="no" >
+                                <node name="ArrayParamDimensions" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
                     </targets>
                 </son>
             </sons>
@@ -618,6 +628,17 @@
                 </attribute>
                 <attribute name="isexport">
                     <type name="Bool">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="type">
+                    <type name="Type">
                         <targets>
                             <target mandatory="yes">
                                 <phases>
@@ -759,6 +780,16 @@
                     <targets>
                             <target mandatory="no" >
                                 <node name="GlobalDefinition" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                    </targets>
+                </son>
+                <son name="dimensions">
+                    <targets>
+                            <target mandatory="no" >
+                                <node name="ArrayParamDimensions" />
                                 <phases>
                                     <all />
                                 </phases>

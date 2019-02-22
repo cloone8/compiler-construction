@@ -671,7 +671,7 @@ PRTglobaldefinition (node * arg_node, info * arg_info)
 {
     DBUG_ENTER ("PRTglobaldefinition");
 
-    GLOBALDEFINITION_VALUE(arg_node) = TRAVdo(GLOBALDEFINITION_VALUE(arg_node), arg_info);
+    GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);
 }
