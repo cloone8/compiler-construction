@@ -56,8 +56,8 @@ static int yyerror(char *errname);
 %left OR AND
 %right NEG
 
-
-%nonassoc IF ELSE
+%nonassoc IF_NO_ELSE
+%nonassoc ELSE
 
 
 %start program
@@ -317,7 +317,7 @@ statement: ID LET expr SEMICOLON
         {
 
         }
-        | IF BRACKET_L expr BRACKET_R block
+        | IF BRACKET_L expr BRACKET_R block %prec IF_NO_ELSE
         {
 
         }
