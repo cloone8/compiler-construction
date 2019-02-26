@@ -53,6 +53,7 @@ static int yyerror(char *errname);
 %type <node> funbody
 %type <node> const boolconst
 %type <node> exprs expr
+%type <node> statements statement arrexpr block
 
 %right LET
 %left MINUS PLUS
@@ -362,7 +363,7 @@ vardec: basictype ID SEMICOLON
 
 statement: ID LET expr SEMICOLON
         {
-
+            $$ = TBmakeVarassign(STRcpy($1), $3);
         }
         | ID BRACKET_L BRACKET_R SEMICOLON
         {
@@ -370,23 +371,23 @@ statement: ID LET expr SEMICOLON
         }
         | ID BRACKET_L exprs BRACKET_R SEMICOLON
         {
-
+            $$ = TBmakeExpr($3);
         }
         | IF BRACKET_L expr BRACKET_R block %prec IF_NO_ELSE
         {
-
+            $$ = TBmakeBranch($3, $5, NULL);
         }
         | IF BRACKET_L expr BRACKET_R block ELSE block
         {
-
+            $$ = TBmakeBranch($3, NULL, $7);
         }
         | WHILE BRACKET_L expr BRACKET_R block
         {
-
+            $$ = TBmakeWhile($3, $5);
         }
         | DO block WHILE BRACKET_L expr BRACKET_R SEMICOLON
         {
-
+            $$ = TBmakeDowhile($5, $2);
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr BRACKET_R block
         {
@@ -412,11 +413,11 @@ statement: ID LET expr SEMICOLON
 
 arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
         {
-
+            $$ = TBmakeExprarray(NULL, $2);
         }
     | expr
         {
-
+            $$ = TBmakeExprarray(NULL, $1);
         }
         ;
 
@@ -425,11 +426,11 @@ block: BRACE_L BRACE_R
         }
     | BRACE_L statements BRACE_R
         {
-
+            $$ = TBmakeStatements($2, NULL);
         }
     | statement
         {
-
+            $$ = TBmakeStatements($1, NULL);
         }
         ;
 
