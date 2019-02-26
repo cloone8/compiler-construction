@@ -344,11 +344,11 @@ vardecs: vardec
 
 statements: statement
         {
-
+            $$ = $1;
         }
     | statements statement
         {
-
+            $$ = TBmakeStatements($2, $1);
         }
         ;
 
@@ -422,7 +422,7 @@ statement: ID LET expr SEMICOLON
 
 arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
         {
-            $$ = TBmakeExprarray(NULL, $2);
+            $$ = TBmakeExprarray($2, NULL);
         }
     | expr
         {
@@ -435,11 +435,11 @@ block: BRACE_L BRACE_R
         }
     | BRACE_L statements BRACE_R
         {
-            $$ = TBmakeStatements($2, NULL);
+            $$ = $2;
         }
     | statement
         {
-            $$ = TBmakeStatements($1, NULL);
+            $$ = $1;
         }
         ;
 
