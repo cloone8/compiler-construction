@@ -312,11 +312,23 @@ funbody: vardecs localfundefs statements
 
 localfundefs: localfundef
         {
-            // TODO: Multiple local function definitions
+            $$ = $1;
         }
         | localfundefs localfundef
         {
+            node* new_final_node = $2;
 
+            node* current_final_node = $1;
+
+            // Go to the end of the branch
+            while(LOCALFUNCTION_NEXT(current_final_node) != NULL) {
+                current_final_node = LOCALFUNCTION_NEXT(current_final_node);
+            }
+
+            // End found, link the new node to the end
+            LOCALFUNCTION_NEXT(current_final_node) = new_final_node;
+
+            $$ = $1;
         }
         ;
 
@@ -328,7 +340,7 @@ localfundef: funheader BRACE_L funbody BRACE_R
 
             FUNCTION_DEFINITION($1) = function_definition;
 
-            $$ = $1;
+            $$ = TBmakeLocalfunction($1, NULL);
         }
         ;
 
@@ -338,7 +350,19 @@ vardecs: vardec
         }
     | vardecs vardec
         {
-            //TODO: Multiple vardecs
+            node* new_final_node = $2;
+
+            node* current_final_node = $1;
+
+            // Go to the end of the branch
+            while(FUNCTIONVARDECLARATION_NEXT(current_final_node) != NULL) {
+                current_final_node = FUNCTIONVARDECLARATION_NEXT(current_final_node);
+            }
+
+            // End found, link the new node to the end
+            FUNCTIONVARDECLARATION_NEXT(current_final_node) = new_final_node;
+
+            $$ = $1;
         }
         ;
 
@@ -354,19 +378,19 @@ statements: statement
 
 vardec: basictype ID SEMICOLON
         {
-            $$ = TBmakeBasicvardeclaration(STRcpy($2), $1, NULL);
+            $$ = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration(STRcpy($2), $1, NULL), NULL);
         }
     | basictype ID LET expr SEMICOLON
         {
-            $$ = TBmakeBasicvardeclaration(STRcpy($2), $1, $4);
+            $$ = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration(STRcpy($2), $1, $4), NULL);
         }
     | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
         {
-            $$ = TBmakeArrayvardeclaration(STRcpy($5), $1, $7, $3);
+            $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration(STRcpy($5), $1, $7, $3), NULL);
         }
     | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
         {
-            $$ = TBmakeArrayvardeclaration(STRcpy($5), $1, NULL, $3);
+            $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration(STRcpy($5), $1, NULL, $3), NULL);
         }
         ;
 
