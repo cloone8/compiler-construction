@@ -368,11 +368,23 @@ vardecs: vardec
 
 statements: statement
         {
-            $$ = $1;
+            $$ = TBmakeStatements($1, NULL);
         }
     | statements statement
         {
-            $$ = TBmakeStatements($2, $1);
+            node* new_final_node = TBmakeStatements($2, NULL);
+
+            node* current_final_node = $1;
+
+            // Go to the end of the branch
+            while(STATEMENTS_NEXT(current_final_node) != NULL) {
+                current_final_node = STATEMENTS_NEXT(current_final_node);
+            }
+
+            // End found, link the new node to the end
+            STATEMENTS_NEXT(current_final_node) = new_final_node;
+
+            $$ = $1;
         }
         ;
 
@@ -446,11 +458,11 @@ statement: ID LET expr SEMICOLON
 
 arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
         {
-            $$ = TBmakeExprarray($2, NULL);
+            $$ = $2;
         }
     | expr
         {
-            $$ = TBmakeExprarray(NULL, $1);
+            $$ = TBmakeExprarray($1, NULL);
         }
         ;
 
@@ -463,18 +475,29 @@ block: BRACE_L BRACE_R
         }
     | statement
         {
-            $$ = $1;
+            $$ = TBmakeStatements($1, NULL);
         }
         ;
 
 exprs: exprs COMMA expr
     {
-        $$ = TBmakeExprarray($1, $3);
-        // TODO: Fix order
+        node* new_final_node = TBmakeExprarray($3, NULL);;
+
+        node* current_final_node = $1;
+
+        // Go to the end of the branch
+        while(EXPRARRAY_NEXT(current_final_node) != NULL) {
+            current_final_node = EXPRARRAY_NEXT(current_final_node);
+        }
+
+        // End found, link the new node to the end
+        EXPRARRAY_NEXT(current_final_node) = new_final_node;
+
+        $$ = $1;
     }
     | expr
     {
-        $$ = TBmakeExpr($1);
+        $$ = TBmakeExprarray($1, NULL);
     }
     ;
 
