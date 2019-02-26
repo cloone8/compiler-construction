@@ -54,7 +54,8 @@ static int yyerror(char *errname);
 %type <node> const boolconst
 %type <node> exprs expr
 %type <node> arrexpr
-%type <node> vardecs localfundefs statements
+%type <node> vardec vardecs localfundefs statements
+%type <node> localfundef
 
 %right LET
 %left MINUS PLUS
@@ -320,17 +321,23 @@ localfundefs: localfundef
 
 localfundef: funheader BRACE_L funbody BRACE_R
         {
+            // Make a new function definition node, and link the function
+            // declaration from the header to the new definition
+            node* function_definition = TBmakeFunctiondefinition(FALSE, $3);
 
+            FUNCTION_DEFINITION($1) = function_definition;
+
+            $$ = $1;
         }
         ;
 
 vardecs: vardec
         {
-
+            $$ = $1;
         }
     | vardecs vardec
         {
-
+            //TODO: Multiple vardecs
         }
         ;
 
@@ -346,19 +353,19 @@ statements: statement
 
 vardec: basictype ID SEMICOLON
         {
-
+            $$ = TBmakeBasicvardeclaration(STRcpy($2), $1, NULL);
         }
     | basictype ID LET expr SEMICOLON
         {
-
+            $$ = TBmakeBasicvardeclaration(STRcpy($2), $1, $4);
         }
     | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
         {
-
+            $$ = TBmakeArrayvardeclaration(STRcpy($5), $1, $7, $3);
         }
     | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
         {
-
+            $$ = TBmakeArrayvardeclaration(STRcpy($5), $1, NULL, $3);
         }
         ;
 
