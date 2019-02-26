@@ -436,6 +436,7 @@ block: BRACE_L BRACE_R
 exprs: exprs COMMA expr
     {
         $$ = TBmakeExprarray($1, $3);
+        // TODO: Fix order
     }
     | expr
     {
