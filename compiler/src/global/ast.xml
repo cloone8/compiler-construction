@@ -973,7 +973,7 @@
                         </target>
                     </targets>
                 </son>
-                <son name="truebranch">
+                <son name="thenbranch">
                     <targets>
                         <target mandatory="yes" >
                             <node name="Statements" />
@@ -983,7 +983,7 @@
                         </target>
                     </targets>
                 </son>
-                <son name="falsebranch">
+                <son name="elsebranch">
                     <targets>
                         <target mandatory="no" >
                             <node name="Statements" />

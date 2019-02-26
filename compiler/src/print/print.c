@@ -862,8 +862,8 @@ PRTbranch(node * arg_node, info * arg_info)
     DBUG_ENTER ("PRTbranch");
 
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
-    BRANCH_TRUEBRANCH(arg_node) = TRAVdo(BRANCH_TRUEBRANCH(arg_node), arg_info);
-    BRANCH_FALSEBRANCH(arg_node) = TRAVdo(BRANCH_FALSEBRANCH(arg_node), arg_info);
+    BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+    BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);
 }
