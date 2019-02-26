@@ -914,6 +914,54 @@ PRTmonop(node * arg_node, info * arg_info)
     DBUG_RETURN (arg_node);
 }
 
+/** <!--******************************************************************-->
+ *
+ * @fn PRTfunctionvardeclarations
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+
+node *
+PRTfunctionvardeclarations(node * arg_node, info * arg_info)
+{
+    DBUG_ENTER ("PRTfunctionvardeclarations");
+
+    FUNCTIONVARDECLARATIONS_CURRENT(arg_node) = TRAVdo(FUNCTIONVARDECLARATIONS_CURRENT(arg_node), arg_info);
+    FUNCTIONVARDECLARATIONS_NEXT(arg_node) = TRAVdo(FUNCTIONVARDECLARATIONS_NEXT(arg_node), arg_info);
+
+    DBUG_RETURN (arg_node);
+}
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTlocalfunction
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+
+node *
+PRTlocalfunction(node * arg_node, info * arg_info)
+{
+    DBUG_ENTER ("PRTlocalfunction");
+
+    LOCALFUNCTION_CURRENT(arg_node) = TRAVdo(LOCALFUNCTION_CURRENT(arg_node), arg_info);
+    LOCALFUNCTION_NEXT(arg_node) = TRAVdo(LOCALFUNCTION_NEXT(arg_node), arg_info);
+
+    DBUG_RETURN (arg_node);
+}
+
 /** <!-- ****************************************************************** -->
  * @brief Prints the given syntaxtree
  *

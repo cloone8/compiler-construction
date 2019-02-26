@@ -47,6 +47,8 @@ extern node *PRTboolconst (node * arg_node, info * arg_info);
 extern node *PRTintconst (node * arg_node, info * arg_info);
 extern node *PRTfloatconst (node * arg_node, info * arg_info);
 extern node *PRTconstant (node * arg_node, info * arg_info);
+extern node *PRTfunctionvardeclarations (node * arg_node, info * arg_info);
+extern node *PRTlocalfunction (node * arg_node, info * arg_info);
 
 
 

@@ -464,7 +464,7 @@
                 <son name="current">
                     <targets>
                         <target mandatory="yes">
-                            <set name="Function" />
+                            <node name="Function" />
                                 <phases>
                                     <all />
                                 </phases>
