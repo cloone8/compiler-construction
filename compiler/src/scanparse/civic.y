@@ -400,7 +400,7 @@ statement: ID LET expr SEMICOLON
         }
         | ID BRACKET_L BRACKET_R SEMICOLON
         {
-
+            $$ = TBmakeFuncall(STRcpy($1), NULL);
         }
         | ID BRACKET_L exprs BRACKET_R SEMICOLON
         {
@@ -432,7 +432,7 @@ statement: ID LET expr SEMICOLON
         }
         | RETURN SEMICOLON
         {
-
+            $$ = TBmakeReturn(NULL);
         }
         | RETURN expr SEMICOLON
         {
