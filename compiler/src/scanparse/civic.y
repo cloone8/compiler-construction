@@ -53,6 +53,8 @@ static int yyerror(char *errname);
 %type <node> funbody
 %type <node> const boolconst
 %type <node> exprs expr
+%type <node> arrexpr
+%type <node> vardecs localfundefs statements
 
 %right LET
 %left MINUS PLUS
@@ -260,55 +262,55 @@ globaldef: EXPORT basictype ID LET expr SEMICOLON
             }
         | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
-
+                $$ = TBmakeGlobaldefinition(STRcpy($6), TRUE, $2, $8, $4);
             }
         | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
-
+                 $$ = TBmakeGlobaldefinition(STRcpy($5), FALSE, $1, $7, $3);
             }
         | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
-
+                $$ = TBmakeGlobaldefinition(STRcpy($6), TRUE, $2, NULL, $4);
             }
         | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
-
+                $$ = TBmakeGlobaldefinition(STRcpy($5), FALSE, $1, NULL, $3);
             }
             ;
 
 funbody: vardecs localfundefs statements
         {
-
+            $$ = TBmakeFunctionbody($1, $2, $3);
         }
         | vardecs
         {
-
+            $$ = TBmakeFunctionbody($1, NULL, NULL);
         }
         | statements
         {
-
+            $$ = TBmakeFunctionbody(NULL, NULL, $1);
         }
         | localfundefs
         {
-
+            $$ = TBmakeFunctionbody(NULL, $1, NULL);
         }
         | vardecs statements
         {
-
+            $$ = TBmakeFunctionbody($1, NULL, $2);
         }
         | vardecs localfundefs
         {
-
+            $$ = TBmakeFunctionbody($1, $2, NULL);
         }
         | localfundefs statements
         {
-
+            $$ = TBmakeFunctionbody(NULL, $1, $2);
         }
         ;
 
 localfundefs: localfundef
         {
-
+            // TODO: Multiple local function definitions
         }
         | localfundefs localfundef
         {
