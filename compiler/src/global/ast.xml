@@ -102,7 +102,7 @@
                 <node name="ArrayParameter" />
             </target>
         </nodeset>
-        <nodeset name="FunctionVarDeclarations">
+        <nodeset name="FunctionVarDeclarationTypes">
             <target>
                 <node name="BasicVarDeclaration" />
                 <node name="ArrayVarDeclaration" />
@@ -386,7 +386,7 @@
                 <son name="vardeclarations">
                     <targets>
                         <target mandatory="no">
-                            <set name="FunctionVarDeclarations" />
+                            <node name="FunctionVarDeclarations" />
                                 <phases>
                                     <all />
                                 </phases>
@@ -396,7 +396,7 @@
                 <son name="localfunctions">
                     <targets>
                         <target mandatory="no">
-                            <node name="Function" />
+                            <node name="LocalFunction" />
                                 <phases>
                                     <all />
                                 </phases>
@@ -405,8 +405,76 @@
                 </son>
                 <son name="statements">
                     <targets>
-                        <target mandatory="yes">
+                        <target mandatory="no">
                             <node name="Statements" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+            </attributes>
+        </node>
+
+        <!--
+        Node FunctionVarDeclarations
+         -->
+
+        <node name="FunctionVarDeclarations">
+            <description>
+                All variable declarations in a function
+            </description>
+            <sons>
+                <son name="current">
+                    <targets>
+                        <target mandatory="yes">
+                            <set name="FunctionVarDeclarationTypes" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="FunctionVarDeclarations" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+            </attributes>
+        </node>
+
+        <!--
+        Node LocalFunction
+         -->
+
+        <node name="LocalFunction">
+            <description>
+                Local function definition
+            </description>
+            <sons>
+                <son name="current">
+                    <targets>
+                        <target mandatory="yes">
+                            <set name="Function" />
+                                <phases>
+                                    <all />
+                                </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="next">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="LocalFunction" />
                                 <phases>
                                     <all />
                                 </phases>
