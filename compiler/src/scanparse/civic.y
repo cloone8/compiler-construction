@@ -400,11 +400,11 @@ statement: ID LET expr SEMICOLON
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr BRACKET_R block
         {
-
+            $$ = TBmakeFor($6, $8, NULL, $10);
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr COMMA expr BRACKET_R block
         {
-
+            $$ = TBmakeFor($6, $8, $10, $12);
         }
         | RETURN SEMICOLON
         {
@@ -412,11 +412,11 @@ statement: ID LET expr SEMICOLON
         }
         | RETURN expr SEMICOLON
         {
-
+            $$ = TBmakeReturn($2);
         }
         | ID SQR_BRACKET_L expr SQR_BRACKET_R LET expr SEMICOLON
         {
-
+            $$ = TBmakeArrayvarassign(STRcpy($1), $3, $6);
         }
         ;
 
