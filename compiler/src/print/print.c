@@ -916,7 +916,7 @@ PRTmonop(node * arg_node, info * arg_info)
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfunctionvardeclarations
+ * @fn PRTfunctionvardeclaration
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -928,12 +928,12 @@ PRTmonop(node * arg_node, info * arg_info)
  ***************************************************************************/
 
 node *
-PRTfunctionvardeclarations(node * arg_node, info * arg_info)
+PRTfunctionvardeclaration(node * arg_node, info * arg_info)
 {
-    DBUG_ENTER ("PRTfunctionvardeclarations");
+    DBUG_ENTER ("PRTfunctionvardeclaration");
 
-    FUNCTIONVARDECLARATIONS_CURRENT(arg_node) = TRAVdo(FUNCTIONVARDECLARATIONS_CURRENT(arg_node), arg_info);
-    FUNCTIONVARDECLARATIONS_NEXT(arg_node) = TRAVdo(FUNCTIONVARDECLARATIONS_NEXT(arg_node), arg_info);
+    FUNCTIONVARDECLARATION_CURRENT(arg_node) = TRAVdo(FUNCTIONVARDECLARATION_CURRENT(arg_node), arg_info);
+    FUNCTIONVARDECLARATION_NEXT(arg_node) = TRAVdo(FUNCTIONVARDECLARATION_NEXT(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);
 }

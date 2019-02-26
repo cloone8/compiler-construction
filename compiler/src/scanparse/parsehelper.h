@@ -19,7 +19,4 @@ size_t countNewlines(char* string, size_t length);
 node* paramsGetNextNode(node* current);
 void paramsSetNextNode(node* current, node* newNext);
 
-node* funvardecsGetNextNode(node* current);
-void funvardecsSetNextNode(node* current, node* newNext);
-
 #endif

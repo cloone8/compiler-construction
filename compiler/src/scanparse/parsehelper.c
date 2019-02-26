@@ -55,34 +55,3 @@ void paramsSetNextNode(node* current, node* newNext) {
             DBUG_ASSERT(FALSE, "Non-array parameter encountered in array parameter traversal function");
     }
 }
-
-node* funvardecsGetNextNode(node* current) {
-    switch (NODE_TYPE(current)) {
-        case N_basicparameter:
-            return BASICPARAMETER_NEXT(current);
-            break;
-
-        case N_arrayparameter:
-            return ARRAYPARAMETER_NEXT(current);
-            break;
-
-        default:
-            DBUG_ASSERT(FALSE, "Non-vardec node encountered in function vardecs traversal function");
-    }
-    return NULL;
-}
-
-void funvardecsSetNextNode(node* current, node* newNext) {
-    switch (NODE_TYPE(current)) {
-        case N_basicparameter:
-            BASICPARAMETER_NEXT(current) = newNext;
-            break;
-
-        case N_arrayparameter:
-            ARRAYPARAMETER_NEXT(current) = newNext;
-            break;
-
-        default:
-            DBUG_ASSERT(FALSE, "Non-vardec node encountered in function vardecs traversal function");
-    }
-}

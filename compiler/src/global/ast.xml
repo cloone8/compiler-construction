@@ -386,7 +386,7 @@
                 <son name="vardeclarations">
                     <targets>
                         <target mandatory="no">
-                            <node name="FunctionVarDeclarations" />
+                            <node name="FunctionVarDeclaration" />
                                 <phases>
                                     <all />
                                 </phases>
@@ -419,10 +419,10 @@
         </node>
 
         <!--
-        Node FunctionVarDeclarations
+        Node FunctionVarDeclaration
          -->
 
-        <node name="FunctionVarDeclarations">
+        <node name="FunctionVarDeclaration">
             <description>
                 All variable declarations in a function
             </description>
@@ -440,7 +440,7 @@
                 <son name="next">
                     <targets>
                         <target mandatory="no">
-                            <node name="FunctionVarDeclarations" />
+                            <node name="FunctionVarDeclaration" />
                                 <phases>
                                     <all />
                                 </phases>
