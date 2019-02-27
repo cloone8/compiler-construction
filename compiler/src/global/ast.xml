@@ -1362,7 +1362,7 @@
                 <son name="values">
                     <targets>
                         <target mandatory="yes" >
-                            <node name="ExprArray" />
+                            <node name="Expr" />
                             <phases>
                                 <all />
                             </phases>
