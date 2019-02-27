@@ -92,8 +92,12 @@ PRTdeclaration (node * arg_node, info * arg_info)
 {
     DBUG_ENTER("PRTdeclaration");
 
+    printf("Declaration: ");
+
     DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
-    DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
+
+    if(DECLARATION_NEXT(arg_node) != NULL)
+        DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -985,6 +989,7 @@ node
 
     TRAVpush(TR_prt);
 
+    printf("Root node type: %d\n", NODE_TYPE(syntaxtree));
     syntaxtree = TRAVdo(syntaxtree, info);
 
     TRAVpop();

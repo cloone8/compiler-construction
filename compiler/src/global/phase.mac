@@ -23,6 +23,7 @@ SUBPHASE(scp,
           SPdoScanParse,
           ALWAYS,
           ld)
+SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ALWAYS, ld)
 
 ENDPHASE(ld)
 
@@ -43,9 +44,8 @@ ENDPHASE(pet)
 PHASE(cg,
        "Generating Code",
        ALWAYS)
-
 SUBPHASE(prt, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)
-SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ALWAYS, cg)
+
 
 SUBPHASE(frtr,
           "De-allocating syntax tree representation",
