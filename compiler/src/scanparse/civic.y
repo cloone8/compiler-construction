@@ -630,7 +630,7 @@ expr: BRACKET_L expr BRACKET_R
         }
     | ID SQR_BRACKET_L exprs SQR_BRACKET_R
         {
-            $$ = TBmakeArrayvarread(STRcpy($1), $3);
+            $$ = TBmakeExpr(TBmakeArrayvarread(STRcpy($1), $3));
         }
         ;
 
