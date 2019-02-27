@@ -55,3 +55,34 @@ void paramsSetNextNode(node* current, node* newNext) {
             DBUG_ASSERT(FALSE, "Non-array parameter encountered in array parameter traversal function");
     }
 }
+
+node* funcallExprsToParams(node *exprarray) {
+    // Copy all expressions into a funcallparameter node
+    node* current_expr = exprarray;
+
+    node* params_head = NULL;
+    node* params_tail = NULL;
+
+    while(current_expr != NULL) {
+        node* new_param = TBmakeFuncallparameter(EXPRARRAY_CURRENT(current_expr), NULL);
+
+        if(params_head == NULL) {
+            params_head = new_param;
+        }
+
+        if(params_tail != NULL) {
+            FUNCALLPARAMETER_NEXT(params_tail) = new_param;
+        }
+
+        params_tail = new_param;
+
+        node* previous_node = current_expr;
+        current_expr = EXPRARRAY_NEXT(current_expr);
+
+        EXPRARRAY_CURRENT(previous_node) = NULL;
+        EXPRARRAY_NEXT(previous_node) = NULL;
+        FREEexprarray(previous_node, NULL);
+    }
+
+    return params_head;
+}

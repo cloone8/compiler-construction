@@ -18,5 +18,6 @@ size_t countNewlines(char* string, size_t length);
 
 node* paramsGetNextNode(node* current);
 void paramsSetNextNode(node* current, node* newNext);
+node* funcallExprsToParams(node *exprarray);
 
 #endif

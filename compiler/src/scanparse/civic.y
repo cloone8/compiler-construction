@@ -449,7 +449,8 @@ statement: ID LET expr SEMICOLON
         }
         | ID BRACKET_L exprs BRACKET_R SEMICOLON
         {
-            $$ = TBmakeExpr($3);
+            node* funcallparameters = funcallExprsToParams($3);
+            $$ = TBmakeFuncall(STRcpy($1), funcallparameters);
         }
         | IF BRACKET_L expr BRACKET_R block %prec IF_NO_ELSE
         {
@@ -616,7 +617,8 @@ expr: BRACKET_L expr BRACKET_R
         }
     | ID BRACKET_L exprs BRACKET_R
         {
-            $$ = TBmakeExpr(TBmakeFuncall(STRcpy($1), $3));
+            node* funcallparameters = funcallExprsToParams($3);
+            $$ = TBmakeExpr(TBmakeFuncall(STRcpy($1), funcallparameters));
         }
     | ID
         {
