@@ -268,8 +268,14 @@ globaldec: EXTERN basictype ID SEMICOLON
         | EXTERN basictype SQR_BRACKET_L ID SQR_BRACKET_R ID SEMICOLON
         {
             node* dimensions = TBmakeArrayparamdimensions(STRcpy($4), NULL);
+
             $$ = TBmakeGlobal(STRcpy($6), $2, NULL, dimensions);
-            // TODO: Multi-dimensional arrays
+        }
+        | EXTERN basictype SQR_BRACKET_L ID COMMA ids SQR_BRACKET_R ID SEMICOLON
+        {
+            node* dimensions = TBmakeArrayparamdimensions(STRcpy($4), $6);
+
+            $$ = TBmakeGlobal(STRcpy($8), $2, NULL, dimensions);
         }
         ;
 
