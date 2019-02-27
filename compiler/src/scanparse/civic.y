@@ -57,6 +57,7 @@ static int yyerror(char *errname);
 %type <node> vardec vardecs localfundefs
 %type <node> localfundef
 %type <node> statements statement block
+%type <node> ids
 
 %right LET
 %left MINUS PLUS
@@ -185,9 +186,9 @@ funheader: basictype ID BRACKET_L params BRACKET_R
         }
         ;
 
-params: params param
+params: params COMMA param
         {
-            node* new_final_node = $2;
+            node* new_final_node = $3;
 
             node* current_final_node = $1;
 
@@ -214,11 +215,37 @@ param: basictype ID
     }
     | basictype SQR_BRACKET_L ID SQR_BRACKET_R ID
     {
-        node* dimensions_branch = TBmakeArrayparamdimensions($3, NULL);
-        $$ = TBmakeArrayparameter($5, $1, NULL, dimensions_branch);
-        // TODO: Multi-dimensional arrays
+        node* dimensions_branch = TBmakeArrayparamdimensions(STRcpy($3), NULL);
+        $$ = TBmakeArrayparameter(STRcpy($5), $1, NULL, dimensions_branch);
+    }
+    | basictype SQR_BRACKET_L ID COMMA ids SQR_BRACKET_R ID
+    {
+        node* dimensions_branch = TBmakeArrayparamdimensions(STRcpy($3), $5);
+        $$ = TBmakeArrayparameter(STRcpy($7), $1, NULL, dimensions_branch);
     }
     ;
+
+ids: ids COMMA ID
+    {
+        node* new_final_node = TBmakeArrayparamdimensions(STRcpy($3), NULL);
+
+        node* current_final_node = $1;
+
+        // Go to the end of the branch
+        while(ARRAYPARAMDIMENSIONS_NEXT(current_final_node) != NULL) {
+            current_final_node = ARRAYPARAMDIMENSIONS_NEXT(current_final_node);
+        }
+
+        // End found, link the new node to the end
+        ARRAYPARAMDIMENSIONS_NEXT(current_final_node) = new_final_node;
+
+    }
+    | ID
+    {
+        $$ = TBmakeArrayparamdimensions(STRcpy($1), NULL);
+    }
+    ;
+
 
 basictype: BOOLTYPE
         {
