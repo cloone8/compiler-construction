@@ -495,7 +495,7 @@ arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
         }
     | expr
         {
-            $$ = TBmakeExprarray($1, NULL);
+            $$ = TBmakeExprarray(NULL, $1);
         }
         ;
 
@@ -514,7 +514,7 @@ block: BRACE_L BRACE_R
 
 exprs: exprs COMMA expr
     {
-        node* new_final_node = TBmakeExprarray($3, NULL);;
+        node* new_final_node = TBmakeExprarray(NULL, $3);
 
         node* current_final_node = $1;
 
@@ -530,7 +530,7 @@ exprs: exprs COMMA expr
     }
     | expr
     {
-        $$ = TBmakeExprarray($1, NULL);
+        $$ = TBmakeExprarray(NULL, $1);
     }
     ;
 
