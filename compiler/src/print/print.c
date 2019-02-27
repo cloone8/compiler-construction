@@ -908,7 +908,7 @@ PRTfor (node * arg_node, info * arg_info)
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
 
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
-    
+
     if (FOR_STEP(arg_node) != NULL) {
         printf("%s", "FOR step size");
         FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
