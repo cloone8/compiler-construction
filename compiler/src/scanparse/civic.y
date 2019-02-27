@@ -429,11 +429,11 @@ vardec: basictype ID SEMICOLON
         {
             $$ = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration(STRcpy($2), $1, $4), NULL);
         }
-    | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID LET arrexpr SEMICOLON
+    | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
         {
             $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration(STRcpy($5), $1, $7, $3), NULL);
         }
-    | basictype SQR_BRACKET_L expr SQR_BRACKET_R ID SEMICOLON
+    | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
         {
             $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration(STRcpy($5), $1, NULL, $3), NULL);
         }
@@ -483,7 +483,7 @@ statement: ID LET expr SEMICOLON
         {
             $$ = TBmakeReturn($2);
         }
-        | ID SQR_BRACKET_L expr SQR_BRACKET_R LET expr SEMICOLON
+        | ID SQR_BRACKET_L exprs SQR_BRACKET_R LET expr SEMICOLON
         {
             $$ = TBmakeArrayvarassign(STRcpy($1), $3, $6);
         }
@@ -626,7 +626,7 @@ expr: BRACKET_L expr BRACKET_R
         {
             $$ = TBmakeExpr(TBmakeConstant($1));
         }
-    | ID SQR_BRACKET_L expr SQR_BRACKET_R
+    | ID SQR_BRACKET_L exprs SQR_BRACKET_R
         {
             $$ = TBmakeArrayvarread(STRcpy($1), $3);
         }
