@@ -470,11 +470,11 @@ statement: ID LET expr SEMICOLON
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr BRACKET_R block
         {
-            $$ = TBmakeFor($6, $8, NULL, $10);
+            $$ = TBmakeFor(TBmakeVarassign(STRcpy($4), $6), $8, NULL, $10);
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr COMMA expr BRACKET_R block
         {
-            $$ = TBmakeFor($6, $8, $10, $12);
+            $$ = TBmakeFor(TBmakeVarassign(STRcpy($4), $6), $8, $10, $12);
         }
         | RETURN SEMICOLON
         {
