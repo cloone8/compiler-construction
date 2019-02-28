@@ -675,7 +675,43 @@ PRTglobaldefinition (node * arg_node, info * arg_info)
 {
     DBUG_ENTER ("PRTglobaldefinition");
 
-    GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
+    switch (GLOBALDEFINITION_TYPE(arg_node)) {
+    case TP_bool:
+        printf("bool");
+        break;
+    case TP_int:
+        printf("int");
+        break;
+    case TP_float:
+        printf("float");
+        break;
+
+    default:
+        printf("invaldid type");
+        break;
+    }
+
+    if (GLOBALDEFINITION_VALUES(arg_node) != NULL) {
+        GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
+        printf("%s", "GLOBAL VALUES: ");
+    }
+
+    if (GLOBALDEFINITION_DIMENSIONS(arg_node) != NULL) {
+        GLOBALDEFINITION_DIMENSIONS(arg_node) = TRAVdo(GLOBALDEFINITION_DIMENSIONS(arg_node), arg_info);
+        printf("%s", "DIMENSIONS");
+    }
+
+    printf("%s", GLOBALDEFINITION_NAME(arg_node));
+    switch (GLOBALDEFINITION_ISEXPORT(arg_node)) {
+        case TRUE:
+            printf("TRUE");
+            break;
+        case FALSE:
+            printf("FALSE");
+        default:
+            printf("INVALID bool");
+            break;
+    }
 
     DBUG_RETURN (arg_node);
 }
