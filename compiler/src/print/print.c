@@ -1300,7 +1300,7 @@ node* PRTlocalfunction(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTlocalfunction");
     PRINT_INDENTS(arg_info);
 
-    printf("LOCAL FUNCTION:");
+    printf("__LOCAL FUNCTION__\n");
 
     LOCALFUNCTION_CURRENT(arg_node) = TRAVdo(LOCALFUNCTION_CURRENT(arg_node), arg_info);
 
