@@ -170,19 +170,20 @@ fundef: EXPORT funheader BRACE_L funbody BRACE_R
 
 funheader: basictype ID BRACKET_L params BRACKET_R
         {
-            $$ = TBmakeFunction(STRcpy($2), $1, $4, NULL);
+            $$ = TBmakeFunction($2, $1, $4, NULL);
+
         }
         | basictype ID BRACKET_L BRACKET_R
         {
-            $$ = TBmakeFunction(STRcpy($2), $1, NULL, NULL);
+            $$ = TBmakeFunction($2, $1, NULL, NULL);
         }
         | VOIDTYPE ID BRACKET_L params BRACKET_R
         {
-            $$ = TBmakeFunction(STRcpy($2), TP_void, $4, NULL);
+            $$ = TBmakeFunction($2, TP_void, $4, NULL);
         }
         | VOIDTYPE ID BRACKET_L BRACKET_R
         {
-            $$ = TBmakeFunction(STRcpy($2), TP_void, NULL, NULL);
+            $$ = TBmakeFunction($2, TP_void, NULL, NULL);
         }
         ;
 
@@ -215,19 +216,19 @@ param: basictype ID
     }
     | basictype SQR_BRACKET_L ID SQR_BRACKET_R ID
     {
-        node* dimensions_branch = TBmakeArrayparamdimensions(STRcpy($3), NULL);
-        $$ = TBmakeArrayparameter(STRcpy($5), $1, NULL, dimensions_branch);
+        node* dimensions_branch = TBmakeArrayparamdimensions($3, NULL);
+        $$ = TBmakeArrayparameter($5, $1, NULL, dimensions_branch);
     }
     | basictype SQR_BRACKET_L ID COMMA ids SQR_BRACKET_R ID
     {
-        node* dimensions_branch = TBmakeArrayparamdimensions(STRcpy($3), $5);
-        $$ = TBmakeArrayparameter(STRcpy($7), $1, NULL, dimensions_branch);
+        node* dimensions_branch = TBmakeArrayparamdimensions($3, $5);
+        $$ = TBmakeArrayparameter($7, $1, NULL, dimensions_branch);
     }
     ;
 
 ids: ids COMMA ID
     {
-        node* new_final_node = TBmakeArrayparamdimensions(STRcpy($3), NULL);
+        node* new_final_node = TBmakeArrayparamdimensions($3, NULL);
 
         node* current_final_node = $1;
 
@@ -242,7 +243,7 @@ ids: ids COMMA ID
     }
     | ID
     {
-        $$ = TBmakeArrayparamdimensions(STRcpy($1), NULL);
+        $$ = TBmakeArrayparamdimensions($1, NULL);
     }
     ;
 
@@ -263,53 +264,53 @@ basictype: BOOLTYPE
 
 globaldec: EXTERN basictype ID SEMICOLON
         {
-            $$ = TBmakeGlobal(STRcpy($3), $2, NULL, NULL);
+            $$ = TBmakeGlobal($3, $2, NULL, NULL);
         }
         | EXTERN basictype SQR_BRACKET_L ID SQR_BRACKET_R ID SEMICOLON
         {
-            node* dimensions = TBmakeArrayparamdimensions(STRcpy($4), NULL);
+            node* dimensions = TBmakeArrayparamdimensions($4, NULL);
 
-            $$ = TBmakeGlobal(STRcpy($6), $2, NULL, dimensions);
+            $$ = TBmakeGlobal($6, $2, NULL, dimensions);
         }
         | EXTERN basictype SQR_BRACKET_L ID COMMA ids SQR_BRACKET_R ID SEMICOLON
         {
-            node* dimensions = TBmakeArrayparamdimensions(STRcpy($4), $6);
+            node* dimensions = TBmakeArrayparamdimensions($4, $6);
 
-            $$ = TBmakeGlobal(STRcpy($8), $2, NULL, dimensions);
+            $$ = TBmakeGlobal($8, $2, NULL, dimensions);
         }
         ;
 
 globaldef: EXPORT basictype ID LET expr SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition(STRcpy($3), TRUE, $2, TBmakeExprarray(NULL, $5), NULL);
+                $$ = TBmakeGlobaldefinition($3, TRUE, $2, TBmakeExprarray(NULL, $5), NULL);
             }
         | basictype ID LET expr SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition(STRcpy($2), FALSE, $1, TBmakeExprarray(NULL, $4), NULL);
+                $$ = TBmakeGlobaldefinition($2, FALSE, $1, TBmakeExprarray(NULL, $4), NULL);
             }
         | EXPORT basictype ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition(STRcpy($3), TRUE, $2, NULL, NULL);
+                $$ = TBmakeGlobaldefinition($3, TRUE, $2, NULL, NULL);
             }
         | basictype ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition(STRcpy($2), FALSE, $1, NULL, NULL);
+                $$ = TBmakeGlobaldefinition($2, FALSE, $1, NULL, NULL);
             }
         | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition(STRcpy($6), TRUE, $2, $8, $4);
+                $$ = TBmakeGlobaldefinition($6, TRUE, $2, $8, $4);
             }
         | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
-                 $$ = TBmakeGlobaldefinition(STRcpy($5), FALSE, $1, $7, $3);
+                 $$ = TBmakeGlobaldefinition($5, FALSE, $1, $7, $3);
             }
         | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition(STRcpy($6), TRUE, $2, NULL, $4);
+                $$ = TBmakeGlobaldefinition($6, TRUE, $2, NULL, $4);
             }
         | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition(STRcpy($5), FALSE, $1, NULL, $3);
+                $$ = TBmakeGlobaldefinition($5, FALSE, $1, NULL, $3);
             }
             ;
 
@@ -423,34 +424,34 @@ statements: statement
 
 vardec: basictype ID SEMICOLON
         {
-            $$ = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration(STRcpy($2), $1, NULL), NULL);
+            $$ = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration($2, $1, NULL), NULL);
         }
     | basictype ID LET expr SEMICOLON
         {
-            $$ = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration(STRcpy($2), $1, $4), NULL);
+            $$ = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration($2, $1, $4), NULL);
         }
     | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
         {
-            $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration(STRcpy($5), $1, $7, $3), NULL);
+            $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration($5, $1, $7, $3), NULL);
         }
     | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
         {
-            $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration(STRcpy($5), $1, NULL, $3), NULL);
+            $$ = TBmakeFunctionvardeclaration(TBmakeArrayvardeclaration($5, $1, NULL, $3), NULL);
         }
         ;
 
 statement: ID LET expr SEMICOLON
         {
-            $$ = TBmakeVarassign(STRcpy($1), $3);
+            $$ = TBmakeVarassign($1, $3);
         }
         | ID BRACKET_L BRACKET_R SEMICOLON
         {
-            $$ = TBmakeFuncall(STRcpy($1), NULL);
+            $$ = TBmakeFuncall($1, NULL);
         }
         | ID BRACKET_L exprs BRACKET_R SEMICOLON
         {
             node* funcallparameters = funcallExprsToParams($3);
-            $$ = TBmakeFuncall(STRcpy($1), funcallparameters);
+            $$ = TBmakeFuncall($1, funcallparameters);
         }
         | IF BRACKET_L expr BRACKET_R block %prec IF_NO_ELSE
         {
@@ -470,11 +471,11 @@ statement: ID LET expr SEMICOLON
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr BRACKET_R block
         {
-            $$ = TBmakeFor(TBmakeVarassign(STRcpy($4), $6), $8, NULL, $10);
+            $$ = TBmakeFor(TBmakeVarassign($4, $6), $8, NULL, $10);
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr COMMA expr BRACKET_R block
         {
-            $$ = TBmakeFor(TBmakeVarassign(STRcpy($4), $6), $8, $10, $12);
+            $$ = TBmakeFor(TBmakeVarassign($4, $6), $8, $10, $12);
         }
         | RETURN SEMICOLON
         {
@@ -486,7 +487,7 @@ statement: ID LET expr SEMICOLON
         }
         | ID SQR_BRACKET_L exprs SQR_BRACKET_R LET expr SEMICOLON
         {
-            $$ = TBmakeArrayvarassign(STRcpy($1), $3, $6);
+            $$ = TBmakeArrayvarassign($1, $3, $6);
         }
         ;
 
@@ -613,16 +614,16 @@ expr: BRACKET_L expr BRACKET_R
         }
     | ID BRACKET_L BRACKET_R
         {
-            $$ = TBmakeExpr(TBmakeFuncall(STRcpy($1), NULL));
+            $$ = TBmakeExpr(TBmakeFuncall($1, NULL));
         }
     | ID BRACKET_L exprs BRACKET_R
         {
             node* funcallparameters = funcallExprsToParams($3);
-            $$ = TBmakeExpr(TBmakeFuncall(STRcpy($1), funcallparameters));
+            $$ = TBmakeExpr(TBmakeFuncall($1, funcallparameters));
         }
     | ID
         {
-            $$ = TBmakeExpr(TBmakeVarread(STRcpy($1)));
+            $$ = TBmakeExpr(TBmakeVarread($1));
         }
     | const
         {
@@ -630,7 +631,7 @@ expr: BRACKET_L expr BRACKET_R
         }
     | ID SQR_BRACKET_L exprs SQR_BRACKET_R
         {
-            $$ = TBmakeExpr(TBmakeArrayvarread(STRcpy($1), $3));
+            $$ = TBmakeExpr(TBmakeArrayvarread($1, $3));
         }
         ;
 

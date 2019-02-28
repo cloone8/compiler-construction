@@ -33,7 +33,7 @@
         <!-- id is the short id of the traversal
             name is a descriptive name
             default gives the default traversal mode
-            user  a user defined function
+            user  a user definedALWAYS function
             sons  TravSons
             none  TravNone
             error TravError

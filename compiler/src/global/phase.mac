@@ -19,7 +19,7 @@ SUBPHASE(cpp,
           ld)
 
 SUBPHASE(scp,
-          "Reading input file",
+          "Parsing source code",
           SPdoScanParse,
           ALWAYS,
           ld)
@@ -52,6 +52,12 @@ SUBPHASE(frtr,
           FREEdoFreeTree,
           ALWAYS,
           cg)
+
+SUBPHASE(fin,
+         "Cleaning up compiler memory",
+         FINdoFinalise,
+         ALWAYS,
+         cg)
 
 ENDPHASE(cg)
 
