@@ -235,6 +235,7 @@ node* PRTarithop (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTarrayvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTarrayvarassign");
+    PRINT_INDENTS(arg_info);
 
     printf("%s[", ARRAYVARASSIGN_VARNAME(arg_node));
 
@@ -741,9 +742,15 @@ node* PRTfunctionbody (node * arg_node, info * arg_info) {
 node* PRTstatements (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTstatements");
 
-    // FunCall can also be an expression, so we can't just print the indents there
-    if(NODE_TYPE(STATEMENTS_CURRENT(arg_node)) == N_funcall)
-        PRINT_INDENTS(arg_info);
+    // These can also be expressions, so we can't just print the indents there
+    switch(NODE_TYPE(STATEMENTS_CURRENT(arg_node))) {
+        case N_funcall:
+        case N_varassign:
+            PRINT_INDENTS(arg_info);
+            break;
+        default:
+            break;
+    }
 
     STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
 
@@ -957,6 +964,8 @@ node* PRTfor (node * arg_node, info * arg_info) {
     INFO_INDENTLEVEL(arg_info) += 1;
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
     INFO_INDENTLEVEL(arg_info) -= 1;
+
+    PRINT_INDENTS(arg_info);
     printf("}\n");
 
     DBUG_RETURN (arg_node);
@@ -978,12 +987,18 @@ node* PRTfor (node * arg_node, info * arg_info) {
 node* PRTwhile (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTwhile");
 
+    PRINT_INDENTS(arg_info);
     printf("while(");
 
     WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
 
     printf(") {\n");
+
+    INFO_INDENTLEVEL(arg_info) += 1;
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
+    INFO_INDENTLEVEL(arg_info) -= 1;
+
+    PRINT_INDENTS(arg_info);
     printf("}");
 
     DBUG_RETURN (arg_node);
@@ -1005,10 +1020,14 @@ node* PRTwhile (node * arg_node, info * arg_info) {
 node* PRTdowhile(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTdowhile");
 
+    PRINT_INDENTS(arg_info);
     printf("do {\n");
 
+    INFO_INDENTLEVEL(arg_info) += 1;
     DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
+    INFO_INDENTLEVEL(arg_info) -= 1;
 
+    PRINT_INDENTS(arg_info);
     printf("} while(");
     DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
     printf(");\n");
