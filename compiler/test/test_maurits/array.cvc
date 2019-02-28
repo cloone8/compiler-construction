@@ -6,76 +6,76 @@ extern int scanInt();
 extern float scanFloat();
 
 export void printIntVec(int[n] vec) {
-    for (int i = 0, n, 1) {
-        printInt(vec[i]);
-        printSpaces(1);
-    }
+	for (int i = 0, n, 1) {
+		printInt(vec[i]);
+		printSpaces(1);
+	}
 }
 
 export void printFloatVec(float[n] vec) {
-    for (int i = 0, n, 1) {
-        printFloat(vec[i]);
-        printSpaces(1);
-    }
+	for (int i = 0, n, 1) {
+		printFloat(vec[i]);
+		printSpaces(1);
+	}
 }
 
 export void printIntMat(int[m, n] mat) {
-    for (int j = 0, n, 1) {
-        for (int i = 0, m, 1) {
-            printInt(mat[j, i]);
-            printSpaces(1);
-        }
-        printNewlines(1);
-    }
+	for (int j = 0, n, 1) {
+		for (int i = 0, m, 1) {
+			printInt(mat[j, i]);
+			printSpaces(1);
+		}
+		printNewlines(1);
+	}
 }
 
 export void printFloatMat(float[m, n] mat) {
-    for (int j = 0, n, 1) {
-        for (int i = 0, m, 1) {
-            printFloat(mat[j, i]);
-            printSpaces(1);
-        }
-        printNewlines(1);
-    }
+	for (int j = 0, n, 1) {
+		for (int i = 0, m, 1) {
+			printFloat(mat[j, i]);
+			printSpaces(1);
+		}
+		printNewlines(1);
+	}
 }
 
 export void scanIntVec(int[n] vec) {
-    for (int i = 0, n, 1) {
-        vec[i] = scanInt();
-    }
+	for (int i = 0, n, 1) {
+		vec[i] = scanInt();
+	}
 }
 
 export void scanFloatVec(float[n] vec) {
-    for (int i = 0, n, 1) {
-        vec[i] = scanFloat();
-    }
+	for (int i = 0, n, 1) {
+		vec[i] = scanFloat();
+	}
 }
 
 export void scanIntMat(int[m, n] mat) {
-    for (int j = 0, n, 1) {
-        for (int i = 0, m , 1) {
-            mat[j, i] = scanInt();
-        }
-    }
+	for (int j = 0, n, 1) {
+		for (int i = 0, m , 1) {
+			mat[j, i] = scanInt();
+		}
+	}
 }
 
 export void scanFloatMat(float[m, n] mat) {
-    for (int j = 0, n, 1) {
-        for (int i = 0, m , 1) {
-            mat[j, i] = scanFloat();
-        }
-    }
+	for (int j = 0, n, 1) {
+		for (int i = 0, m , 1) {
+			mat[j, i] = scanFloat();
+		}
+	}
 }
 
 export void matMul(float[u, v] a, float[w, x] b, float[y, z] c) {
-    float sum;
-    for (int i = 0, u, 1) {
-        for (int j = 0, x, 1) {
-            sum = 0.0;
-            for (int l = 0, v, 1) {
-                sum = sum + a[i, l] * b[l, j];
-            }
-            c[i, j] = sum;
-        }
-    }
+	float sum;
+	for (int i = 0, u, 1) {
+		for (int j = 0, x, 1) {
+			sum = 0.0;
+			for (int l = 0, v, 1) {
+				sum = sum + a[i, l] * b[l, j];
+			}
+			c[i, j] = sum;
+		}
+	}
 }
