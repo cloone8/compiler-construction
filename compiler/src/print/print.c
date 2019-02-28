@@ -862,43 +862,48 @@ node* PRTexprarray (node * arg_node, info * arg_info) {
 
 node* PRTglobaldefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTglobaldefinition");
+    char* type;
+    char* export;
+
+    switch (GLOBALDEFINITION_ISEXPORT(arg_node)) {
+        case TRUE:
+            export = "export ";
+            break;
+        case FALSE:
+            export = "";
+            break;
+        default:
+            export = "INVALID_EXPORT_VALUE ";
+            break;
+    }
 
     switch (GLOBALDEFINITION_TYPE(arg_node)) {
-    case TP_bool:
-        printf("bool");
-        break;
-    case TP_int:
-        printf("int");
-        break;
-    case TP_float:
-        printf("float");
-        break;
+        case TP_bool:
+            type = "bool";
+            break;
+        case TP_int:
+            type = "int";
+            break;
+        case TP_float:
+            type = "float";
+            break;
+        default:
+            type = "INVALID_GLOBAL_DEFINITION_TYPE";
+            break;
+    }
 
-    default:
-        printf("invaldid type");
-        break;
+    printf("%s%s %s", export, type, GLOBALDEFINITION_NAME(arg_node));
+
+        if (GLOBALDEFINITION_DIMENSIONS(arg_node) != NULL) {
+        putchar('[');
+        GLOBALDEFINITION_DIMENSIONS(arg_node) = TRAVdo(GLOBALDEFINITION_DIMENSIONS(arg_node), arg_info);
+        putchar(']');
     }
 
     if (GLOBALDEFINITION_VALUES(arg_node) != NULL) {
+        printf(" = ");
         GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
-        printf("%s", "GLOBAL VALUES: ");
-    }
-
-    if (GLOBALDEFINITION_DIMENSIONS(arg_node) != NULL) {
-        GLOBALDEFINITION_DIMENSIONS(arg_node) = TRAVdo(GLOBALDEFINITION_DIMENSIONS(arg_node), arg_info);
-        printf("%s", "DIMENSIONS");
-    }
-
-    printf("%s", GLOBALDEFINITION_NAME(arg_node));
-    switch (GLOBALDEFINITION_ISEXPORT(arg_node)) {
-        case TRUE:
-            printf("TRUE");
-            break;
-        case FALSE:
-            printf("FALSE");
-        default:
-            printf("INVALID bool");
-            break;
+        printf(";\n");
     }
 
     DBUG_RETURN (arg_node);
