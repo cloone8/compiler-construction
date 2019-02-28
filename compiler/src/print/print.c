@@ -1197,6 +1197,7 @@ node* PRTmonop(node * arg_node, info * arg_info) {
             break;
         case MO_neg:
             putchar('-');
+            break;
         default:
             printf("INVALID_MONOP_TYPE");
     }
