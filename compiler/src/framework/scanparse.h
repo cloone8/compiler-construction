@@ -52,6 +52,9 @@
 
 #include "types.h"
 
+#define CVC_TO_PROCESS_EXTENSION (".cvccpp.c")
+#define CVC_PROCESSED_EXTENSION (".cvccpp")
+
 extern node *SPdoScanParse(node *syntax_tree);
 extern node *SPdoRunPreProcessor(node *syntax_tree);
 

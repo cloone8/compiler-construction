@@ -80,7 +80,7 @@ node* SPdoScanParse(node *syntax_tree) {
         filename = STRcatn(3,
                             "./",
                             global.infile,
-                            ".cpp");
+                            CVC_PROCESSED_EXTENSION);
     }
     else {
         filename = STRcpy(global.infile);
@@ -92,33 +92,82 @@ node* SPdoScanParse(node *syntax_tree) {
         CTIabort("Cannot open file '%s'.", filename);
     }
 
-    MEMfree(filename);
+
 
     result = YYparseTree();
+
+    char* rm_intermediate_file_str = STRcat("rm ", filename);
+
+    int err = system(rm_intermediate_file_str);
+
+    rm_intermediate_file_str = MEMfree(rm_intermediate_file_str);
+
+    if(err) {
+        MEMfree(filename);
+        CTIabort("Could not remove intermediate file, some junk files might have been left behind");
+    }
+
+    MEMfree(filename);
 
     DBUG_RETURN(result);
 }
 
+/**
+ * Runs the GCC C preprocessor. Does some file copying and and deleting for
+ * intermediate files, as GCC needs files to have the .c extension
+ * before it works.
+ */
 node* SPdoRunPreProcessor(node *syntax_tree) {
     int  err;
     char *cppcallstr;
+    char *renaming_callstr;
+    char *delete_temp_file_callstr;
+    char *filetoprocess;
+    char *processedfile;
 
     DBUG_ENTER("SPdoRunPreProcessor");
 
+    filetoprocess = STRcat(global.infile, CVC_TO_PROCESS_EXTENSION);
+    processedfile = STRcat(global.infile, CVC_PROCESSED_EXTENSION);
 
-    cppcallstr = STRcatn(5,
+    renaming_callstr = STRcatn(4, "cp ", global.infile, " ./", filetoprocess);
+
+    err = system(renaming_callstr);
+
+    if (err) {
+        filetoprocess = MEMfree(filetoprocess);
+        processedfile = MEMfree(processedfile);
+        CTIabort("Unable to run C preprocessor. Copying command failed.");
+    }
+
+    cppcallstr = STRcatn(4,
                         "gcc -E ",
-                        global.infile,
+                        filetoprocess,
                         " > ./",
-                        global.infile,
-                        ".cpp");
+                        processedfile);
 
     err = system(cppcallstr);
 
+    if (err) {
+        cppcallstr = MEMfree(cppcallstr);
+        renaming_callstr = MEMfree(renaming_callstr);
+        filetoprocess = MEMfree(filetoprocess);
+        processedfile = MEMfree(processedfile);
+
+        CTIabort("Unable to run C preprocessor");
+    }
+
+    delete_temp_file_callstr = STRcatn(3, "rm ", " ./", filetoprocess);
+    err = system(delete_temp_file_callstr);
+
     cppcallstr = MEMfree(cppcallstr);
+    renaming_callstr = MEMfree(renaming_callstr);
+    filetoprocess = MEMfree(filetoprocess);
+    processedfile = MEMfree(processedfile);
+    delete_temp_file_callstr = MEMfree(delete_temp_file_callstr);
 
     if (err) {
-        CTIabort("Unable to run C preprocessor");
+        CTIabort("Unable to run C preprocessor. Some junk files might have been left behind.");
     }
 
     global.cpp = TRUE;

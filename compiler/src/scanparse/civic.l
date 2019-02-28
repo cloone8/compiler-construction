@@ -123,6 +123,8 @@
                                         global.line += 1;
                                     }
 
+#[^\r\n]*(\r\n|\r|\n)            {}
+
 \/\*([^*]|\*+[^\/])*\*+\/  {
                                 global.col += yyleng;
                                 global.line += countNewlines(yytext, yyleng);
