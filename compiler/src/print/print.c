@@ -555,7 +555,7 @@ node* PRTfunction (node * arg_node, info * arg_info) {
         PRINT_INDENTS(arg_info);
         printf("}\n");
     } else {
-        printf(";");
+        printf(";\n");
     }
 
     DBUG_RETURN (arg_node);
@@ -634,11 +634,12 @@ node* PRTarrayparameter (node * arg_node, info * arg_info) {
             type = "INVALID_PARAMETER_TYPE";
     }
 
-    printf("%s %s[", type, ARRAYPARAMETER_NAME(arg_node));
+    printf("%s%s", type, "[");
 
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
 
     putchar(']');
+    printf(" %s", ARRAYPARAMETER_NAME(arg_node));
 
     if(ARRAYPARAMETER_NEXT(arg_node) != NULL) {
         printf(", ");
@@ -838,6 +839,7 @@ node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
 
     putchar(']');
 
+
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
         printf(" = ");
         ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
@@ -954,7 +956,7 @@ node* PRTfor (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfor");
 
     PRINT_INDENTS(arg_info);
-    printf("for(");
+    printf("for(int ");
 
     FOR_COUNTER(arg_node) = TRAVdo(FOR_COUNTER(arg_node), arg_info);
 
