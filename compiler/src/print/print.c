@@ -909,19 +909,24 @@ node* PRTglobaldefinition (node * arg_node, info * arg_info) {
 node* PRTfor (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfor");
 
-    printf("%s", "Starting FOR loop");
+    printf("for(");
 
     FOR_COUNTER(arg_node) = TRAVdo(FOR_COUNTER(arg_node), arg_info);
 
-    printf("%s", "FOR condition");
+    printf(", ");
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
+
+    if (FOR_STEP(arg_node) != NULL) {
+          printf(", ");
+        FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
+    }
+
+    printf(") {\n");
 
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
 
-    if (FOR_STEP(arg_node) != NULL) {
-        printf("%s", "FOR step size");
-        FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
-    }
+    printf("}\n");
+
     DBUG_RETURN (arg_node);
 }
 
@@ -941,10 +946,13 @@ node* PRTfor (node * arg_node, info * arg_info) {
 node* PRTwhile (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTwhile");
 
-    printf("%s", "WHILE");
+    printf("while(");
 
     WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
+
+    printf(") {\n");
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
+    printf("}\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -965,10 +973,13 @@ node* PRTwhile (node * arg_node, info * arg_info) {
 node* PRTdowhile(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTdowhile");
 
-    printf("%s", "DO_WHILE");
+    printf("do {\n");
 
-    DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
     DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
+
+    printf("} while(");
+    DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
+    printf(");\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -988,27 +999,28 @@ node* PRTdowhile(node * arg_node, info * arg_info) {
 
 node* PRTglobal(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTglobal");
-    char* type;
-
-    switch (GLOBAL_TYPE(arg_node)) {
-        case TP_int:
-            type = "int";
-            break;
-        case TP_float:
-            type = "float";
-            break;
-        case TP_bool:
-            type = "bool";
-            break;
-        default:
-            type = "INVALID TYPE";
-            break;
-    }
-
-    printf("%s%s%s", "Declaring global: ", type, GLOBAL_NAME(arg_node));
 
     if (GLOBAL_DEFINITION(arg_node) != NULL) {
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
+    } else {
+        char* type;
+
+        switch (GLOBAL_TYPE(arg_node)) {
+            case TP_int:
+                type = "int";
+                break;
+            case TP_float:
+                type = "float";
+                break;
+            case TP_bool:
+                type = "bool";
+                break;
+            default:
+                type = "INVALID_GLOBAL_TYPE";
+                break;
+        }
+
+        printf("extern %s %s;\n", type, GLOBAL_NAME(arg_node));
     }
 
     DBUG_RETURN (arg_node);
@@ -1030,9 +1042,13 @@ node* PRTglobal(node * arg_node, info * arg_info) {
 node* PRTfuncall(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfuncall");
 
-    printf("%s%s", "Calling function: ", FUNCALL_FUNCTIONNAME(arg_node));
+    printf("%s(", FUNCALL_FUNCTIONNAME(arg_node));
 
-    FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
+    if(FUNCALL_PARAMS(arg_node) != NULL) {
+        FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
+    }
+
+    putchar(')');
 
     DBUG_RETURN (arg_node);
 }
@@ -1053,11 +1069,10 @@ node* PRTfuncall(node * arg_node, info * arg_info) {
 node* PRTfuncallparameter(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfuncallparameter");
 
-    printf("%s", "Parameters of called function: ");
-
     FUNCALLPARAMETER_VALUE(arg_node) = TRAVdo(FUNCALLPARAMETER_VALUE(arg_node), arg_info);
 
-    if (FUNCALLPARAMETER_NEXT(arg_node)) {
+    if (FUNCALLPARAMETER_NEXT(arg_node) != NULL) {
+        printf(", ");
         FUNCALLPARAMETER_NEXT(arg_node) = TRAVdo(FUNCALLPARAMETER_NEXT(arg_node), arg_info);
     }
 
@@ -1080,9 +1095,14 @@ node* PRTfuncallparameter(node * arg_node, info * arg_info) {
 node* PRTreturn(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTreturn");
 
-    printf("%s", "RETURNING: ");
+    printf("return");
 
-    RETURN_VALUE(arg_node) = TRAVdo(RETURN_VALUE(arg_node), arg_info);
+    if(RETURN_VALUE(arg_node) != NULL) {
+        putchar(' ');
+        RETURN_VALUE(arg_node) = TRAVdo(RETURN_VALUE(arg_node), arg_info);
+    }
+
+    printf(";\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -1103,15 +1123,19 @@ node* PRTreturn(node * arg_node, info * arg_info) {
 node* PRTbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbranch");
 
-    printf("%s", "Starting IF statement");
+    printf("if(");
 
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
+
+    printf(") {\n");
     BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
-        printf("%s", "Starting ELSE statement");
+        printf("} else {\n");
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
     }
+
+    printf("}\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -1154,17 +1178,15 @@ node* PRTmonop(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTmonop");
 
     monop type = MONOP_TYPE(arg_node);
-    switch (type)
-    {
+    switch (type) {
         case MO_not:
             putchar('!');
             break;
         case MO_neg:
             putchar('-');
         default:
-            printf("%s", "INVALID MONOP");
+            printf("INVALID_MONOP_TYPE");
     }
-
 
     MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
 
@@ -1212,7 +1234,7 @@ node* PRTfunctionvardeclaration(node * arg_node, info * arg_info) {
 node* PRTlocalfunction(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTlocalfunction");
 
-    printf("%s", "New local function");
+    printf("LOCAL FUNCTION:\n");
 
     LOCALFUNCTION_CURRENT(arg_node) = TRAVdo(LOCALFUNCTION_CURRENT(arg_node), arg_info);
 
