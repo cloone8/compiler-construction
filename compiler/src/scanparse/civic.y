@@ -458,7 +458,7 @@ statement: ID LET expr SEMICOLON
         }
         | IF BRACKET_L expr BRACKET_R block ELSE block
         {
-            $$ = TBmakeBranch($3, NULL, $7);
+            $$ = TBmakeBranch($3, $5, $7);
         }
         | WHILE BRACKET_L expr BRACKET_R block
         {

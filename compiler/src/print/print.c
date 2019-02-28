@@ -86,8 +86,6 @@ node* PRTbinop (node * arg_node, info * arg_info) {
 node* PRTdeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTdeclaration");
 
-    printf("Declaration: ");
-
     DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
 
     if(DECLARATION_NEXT(arg_node) != NULL)
@@ -1171,7 +1169,6 @@ node* PRTbranch(node * arg_node, info * arg_info) {
 
 node* PRTexpr(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTexpr");
-
     EXPR_CURRENT(arg_node) = TRAVdo(EXPR_CURRENT(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);
