@@ -63,8 +63,7 @@ static info *FreeInfo(info *info) {
  *
  ***************************************************************************/
 
-node *
-PRTbinop (node * arg_node, info * arg_info) {
+node* PRTbinop (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbinop");
 
     BINOP_OPERATORS(arg_node) = TRAVdo(BINOP_OPERATORS(arg_node), arg_info);
@@ -84,8 +83,7 @@ PRTbinop (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTdeclaration (node * arg_node, info * arg_info) {
+node* PRTdeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTdeclaration");
 
     printf("Declaration: ");
@@ -111,8 +109,7 @@ PRTdeclaration (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTlogicop (node * arg_node, info * arg_info) {
+node* PRTlogicop (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTlogicop");
 
     LOGICOP_LEFT(arg_node) = TRAVdo(LOGICOP_LEFT(arg_node), arg_info);
@@ -145,8 +142,7 @@ PRTlogicop (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTrelop (node * arg_node, info * arg_info) {
+node* PRTrelop (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTrelop");
 
     RELOP_LEFT(arg_node) = TRAVdo(RELOP_LEFT(arg_node), arg_info);
@@ -191,8 +187,7 @@ PRTrelop (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTarithop (node * arg_node, info * arg_info) {
+node* PRTarithop (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTarithop");
 
     ARITHOP_LEFT(arg_node) = TRAVdo(ARITHOP_LEFT(arg_node), arg_info);
@@ -234,8 +229,7 @@ PRTarithop (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTarrayvarassign (node * arg_node, info * arg_info) {
+node* PRTarrayvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTarrayvarassign");
 
     printf("%s[", ARRAYVARASSIGN_VARNAME(arg_node));
@@ -260,8 +254,7 @@ PRTarrayvarassign (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTarrayvarread (node * arg_node, info * arg_info) {
+node* PRTarrayvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTarrayvarread");
 
     printf("%s[", ARRAYVARREAD_ARRAYVARNAME(arg_node));
@@ -286,8 +279,7 @@ PRTarrayvarread (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTvarassign (node * arg_node, info * arg_info) {
+node* PRTvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTvarassign");
 
     printf("%s = ", VARASSIGN_VARNAME(arg_node));
@@ -310,8 +302,7 @@ PRTvarassign (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTvarread (node * arg_node, info * arg_info) {
+node* PRTvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTvarread");
 
     printf("%s", VARREAD_VARNAME(arg_node));
@@ -332,8 +323,7 @@ PRTvarread (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTcast (node * arg_node, info * arg_info) {
+node* PRTcast (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTcast");
 
     switch(CAST_CASTTO(arg_node)) {
@@ -371,8 +361,7 @@ PRTcast (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTboolconst (node * arg_node, info * arg_info) {
+node* PRTboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTboolconst");
 
     switch (BOOLCONST_VALUE(arg_node))
@@ -403,8 +392,7 @@ PRTboolconst (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTintconst (node * arg_node, info * arg_info) {
+node* PRTintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTintconst");
 
     printf("%d", INTCONST_VALUE(arg_node));
@@ -425,8 +413,7 @@ PRTintconst (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTfloatconst (node * arg_node, info * arg_info) {
+node* PRTfloatconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTfloatconst");
 
     printf("%.10f", FLOATCONST_VALUE(arg_node));
@@ -447,8 +434,7 @@ PRTfloatconst (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node *
-PRTconstant (node * arg_node, info * arg_info) {
+node* PRTconstant (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTconstant");
 
     CONSTANT_CURRENT(arg_node) = TRAVdo(CONSTANT_CURRENT(arg_node), arg_info);
@@ -469,8 +455,7 @@ PRTconstant (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTerror (node * arg_node, info * arg_info) {
+node* PRTerror (node * arg_node, info * arg_info) {
     bool first_error;
 
     DBUG_ENTER ("PRTerror");
@@ -517,8 +502,7 @@ PRTerror (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTfunction (node * arg_node, info * arg_info) {
+node* PRTfunction (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunction");
 
     // Only used when the definition is actually given. Otherwise remains empty
@@ -583,8 +567,7 @@ PRTfunction (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTbasicparameter (node * arg_node, info * arg_info) {
+node* PRTbasicparameter (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbasicparameter");
     char* type = "";
 
@@ -625,8 +608,7 @@ PRTbasicparameter (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTarrayparameter (node * arg_node, info * arg_info) {
+node* PRTarrayparameter (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbasicparameter");
 
     char* type = "";
@@ -672,8 +654,7 @@ PRTarrayparameter (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTarrayparamdimensions (node * arg_node, info * arg_info) {
+node* PRTarrayparamdimensions (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTarrayparamdimensions");
     printf("%s", ARRAYPARAMDIMENSIONS_NAME(arg_node));
 
@@ -698,8 +679,7 @@ PRTarrayparamdimensions (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTfunctiondefinition (node * arg_node, info * arg_info) {
+node* PRTfunctiondefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunctiondefinition");
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
@@ -720,8 +700,7 @@ PRTfunctiondefinition (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTfunctionbody (node * arg_node, info * arg_info) {
+node* PRTfunctionbody (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunctionbody");
 
     if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
@@ -752,8 +731,7 @@ PRTfunctionbody (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTstatements (node * arg_node, info * arg_info) {
+node* PRTstatements (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTstatements");
 
     STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
@@ -779,8 +757,7 @@ PRTstatements (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTbasicvardeclaration (node * arg_node, info * arg_info) {
+node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbasicvardeclaration");
     char* type = "";
 
@@ -824,8 +801,7 @@ PRTbasicvardeclaration (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTarrayvardeclaration (node * arg_node, info * arg_info) {
+node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTarrayvardeclaration");
 
     printf("%s[", ARRAYVARDECLARATION_VARNAME(arg_node));
@@ -857,8 +833,7 @@ PRTarrayvardeclaration (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node *
-PRTexprarray (node * arg_node, info * arg_info) {
+node* PRTexprarray (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTexprarray");
 
 
