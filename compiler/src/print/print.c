@@ -989,7 +989,7 @@ node* PRTwhile (node * arg_node, info * arg_info) {
 
     printf(") {\n");
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
-    printf("}");
+    printf("}\n");
 
     DBUG_RETURN (arg_node);
 }
