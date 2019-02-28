@@ -167,7 +167,7 @@
                 </son>
                 <son name="definition">
                     <targets>
-                        <target mandatory="yes" >
+                        <target mandatory="no" >
                             <node name="FunctionDefinition" />
                             <phases>
                                 <all />
