@@ -553,7 +553,7 @@ node* PRTfunction (node * arg_node, info * arg_info) {
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
         printf("}\n");
     } else {
-        printf(";\n");
+        printf(";");
     }
 
     DBUG_RETURN (arg_node);
@@ -1134,8 +1134,6 @@ node* PRTreturn(node * arg_node, info * arg_info) {
         RETURN_VALUE(arg_node) = TRAVdo(RETURN_VALUE(arg_node), arg_info);
     }
 
-    printf(";\n");
-
     DBUG_RETURN (arg_node);
 }
 
@@ -1178,7 +1176,7 @@ node* PRTbranch(node * arg_node, info * arg_info) {
     }
 
     PRINT_INDENTS(arg_info);
-    printf("}\n");
+    printf("}");
 
     DBUG_RETURN (arg_node);
 }
