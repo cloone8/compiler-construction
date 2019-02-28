@@ -1333,7 +1333,6 @@ node* PRTdoPrint(node *syntaxtree) {
 
     TRAVpush(TR_prt);
 
-    printf("Root node type: %d\n", NODE_TYPE(syntaxtree));
     syntaxtree = TRAVdo(syntaxtree, info);
 
     TRAVpop();
