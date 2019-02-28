@@ -825,12 +825,21 @@ PRTbasicvardeclaration (node * arg_node, info * arg_info) {
  ***************************************************************************/
 
 node *
-PRTarrayvardeclaration (node * arg_node, info * arg_info)
-{
+PRTarrayvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTarrayvardeclaration");
 
-    ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
+    printf("%s[", ARRAYVARDECLARATION_VARNAME(arg_node));
+
     ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
+
+    putchar(']');
+
+    if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
+        printf(" = ");
+        ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
+    }
+
+    printf(";\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -849,12 +858,16 @@ PRTarrayvardeclaration (node * arg_node, info * arg_info)
  ***************************************************************************/
 
 node *
-PRTexprarray (node * arg_node, info * arg_info)
-{
+PRTexprarray (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTexprarray");
 
+
     EXPRARRAY_CURRENT(arg_node) = TRAVdo(EXPRARRAY_CURRENT(arg_node), arg_info);
-    EXPRARRAY_NEXT(arg_node) = TRAVdo(EXPRARRAY_NEXT(arg_node), arg_info);
+
+    if(EXPRARRAY_NEXT(arg_node) != NULL) {
+        printf(", ");
+        EXPRARRAY_NEXT(arg_node) = TRAVdo(EXPRARRAY_NEXT(arg_node), arg_info);
+    }
 
     DBUG_RETURN (arg_node);
 }
@@ -872,9 +885,7 @@ PRTexprarray (node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTglobaldefinition (node * arg_node, info * arg_info)
-{
+node* PRTglobaldefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTglobaldefinition");
 
     GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
@@ -895,9 +906,7 @@ PRTglobaldefinition (node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTfor (node * arg_node, info * arg_info)
-{
+node* PRTfor (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfor");
 
     printf("%s", "Starting FOR loop");
@@ -929,9 +938,7 @@ PRTfor (node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTwhile (node * arg_node, info * arg_info)
-{
+node* PRTwhile (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTwhile");
 
     printf("%s", "WHILE");
@@ -955,9 +962,7 @@ PRTwhile (node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTdowhile(node * arg_node, info * arg_info)
-{
+node* PRTdowhile(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTdowhile");
 
     printf("%s", "DO_WHILE");
@@ -981,9 +986,7 @@ PRTdowhile(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTglobal(node * arg_node, info * arg_info)
-{
+node* PRTglobal(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTglobal");
     char* type;
 
@@ -1024,9 +1027,7 @@ PRTglobal(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTfuncall(node * arg_node, info * arg_info)
-{
+node* PRTfuncall(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfuncall");
 
     printf("%s%s", "Calling function: ", FUNCALL_FUNCTIONNAME(arg_node));
@@ -1049,9 +1050,7 @@ PRTfuncall(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTfuncallparameter(node * arg_node, info * arg_info)
-{
+node* PRTfuncallparameter(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfuncallparameter");
 
     printf("%s", "Parameters of called function: ");
@@ -1078,9 +1077,7 @@ PRTfuncallparameter(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTreturn(node * arg_node, info * arg_info)
-{
+node* PRTreturn(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTreturn");
 
     printf("%s", "RETURNING: ");
@@ -1103,9 +1100,7 @@ PRTreturn(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTbranch(node * arg_node, info * arg_info)
-{
+node* PRTbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbranch");
 
     printf("%s", "Starting IF statement");
@@ -1134,9 +1129,7 @@ PRTbranch(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTexpr(node * arg_node, info * arg_info)
-{
+node* PRTexpr(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTexpr");
 
     EXPR_CURRENT(arg_node) = TRAVdo(EXPR_CURRENT(arg_node), arg_info);
@@ -1157,9 +1150,7 @@ PRTexpr(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTmonop(node * arg_node, info * arg_info)
-{
+node* PRTmonop(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTmonop");
 
     monop type = MONOP_TYPE(arg_node);
@@ -1193,9 +1184,7 @@ PRTmonop(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTfunctionvardeclaration(node * arg_node, info * arg_info)
-{
+node* PRTfunctionvardeclaration(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunctionvardeclaration");
 
     FUNCTIONVARDECLARATION_CURRENT(arg_node) = TRAVdo(FUNCTIONVARDECLARATION_CURRENT(arg_node), arg_info);
@@ -1220,9 +1209,7 @@ PRTfunctionvardeclaration(node * arg_node, info * arg_info)
  *
  ***************************************************************************/
 
-node *
-PRTlocalfunction(node * arg_node, info * arg_info)
-{
+node* PRTlocalfunction(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTlocalfunction");
 
     printf("%s", "New local function");
@@ -1245,9 +1232,7 @@ PRTlocalfunction(node * arg_node, info * arg_info)
  * @return the unchanged nodestructure
  ******************************************************************************/
 
-node
-*PRTdoPrint(node *syntaxtree)
-{
+node* PRTdoPrint(node *syntaxtree) {
     info *info;
 
     DBUG_ENTER("PRTdoPrint");
