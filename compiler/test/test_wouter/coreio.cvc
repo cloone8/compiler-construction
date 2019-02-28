@@ -1,4 +1,4 @@
-// #include "civic.h"
+#include "civic.h"
 
 extern int fib(int n);
 

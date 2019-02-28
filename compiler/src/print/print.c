@@ -552,6 +552,7 @@ node* PRTfunction (node * arg_node, info * arg_info) {
     if(FUNCTION_DEFINITION(arg_node) != NULL) {
         printf(" {\n");
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
+        PRINT_INDENTS(arg_info);
         printf("}\n");
     } else {
         printf(";");
@@ -722,7 +723,7 @@ node* PRTfunctionbody (node * arg_node, info * arg_info) {
         FUNCTIONBODY_STATEMENTS(arg_node) = TRAVdo(FUNCTIONBODY_STATEMENTS(arg_node), arg_info);
     }
 
-     INFO_INDENTLEVEL(arg_info) -= 1;
+    INFO_INDENTLEVEL(arg_info) -= 1;
     DBUG_RETURN (arg_node);
 }
 

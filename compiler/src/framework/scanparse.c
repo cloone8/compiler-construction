@@ -67,64 +67,62 @@ FILE *yyin;
  */
 extern node *YYparseTree();
 
-node *SPdoScanParse(node *syntax_tree)
-{
-  node *result = NULL;
-  char *filename;
+node* SPdoScanParse(node *syntax_tree) {
+    node *result = NULL;
+    char *filename;
 
-  DBUG_ENTER("SPdoScanParse");
+    DBUG_ENTER("SPdoScanParse");
 
-  DBUG_ASSERT(syntax_tree == NULL,
-               "SPdoScanParse() called with existing syntax tree.");
+    DBUG_ASSERT(syntax_tree == NULL,
+                "SPdoScanParse() called with existing syntax tree.");
 
-  if (global.cpp) {
-    filename = STRcatn(3,
-                        ".",
-                        global.infile,
-                        ".cpp");
-  }
-  else {
-    filename = STRcpy(global.infile);
-  }
+    if (global.cpp) {
+        filename = STRcatn(3,
+                            "./",
+                            global.infile,
+                            ".cpp");
+    }
+    else {
+        filename = STRcpy(global.infile);
+    }
 
-  yyin = fopen(filename, "r");
+    yyin = fopen(filename, "r");
 
-  if (yyin == NULL) {
-    CTIabort("Cannot open file '%s'.", filename);
-  }
+    if (yyin == NULL) {
+        CTIabort("Cannot open file '%s'.", filename);
+    }
 
-  MEMfree(filename);
+    MEMfree(filename);
 
-  result = YYparseTree();
+    result = YYparseTree();
 
-  DBUG_RETURN(result);
+    DBUG_RETURN(result);
 }
 
+node* SPdoRunPreProcessor(node *syntax_tree) {
+    int  err;
+    char *cppcallstr;
 
-node *SPdoRunPreProcessor(node *syntax_tree)
-{
-  int  err;
-  char *cppcallstr;
+    DBUG_ENTER("SPdoRunPreProcessor");
 
-  DBUG_ENTER("SPdoRunPreProcessor");
 
-  cppcallstr = STRcatn(5,
+    cppcallstr = STRcatn(5,
                         "gcc -E ",
                         global.infile,
-                        " > .",
+                        " > ./",
                         global.infile,
                         ".cpp");
 
-  err = system(cppcallstr);
+    err = system(cppcallstr);
 
-  cppcallstr = MEMfree(cppcallstr);
+    cppcallstr = MEMfree(cppcallstr);
 
-  if (err) {
-    CTIabort("Unable to run C preprocessor");
-  }
+    if (err) {
+        CTIabort("Unable to run C preprocessor");
+    }
 
-  global.cpp = TRUE;
+    global.cpp = TRUE;
 
-  DBUG_RETURN(syntax_tree);
+    DBUG_RETURN(syntax_tree);
 }
 
