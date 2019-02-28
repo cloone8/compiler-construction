@@ -94,7 +94,7 @@ node* SPdoScanParse(node *syntax_tree) {
 
     result = YYparseTree();
 
-    char* rm_intermediate_file_str = STRcat("rm ", filename);
+    char* rm_intermediate_file_str = STRcat(DELETE_COMMAND, filename);
 
     int err = system(rm_intermediate_file_str);
 

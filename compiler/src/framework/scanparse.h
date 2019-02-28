@@ -52,6 +52,12 @@
 
 #include "types.h"
 
+#ifdef _WIN32
+#define DELETE_COMMAND ("del ")
+#else
+#define DELETE_COMMAND ("rm ")
+#endif
+
 #define CVC_TO_PROCESS_EXTENSION (".cvccpp.c")
 #define CVC_PROCESSED_EXTENSION (".cvccpp")
 
