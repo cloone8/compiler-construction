@@ -35,6 +35,8 @@ struct INFO {
 
 #define INFO_FIRSTERROR(n) ((n)->firsterror)
 #define INFO_INDENTLEVEL(n) ((n)->indentlevel)
+#define PRINT_INDENTS(__indents_info_struct__) for(int __indents_counter__ = 0; __indents_counter__ < (__indents_info_struct__)->indentlevel * 4; __indents_counter__++) \
+                                                    putchar(' ');
 
 static info *MakeInfo() {
     info *result;
@@ -506,6 +508,7 @@ node* PRTerror (node * arg_node, info * arg_info) {
 
 node* PRTfunction (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunction");
+    PRINT_INDENTS(arg_info);
 
     // Only used when the definition is actually given. Otherwise remains empty
     char* prefix = "";
@@ -704,6 +707,7 @@ node* PRTfunctiondefinition (node * arg_node, info * arg_info) {
 
 node* PRTfunctionbody (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunctionbody");
+    INFO_INDENTLEVEL(arg_info) += 1;
 
     if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
         FUNCTIONBODY_VARDECLARATIONS(arg_node) = TRAVdo(FUNCTIONBODY_VARDECLARATIONS(arg_node), arg_info);
@@ -717,6 +721,7 @@ node* PRTfunctionbody (node * arg_node, info * arg_info) {
         FUNCTIONBODY_STATEMENTS(arg_node) = TRAVdo(FUNCTIONBODY_STATEMENTS(arg_node), arg_info);
     }
 
+     INFO_INDENTLEVEL(arg_info) -= 1;
     DBUG_RETURN (arg_node);
 }
 
@@ -735,6 +740,10 @@ node* PRTfunctionbody (node * arg_node, info * arg_info) {
 
 node* PRTstatements (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTstatements");
+
+    // FunCall can also be an expression, so we can't just print the indents there
+    if(NODE_TYPE(STATEMENTS_CURRENT(arg_node)) == N_funcall)
+        PRINT_INDENTS(arg_info);
 
     STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
 
@@ -762,6 +771,8 @@ node* PRTstatements (node * arg_node, info * arg_info) {
 
 node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbasicvardeclaration");
+    PRINT_INDENTS(arg_info);
+
     char* type = "";
 
     switch(BASICVARDECLARATION_TYPE(arg_node)) {
@@ -806,6 +817,7 @@ node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
 
 node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTarrayvardeclaration");
+    PRINT_INDENTS(arg_info);
 
     printf("%s[", ARRAYVARDECLARATION_VARNAME(arg_node));
 
@@ -928,6 +940,7 @@ node* PRTglobaldefinition (node * arg_node, info * arg_info) {
 node* PRTfor (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfor");
 
+    PRINT_INDENTS(arg_info);
     printf("for(");
 
     FOR_COUNTER(arg_node) = TRAVdo(FOR_COUNTER(arg_node), arg_info);
@@ -941,9 +954,9 @@ node* PRTfor (node * arg_node, info * arg_info) {
     }
 
     printf(") {\n");
-
+    INFO_INDENTLEVEL(arg_info) += 1;
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
-
+    INFO_INDENTLEVEL(arg_info) -= 1;
     printf("}\n");
 
     DBUG_RETURN (arg_node);
@@ -1113,7 +1126,7 @@ node* PRTfuncallparameter(node * arg_node, info * arg_info) {
 
 node* PRTreturn(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTreturn");
-
+    PRINT_INDENTS(arg_info);
     printf("return");
 
     if(RETURN_VALUE(arg_node) != NULL) {
@@ -1141,19 +1154,30 @@ node* PRTreturn(node * arg_node, info * arg_info) {
 
 node* PRTbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbranch");
+    PRINT_INDENTS(arg_info);
 
     printf("if(");
 
+
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
 
+
     printf(") {\n");
+    INFO_INDENTLEVEL(arg_info) += 1;
     BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+    INFO_INDENTLEVEL(arg_info) -= 1;
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
+
+        PRINT_INDENTS(arg_info);
         printf("} else {\n");
+
+        INFO_INDENTLEVEL(arg_info) += 1;
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
+        INFO_INDENTLEVEL(arg_info) -= 1;
     }
 
+    PRINT_INDENTS(arg_info);
     printf("}\n");
 
     DBUG_RETURN (arg_node);
@@ -1252,8 +1276,9 @@ node* PRTfunctionvardeclaration(node * arg_node, info * arg_info) {
 
 node* PRTlocalfunction(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTlocalfunction");
+    PRINT_INDENTS(arg_info);
 
-    printf("LOCAL FUNCTION:\n");
+    printf("LOCAL FUNCTION:");
 
     LOCALFUNCTION_CURRENT(arg_node) = TRAVdo(LOCALFUNCTION_CURRENT(arg_node), arg_info);
 
