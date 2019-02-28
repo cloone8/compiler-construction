@@ -22,6 +22,7 @@
 #include "memory.h"
 #include "globals.h"
 #include "ctinfo.h"
+#include "str.h"
 
 
 /*
@@ -29,9 +30,11 @@
  */
 struct INFO {
     bool firsterror;
+    int indentlevel;
 };
 
 #define INFO_FIRSTERROR(n) ((n)->firsterror)
+#define INFO_INDENTLEVEL(n) ((n)->indentlevel)
 
 static info *MakeInfo() {
     info *result;
@@ -39,6 +42,7 @@ static info *MakeInfo() {
     result = MEMmalloc(sizeof(info));
 
     INFO_FIRSTERROR(result) = FALSE;
+    INFO_INDENTLEVEL(result) = 0;
 
     return result;
 }
@@ -733,6 +737,7 @@ node* PRTstatements (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTstatements");
 
     STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
+
     printf(";\n");
 
     if(STATEMENTS_NEXT(arg_node) != NULL) {
@@ -966,7 +971,7 @@ node* PRTwhile (node * arg_node, info * arg_info) {
 
     printf(") {\n");
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
-    printf("}\n");
+    printf("}");
 
     DBUG_RETURN (arg_node);
 }
