@@ -754,7 +754,12 @@ node* PRTstatements (node * arg_node, info * arg_info) {
 
     STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
 
-    printf(";\n");
+    if (NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_for &&
+        NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_branch &&
+        NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_while &&
+        NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_dowhile) {
+        printf(";\n");
+    }
 
     if(STATEMENTS_NEXT(arg_node) != NULL) {
         STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);
@@ -1195,7 +1200,7 @@ node* PRTbranch(node * arg_node, info * arg_info) {
     }
 
     PRINT_INDENTS(arg_info);
-    printf("}");
+    printf("}\n");
 
     DBUG_RETURN (arg_node);
 }
