@@ -1004,7 +1004,7 @@ node* PRTwhile (node * arg_node, info * arg_info) {
     INFO_INDENTLEVEL(arg_info) -= 1;
 
     PRINT_INDENTS(arg_info);
-    printf("}");
+    printf("}\n");
 
     DBUG_RETURN (arg_node);
 }
