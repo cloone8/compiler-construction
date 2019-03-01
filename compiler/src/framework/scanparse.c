@@ -52,6 +52,7 @@
 #include "scanparse.h"
 #include "dbug.h"
 #include "globals.h"
+#include "myglobals.h"
 #include "ctinfo.h"
 #include "str.h"
 #include "memory.h"
@@ -87,6 +88,7 @@ node* SPdoScanParse(node *syntax_tree) {
     }
 
     yyin = fopen(filename, "r");
+    myglobal.input_file_handler = yyin;
 
     if (yyin == NULL) {
         CTIabort("Cannot open file '%s'.", filename);
@@ -122,15 +124,20 @@ node* SPdoRunPreProcessor(node *syntax_tree) {
 
     processedfile = STRcat(global.infile, CVC_PROCESSED_EXTENSION);
 
-    cppcallstr = STRcatn(4,
+    cppcallstr = STRcatn(5,
                         "gcc -E -x c ",
                         global.infile,
                         " > ./",
-                        processedfile);
+                        processedfile,
+                        ERROR_TO_NULL);
 
     err = system(cppcallstr);
 
     if (err) {
+        char* rm_intermediate_file_str = STRcat(DELETE_COMMAND, processedfile);
+        system(rm_intermediate_file_str);
+
+        rm_intermediate_file_str = MEMfree(rm_intermediate_file_str);
         cppcallstr = MEMfree(cppcallstr);
         processedfile = MEMfree(processedfile);
 

@@ -72,7 +72,9 @@ static info *FreeInfo(info *info) {
 node* PRTbinop (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbinop");
 
+    putchar('(');
     BINOP_OPERATORS(arg_node) = TRAVdo(BINOP_OPERATORS(arg_node), arg_info);
+    putchar(')');
 
     DBUG_RETURN (arg_node);
 }
@@ -1223,6 +1225,7 @@ node* PRTbranch(node * arg_node, info * arg_info) {
 
 node* PRTexpr(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTexpr");
+
     EXPR_CURRENT(arg_node) = TRAVdo(EXPR_CURRENT(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);
@@ -1244,8 +1247,9 @@ node* PRTexpr(node * arg_node, info * arg_info) {
 node* PRTmonop(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTmonop");
 
-    monop type = MONOP_TYPE(arg_node);
-    switch (type) {
+    putchar('(');
+
+    switch (MONOP_TYPE(arg_node)) {
         case MO_not:
             putchar('!');
             break;
@@ -1258,6 +1262,7 @@ node* PRTmonop(node * arg_node, info * arg_info) {
 
     MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
 
+    putchar(')');
     DBUG_RETURN (arg_node);
 }
 

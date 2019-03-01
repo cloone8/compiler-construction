@@ -54,8 +54,10 @@
 
 #ifdef _WIN32
 #define DELETE_COMMAND ("del ")
+#define ERROR_TO_NULL (" 2> NUL")
 #else
 #define DELETE_COMMAND ("rm ")
+#define ERROR_TO_NULL (" 2> /dev/null")
 #endif
 
 #define CVC_TO_PROCESS_EXTENSION (".cvccpp.c")

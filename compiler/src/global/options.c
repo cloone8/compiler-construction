@@ -5,35 +5,47 @@
 #include "usage.h"
 #include "ctinfo.h"
 #include "phase_options.h"
+#include "myglobals.h"
+#include "strlist.h"
 
+static char* copy_arg(const char* source) {
+    char* copy = STRcpy(source);
 
-void OPTcheckOptions(int argc, char **argv)
-{
-  DBUG_ENTER("OPTcheckOptions");
+    if(myglobal.dangling_strings == NULL) {
+        myglobal.dangling_strings = strlistMake(copy);
+    } else {
+        strlistAdd(myglobal.dangling_strings, copy);
+    }
 
-  ARGS_BEGIN(argc, argv);
+    return copy;
+}
 
-  ARGS_OPTION("b", PHOinterpretBreakOption(ARG))
+void OPTcheckOptions(int argc, char **argv) {
+    DBUG_ENTER("OPTcheckOptions");
 
-  ARGS_FLAG("h", USGprintUsage(); exit(0););
+    ARGS_BEGIN(argc, argv);
 
-  ARGS_OPTION("o", global.outfile = STRcpy(ARG));
+    ARGS_OPTION("b", PHOinterpretBreakOption(ARG))
 
-  ARGS_OPTION("v", ARG_RANGE(global.verbosity, 0, 3));
+    ARGS_FLAG("h", USGprintUsage(); exit(0););
 
-  ARGS_FLAG("tc", global.treecheck = TRUE);
+    ARGS_OPTION("o", global.outfile = copy_arg(ARG));
 
-  ARGS_OPTION("#", DBUG_PUSH(STRcpy(ARG)));
+    ARGS_OPTION("v", ARG_RANGE(global.verbosity, 0, 3));
 
-  ARGS_ARGUMENT(global.infile = STRcpy(ARG); );
+    ARGS_FLAG("tc", global.treecheck = TRUE);
 
-  ARGS_UNKNOWN(ARGS_ERROR("Invalid command line entry"));
+    ARGS_OPTION("#", DBUG_PUSH(copy_arg(ARG)));
 
-  ARGS_END();
+    ARGS_ARGUMENT(global.infile = copy_arg(ARG); );
 
-  if (global.infile == NULL) {
-    CTIabort("No input file given.");
-  }
+    ARGS_UNKNOWN(ARGS_ERROR("Invalid command line entry"));
 
-  DBUG_VOID_RETURN;
+    ARGS_END();
+
+    if (global.infile == NULL) {
+        CTIabort("No input file given.");
+    }
+
+    DBUG_VOID_RETURN;
 }

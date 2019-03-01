@@ -81,5 +81,5 @@ codegen     = gen_byte_code.o
 
 counters    = count_map.o
 
-finalisation = finalise.o
+finalisation = finalise.o strlist.o
 
