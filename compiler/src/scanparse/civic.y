@@ -150,7 +150,8 @@ fundef: EXPORT funheader BRACE_L funbody BRACE_R
         {
             // Make a new function definition node, and link the function
             // declaration from the header to the new definition
-            node* function_definition = TBmakeFunctiondefinition(TRUE, NULL);
+            node* empty_body = TBmakeFunctionbody(NULL, NULL, NULL);
+            node* function_definition = TBmakeFunctiondefinition(TRUE, empty_body);
 
             FUNCTION_DEFINITION($2) = function_definition;
 
@@ -160,7 +161,8 @@ fundef: EXPORT funheader BRACE_L funbody BRACE_R
         {
             // Make a new function definition node, and link the function
             // declaration from the header to the new definition
-            node* function_definition = TBmakeFunctiondefinition(FALSE, NULL);
+            node* empty_body = TBmakeFunctionbody(NULL, NULL, NULL);
+            node* function_definition = TBmakeFunctiondefinition(FALSE, empty_body);
 
             FUNCTION_DEFINITION($1) = function_definition;
 

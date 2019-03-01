@@ -74,12 +74,12 @@ XML_COMMONS = $(wildcard $(XML_DIR)/common-*.xsl)
 AST_DIR     = $(PROJECT_ROOT)/src/global
 
 GENERATED_INCLUDE_FILES = $(patsubst %.xsl,%,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.h.xsl))) \
-                          $(patsubst %.xsl,%,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.mac.xsl))) \
-                          $(patsubst %.y,%.tab.h,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.y)))
+						  $(patsubst %.xsl,%,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.mac.xsl))) \
+						  $(patsubst %.y,%.tab.h,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.y)))
 
 GENERATED_SOURCE_FILES = $(patsubst %.xsl,%,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.c.xsl))) \
-                         $(patsubst %.y,%.tab.c,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.y))) \
-                         $(patsubst %.l,%.lex.c,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.l))) \
+						 $(patsubst %.y,%.tab.c,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.y))) \
+						 $(patsubst %.l,%.lex.c,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.l))) \
 
 GENERATED_HTML_FILES = $(patsubst %.xsl,%,$(foreach dir,$(SOURCE_DIRS),$(wildcard $(dir)/*.html.xsl)))
 
@@ -90,8 +90,6 @@ GENERATED_FILES = $(GENERATED_INCLUDE_FILES) $(GENERATED_SOURCE_FILES) $(GENERAT
 DEPENDENCY_FILES = $(patsubst %.o,%.d,$(TARGETS))
 
 DEPS = $(foreach file,$(DEPENDENCY_FILES),$(dir $(file)).$(notdir $(file)))
-
-
 
 ###############################################################################
 #
@@ -172,10 +170,10 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 
 %.o: %.c
 	@if [ ! -f make_track -o "$(dir $*)" != "`cat make_track`" ] ; \
-         then $(ECHO) "$(dir $*)" > make_track; \
-              $(ECHO) ""; \
-              $(ECHO) "Compiling files in directory $(dir $@)" ; \
-         fi
+		 then $(ECHO) "$(dir $*)" > make_track; \
+			  $(ECHO) ""; \
+			  $(ECHO) "Compiling files in directory $(dir $@)" ; \
+		 fi
 	@$(ECHO) "  Compiling code:  $(notdir $<)"
 	@$(CC) $(CCFLAGS) $(CFLAGS) $(YYFLAGS) $(INCS) -o $@ -c $<
 
@@ -217,18 +215,18 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 		then \
 			$(ECHO) "  Generating png file from XML specification:  $(notdir $@) failed. Please install Graphviz" ;\
 		else \
-            $(ECHO) "  Generating png file from XML specification:  $(notdir $@)" ; \
-            $(XSLTENGINE)  $< $(AST_DIR)/ast.xml > $(DOC_DIR)/ast.dot; \
-            dot  $(DOC_DIR)/ast.dot -Tpng -o  $(DOC_DIR)/$(notdir $@); \
-            rm  $(DOC_DIR)/ast.dot;  \
+			$(ECHO) "  Generating png file from XML specification:  $(notdir $@)" ; \
+			$(XSLTENGINE)  $< $(AST_DIR)/ast.xml > $(DOC_DIR)/ast.dot; \
+			dot  $(DOC_DIR)/ast.dot -Tpng -o  $(DOC_DIR)/$(notdir $@); \
+			rm  $(DOC_DIR)/ast.dot;  \
 		fi
 
 %.track:
 	@if [ ! -f make_track -o "$(dir $*)" != "`cat make_track`" ] ; \
-         then $(ECHO) "$(dir $*)" > make_track; \
-              $(ECHO) ""; \
-              $(ECHO) "Generating files in directory $(dir $@)" ; \
-         fi
+		 then $(ECHO) "$(dir $*)" > make_track; \
+			  $(ECHO) ""; \
+			  $(ECHO) "Generating files in directory $(dir $@)" ; \
+		 fi
 
 
 
@@ -239,20 +237,31 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 
 .%.d: %.c $(GENERATED_FILES)
 	@if [ ! -f make_track -o "$(dir $*)" != "`cat make_track`" ] ; \
-        then $(ECHO) "$(dir $*)" > make_track; \
-             $(ECHO) ""; \
-             $(ECHO) "Checking dependencies in directory $(dir $@)" ; \
-        fi
+		then $(ECHO) "$(dir $*)" > make_track; \
+			 $(ECHO) ""; \
+			 $(ECHO) "Checking dependencies in directory $(dir $@)" ; \
+		fi
 	@$(ECHO) "  Checking dependencies of source file: $(notdir $<)"
 	@if $(CC) $(CCDEPS_FLAGS) $(CFLAGS) $(INCS) $<  > $@d ; \
 	 then sed 's/\($(notdir $*)\)\.o[ :]*/$(subst /,\/,$*)\.o $(subst /,\/,$@)\: $$\(PROJECT_ROOT\)\/Makefile.Config /'  <$@d >$@; \
-	      $(RM) $@d ; \
+		  $(RM) $@d ; \
 	 else $(RM) $@d ; \
-	      exit 1 ;  \
+		  exit 1 ;  \
 	 fi
 
 
+###############################################################################
+#
+# Testing
+#
 
+check: all
+	@cd test; \
+		CIVAS=../$(TEST_CIVAS) \
+		CIVVM=../$(TEST_CIVVM) \
+		CIVCC=../$(TEST_CIVCC) \
+		RUN_FUNCTIONAL=$(TEST_RUN_FUNCTIONAL) \
+		bash run.bash $(TEST_DIRS)
 
 
 ###############################################################################
@@ -262,6 +271,6 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 
 ifeq ($(CHECK_DEPS),yes)
   ifneq ($(DEPS),)
-    -include $(sort $(DEPS))
+	-include $(sort $(DEPS))
   endif
 endif

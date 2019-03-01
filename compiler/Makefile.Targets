@@ -45,6 +45,31 @@
 # ---------------------------------------------------------------------------
 #
 
+###############################################################################
+#
+# Testing
+#
+#  Uncomment the necessary parts when adding extensions.
+
+# Subdirectories of "test/" to traverse into during testing. Enable
+# "nested_funs" and "arrays" when you start implementing those extensions.
+# "preprocess" is optional, for those who implemented the C preprocessor.
+TEST_DIRS := basic # nested_funs arrays preprocess
+
+# Flags to pass to your compiler when running tests (e.g., a verbosity level).
+TEST_CFLAGS := ""
+
+# Whether to run tests that compare program output. Set to 1 after you have
+# implemented your assembly phase.
+TEST_RUN_FUNCTIONAL := 0
+
+# Path to toolchain files, relative to the root directory (used for functional
+# test).
+TEST_CIVAS := bin/civas
+TEST_CIVVM := bin/civvm
+
+# Path to your compiler binary, relative to the root directory.
+TEST_CIVCC := bin/civicc
 
 
 ###############################################################################
@@ -65,11 +90,11 @@ src = global scanparse print codegen framework counters finalisation
 
 
 framework   = memory.o str.o ctinfo.o main_args.o dbug.o globals.o \
-              free_attribs.o free.o copy.o traverse.o scanparse.o main.o \
-              phase.o phase_drivers.o phase_info.o phase_options.o \
-              check_lib.o node_basic.o free_node.o copy_node.o \
-              traverse_tables.o traverse_helper.o check.o \
-              check_node.o check_attribs.o lookup_table.o map.o
+			  free_attribs.o free.o copy.o traverse.o scanparse.o main.o \
+			  phase.o phase_drivers.o phase_info.o phase_options.o \
+			  check_lib.o node_basic.o free_node.o copy_node.o \
+			  traverse_tables.o traverse_helper.o check.o \
+			  check_node.o check_attribs.o lookup_table.o map.o
 
 global      = options.o usage.o myglobals.o
 
@@ -82,4 +107,3 @@ codegen     = gen_byte_code.o
 counters    = count_map.o
 
 finalisation = finalise.o strlist.o
-
