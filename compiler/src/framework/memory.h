@@ -52,6 +52,7 @@
 #define _SAC_MEMORY_H_
 
 extern void *MEMmalloc(int size);
+extern void *MEMrealloc(void *prev, int newsize);
 extern void *MEMfree(void *address);
 extern void *MEMcopy(int size, void *mem);
 
