@@ -749,10 +749,10 @@
                 For loop.
             </description>
             <sons>
-                <son name="counter">
+                <son name="counterinit">
                     <targets>
                         <target mandatory="yes">
-                        <node name="VarAssign" />
+                        <node name="Expr" />
                             <phases>
                                 <all />
                             </phases>
@@ -790,6 +790,19 @@
                     </targets>
                 </son>
             </sons>
+            <attributes>
+                <attribute name="countername">
+                    <type name="String">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
         </node>
 
         <!--
