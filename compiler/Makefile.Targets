@@ -108,4 +108,4 @@ counters    = count_map.o
 
 finalisation = finalise.o strlist.o
 
-semantics = symboltable.o
+semantics = symboltable.o RIrenameIdentifiers.o
