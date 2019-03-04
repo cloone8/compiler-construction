@@ -1,0 +1,5 @@
+extern int a;
+extern int[i, h] b;
+export int asa = 6;
+int[2,2] papapa = [[1,2],[3,4]];
+int[3,3, 2] papapa = [[[1, 2],[3, 4],[5, 6]],[[1, 2],[3, 4],[5, 6]],[[1, 2],[3, 4],[5, 6]]];

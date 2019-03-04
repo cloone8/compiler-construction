@@ -53,7 +53,7 @@ static int yyerror(char *errname);
 %type <node> funbody
 %type <node> const boolconst
 %type <node> exprs expr
-%type <node> arrexpr
+%type <node> arrexpr arrexprs
 %type <node> vardec vardecs localfundefs
 %type <node> localfundef
 %type <node> statements statement block
@@ -219,34 +219,34 @@ param: basictype ID
     }
     | basictype SQR_BRACKET_L ID SQR_BRACKET_R ID
     {
-        node* dimensions_branch = TBmakeArrayparamdimensions($3, NULL);
+        node* dimensions_branch = TBmakeArraydimensionvars($3, NULL);
         $$ = TBmakeArrayparameter($5, $1, NULL, dimensions_branch);
     }
     | basictype SQR_BRACKET_L ID COMMA ids SQR_BRACKET_R ID
     {
-        node* dimensions_branch = TBmakeArrayparamdimensions($3, $5);
+        node* dimensions_branch = TBmakeArraydimensionvars($3, $5);
         $$ = TBmakeArrayparameter($7, $1, NULL, dimensions_branch);
     }
     ;
 
 ids: ids COMMA ID
     {
-        node* new_final_node = TBmakeArrayparamdimensions($3, NULL);
+        node* new_final_node = TBmakeArraydimensionvars($3, NULL);
 
         node* current_final_node = $1;
 
         // Go to the end of the branch
-        while(ARRAYPARAMDIMENSIONS_NEXT(current_final_node) != NULL) {
-            current_final_node = ARRAYPARAMDIMENSIONS_NEXT(current_final_node);
+        while(ARRAYDIMENSIONVARS_NEXT(current_final_node) != NULL) {
+            current_final_node = ARRAYDIMENSIONVARS_NEXT(current_final_node);
         }
 
         // End found, link the new node to the end
-        ARRAYPARAMDIMENSIONS_NEXT(current_final_node) = new_final_node;
+        ARRAYDIMENSIONVARS_NEXT(current_final_node) = new_final_node;
 
     }
     | ID
     {
-        $$ = TBmakeArrayparamdimensions($1, NULL);
+        $$ = TBmakeArraydimensionvars($1, NULL);
     }
     ;
 
@@ -271,13 +271,13 @@ globaldec: EXTERN basictype ID SEMICOLON
         }
         | EXTERN basictype SQR_BRACKET_L ID SQR_BRACKET_R ID SEMICOLON
         {
-            node* dimensions = TBmakeArrayparamdimensions($4, NULL);
+            node* dimensions = TBmakeArraydimensionvars($4, NULL);
 
             $$ = TBmakeGlobal($6, $2, NULL, dimensions);
         }
         | EXTERN basictype SQR_BRACKET_L ID COMMA ids SQR_BRACKET_R ID SEMICOLON
         {
-            node* dimensions = TBmakeArrayparamdimensions($4, $6);
+            node* dimensions = TBmakeArraydimensionvars($4, $6);
 
             $$ = TBmakeGlobal($8, $2, NULL, dimensions);
         }
@@ -285,35 +285,43 @@ globaldec: EXTERN basictype ID SEMICOLON
 
 globaldef: EXPORT basictype ID LET expr SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition($3, TRUE, $2, TBmakeExprarray(NULL, $5), NULL);
+                node* definition = TBmakeGlobaldefinition(TRUE, TBmakeExprarray(NULL, $5));
+                $$ = TBmakeGlobal($3, $2, definition, NULL);
             }
         | basictype ID LET expr SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition($2, FALSE, $1, TBmakeExprarray(NULL, $4), NULL);
+                node* definition = TBmakeGlobaldefinition(FALSE, TBmakeExprarray(NULL, $4));
+                $$ = TBmakeGlobal($2, $1, definition, NULL);
             }
         | EXPORT basictype ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition($3, TRUE, $2, NULL, NULL);
+                node* definition = TBmakeGlobaldefinition(TRUE, NULL);
+                $$ = TBmakeGlobal($3, $2, definition, NULL);
             }
         | basictype ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition($2, FALSE, $1, NULL, NULL);
+                node* definition = TBmakeGlobaldefinition(FALSE, NULL);
+                $$ = TBmakeGlobal($2, $1, definition, NULL);
             }
         | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition($6, TRUE, $2, $8, $4);
+                node* definition = TBmakeGlobaldefinition(TRUE, $8);
+                $$ = TBmakeGlobal($6, $2, definition, $4);
             }
         | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID LET arrexpr SEMICOLON
             {
-                 $$ = TBmakeGlobaldefinition($5, FALSE, $1, $7, $3);
+                node* definition = TBmakeGlobaldefinition(FALSE, $7);
+                $$ = TBmakeGlobal($5, $1, definition, $3);
             }
         | EXPORT basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition($6, TRUE, $2, NULL, $4);
+                node* definition = TBmakeGlobaldefinition(TRUE, NULL);
+                $$ = TBmakeGlobal($6, $2, definition, $4);
             }
         | basictype SQR_BRACKET_L exprs SQR_BRACKET_R ID SEMICOLON
             {
-                $$ = TBmakeGlobaldefinition($5, FALSE, $1, NULL, $3);
+                node* definition = TBmakeGlobaldefinition(FALSE, NULL);
+                $$ = TBmakeGlobal($5, $1, definition, $3);
             }
             ;
 
@@ -505,9 +513,31 @@ statement: ID LET expr SEMICOLON
         }
         ;
 
-arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
+arrexprs: arrexprs COMMA arrexpr
         {
-            $$ = $2;
+            node* new_final_node = $3;
+
+            node* current_final_node = $1;
+
+            // Go to the end of the branch
+            while(EXPRARRAY_NEXT(current_final_node) != NULL) {
+                current_final_node = EXPRARRAY_NEXT(current_final_node);
+            }
+
+            // End found, link the new node to the end
+            EXPRARRAY_NEXT(current_final_node) = new_final_node;
+
+            $$ = $1;
+        }
+        | arrexpr
+        {
+            $$ = $1;
+        }
+        ;
+
+arrexpr: SQR_BRACKET_L arrexprs SQR_BRACKET_R
+        {
+            $$ = TBmakeExprarray(NULL, $2);
         }
     | expr
         {

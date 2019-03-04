@@ -78,6 +78,7 @@
                 <node name="Cast" />
                 <node name="Constant" />
                 <node name="FunCall" />
+                <node name="ExprArray" />
             </target>
         </nodeset>
         <nodeset name="ConstantTypes">
@@ -97,6 +98,18 @@
             <target>
                 <node name="BasicVarDeclaration" />
                 <node name="ArrayVarDeclaration" />
+            </target>
+        </nodeset>
+        <nodeset name="GlobalArrayDims">
+            <target>
+                <node name="ArrayDimensionVars" />
+                <node name="ExprArray" />
+            </target>
+        </nodeset>
+        <nodeset name="ExprArrayOrExpr">
+            <target>
+                <node name="Expr" />
+                <node name="ExprArray" />
             </target>
         </nodeset>
     </nodesets>
@@ -282,7 +295,7 @@
                 <son name="dimensions">
                     <targets>
                         <target mandatory="yes" >
-                            <node name="ArrayParamDimensions" />
+                            <node name="ArrayDimensionVars" />
                             <phases>
                                 <all />
                             </phases>
@@ -317,10 +330,10 @@
         </node>
 
         <!--
-        Node ArrayParamDimensions
+        Node ArrayDimensionVars
          -->
 
-        <node name="ArrayParamDimensions">
+        <node name="ArrayDimensionVars">
             <description>
                 Array function parameter dimension linked list
             </description>
@@ -328,7 +341,7 @@
                 <son name="next">
                     <targets>
                         <target mandatory="no" >
-                            <node name="ArrayParamDimensions" />
+                            <node name="ArrayDimensionVars" />
                             <phases>
                                 <all />
                             </phases>
@@ -654,7 +667,7 @@
                 <son name="current">
                     <targets>
                         <target mandatory="yes">
-                        <node name="Expr" />
+                        <set name="ExprArrayOrExpr" />
                             <phases>
                                 <all />
                             </phases>
@@ -683,42 +696,10 @@
                         </target>
                     </targets>
                 </son>
-                <son name="dimensions">
-                    <targets>
-                            <target mandatory="no" >
-                                <node name="ArrayParamDimensions" />
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
-                    </targets>
-                </son>
             </sons>
             <attributes>
-                <attribute name="name">
-                    <type name="String">
-                        <targets>
-                            <target mandatory="yes">
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
-                        </targets>
-                    </type>
-                </attribute>
                 <attribute name="isexport">
                     <type name="Bool">
-                        <targets>
-                            <target mandatory="yes">
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
-                        </targets>
-                    </type>
-                </attribute>
-                <attribute name="type">
-                    <type name="Type">
                         <targets>
                             <target mandatory="yes">
                                 <phases>
@@ -882,7 +863,7 @@
                 <son name="dimensions">
                     <targets>
                             <target mandatory="no" >
-                                <node name="ArrayParamDimensions" />
+                                <set name="GlobalArrayDims" />
                                 <phases>
                                     <all />
                                 </phases>
