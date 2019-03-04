@@ -579,7 +579,7 @@ node* PRTarrayparameter (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTarrayparamdimensions
+ * @fn PRTarraydimensionvars
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -590,13 +590,13 @@ node* PRTarrayparameter (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTarrayparamdimensions (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTarrayparamdimensions");
-    printf("%s", ARRAYPARAMDIMENSIONS_NAME(arg_node));
+node* PRTarraydimensionvars (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("PRTarraydimensionvars");
+    printf("%s", ARRAYDIMENSIONVARS_NAME(arg_node));
 
-    if(ARRAYPARAMDIMENSIONS_NEXT(arg_node) != NULL) {
+    if(ARRAYDIMENSIONVARS_NEXT(arg_node) != NULL) {
         printf(", ");
-        ARRAYPARAMDIMENSIONS_NEXT(arg_node) = TRAVdo(ARRAYPARAMDIMENSIONS_NEXT(arg_node), arg_info);
+        ARRAYDIMENSIONVARS_NEXT(arg_node) = TRAVdo(ARRAYDIMENSIONVARS_NEXT(arg_node), arg_info);
     }
 
     DBUG_RETURN (arg_node);
@@ -794,74 +794,17 @@ node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
 node* PRTexprarray (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTexprarray");
 
-
-    EXPRARRAY_CURRENT(arg_node) = TRAVdo(EXPRARRAY_CURRENT(arg_node), arg_info);
+    if(NODE_TYPE(EXPRARRAY_CURRENT(arg_node)) == N_exprarray) {
+        putchar('[');
+        EXPRARRAY_CURRENT(arg_node) = TRAVdo(EXPRARRAY_CURRENT(arg_node), arg_info);
+        putchar(']');
+    } else {
+        EXPRARRAY_CURRENT(arg_node) = TRAVdo(EXPRARRAY_CURRENT(arg_node), arg_info);
+    }
 
     if(EXPRARRAY_NEXT(arg_node) != NULL) {
         printf(", ");
         EXPRARRAY_NEXT(arg_node) = TRAVdo(EXPRARRAY_NEXT(arg_node), arg_info);
-    }
-
-    DBUG_RETURN (arg_node);
-}
-
-/** <!--******************************************************************-->
- *
- * @fn PRTglobaldefinition
- *
- * @brief Prints the node and its sons/attributes
- *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
- *
- * @return processed node
- *
- ***************************************************************************/
-
-node* PRTglobaldefinition (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTglobaldefinition");
-    char* type;
-    char* export;
-
-    switch (GLOBALDEFINITION_ISEXPORT(arg_node)) {
-        case TRUE:
-            export = "export ";
-            break;
-        case FALSE:
-            export = "";
-            break;
-        default:
-            export = "INVALID_EXPORT_VALUE ";
-            break;
-    }
-
-    switch (GLOBALDEFINITION_TYPE(arg_node)) {
-        case TP_bool:
-            type = "bool";
-            break;
-        case TP_int:
-            type = "int";
-            break;
-        case TP_float:
-            type = "float";
-            break;
-        default:
-            type = "INVALID_GLOBAL_DEFINITION_TYPE";
-            break;
-    }
-
-    printf("%s%s %s", export, type, GLOBALDEFINITION_NAME(arg_node));
-
-        if (GLOBALDEFINITION_DIMENSIONS(arg_node) != NULL) {
-        putchar('[');
-        GLOBALDEFINITION_DIMENSIONS(arg_node) = TRAVdo(GLOBALDEFINITION_DIMENSIONS(arg_node), arg_info);
-        putchar(']');
-    }
-
-    if (GLOBALDEFINITION_VALUES(arg_node) != NULL) {
-        printf(" = ");
-        GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
-        printf(";\n");
     }
 
     DBUG_RETURN (arg_node);
@@ -986,28 +929,69 @@ node* PRTdowhile(node * arg_node, info * arg_info) {
 
 node* PRTglobal(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTglobal");
+    char* exportextern;
+    char* type;
+
+    switch (GLOBAL_TYPE(arg_node)) {
+        case TP_int:
+            type = "int";
+            break;
+        case TP_float:
+            type = "float";
+            break;
+        case TP_bool:
+            type = "bool";
+            break;
+        default:
+            type = "INVALID_GLOBAL_TYPE";
+            break;
+    }
 
     if (GLOBAL_DEFINITION(arg_node) != NULL) {
-        GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
-    } else {
-        char* type;
-
-        switch (GLOBAL_TYPE(arg_node)) {
-            case TP_int:
-                type = "int";
-                break;
-            case TP_float:
-                type = "float";
-                break;
-            case TP_bool:
-                type = "bool";
-                break;
-            default:
-                type = "INVALID_GLOBAL_TYPE";
-                break;
+        if(GLOBALDEFINITION_ISEXPORT(GLOBAL_DEFINITION(arg_node))) {
+            exportextern = "export ";
+        } else {
+            exportextern = "";
         }
+    } else {
+        exportextern = "extern ";
+    }
 
-        printf("extern %s %s;\n", type, GLOBAL_NAME(arg_node));
+    printf("%s%s %s", exportextern, type, GLOBAL_NAME(arg_node));
+
+    if(GLOBAL_DIMENSIONS(arg_node) != NULL) {
+        putchar('[');
+        GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
+        putchar(']');
+    }
+
+    if(GLOBAL_DEFINITION(arg_node) != NULL) {
+        GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
+    }
+
+    printf(";\n");
+    DBUG_RETURN (arg_node);
+}
+
+/** <!--******************************************************************-->
+ *
+ * @fn PRTglobaldefinition
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+
+node* PRTglobaldefinition (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("PRTglobaldefinition");
+
+    if(GLOBALDEFINITION_VALUES(arg_node) != NULL) {
+        printf(" = ");
+        GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
     }
 
     DBUG_RETURN (arg_node);

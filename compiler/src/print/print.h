@@ -17,7 +17,7 @@ extern node *PRTdeclaration (node * arg_node, info * arg_info);
 extern node *PRTfunction (node * arg_node, info * arg_info);
 extern node *PRTbasicparameter (node * arg_node, info * arg_info);
 extern node *PRTarrayparameter (node * arg_node, info * arg_info);
-extern node *PRTarrayparamdimensions (node * arg_node, info * arg_info);
+extern node *PRTarraydimensionvars (node * arg_node, info * arg_info);
 extern node *PRTfunctiondefinition (node * arg_node, info * arg_info);
 extern node *PRTfunctionbody (node * arg_node, info * arg_info);
 extern node *PRTstatements (node * arg_node, info * arg_info);
