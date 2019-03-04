@@ -65,8 +65,16 @@ TEST_RUN_FUNCTIONAL := 0
 
 # Path to toolchain files, relative to the root directory (used for functional
 # test).
-TEST_CIVAS := bin/civas
-TEST_CIVVM := bin/civvm
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	TEST_CIVAS := bin/tester_bins/linux/civas
+	TEST_CIVVM := bin/tester_bins/linux/civvm
+endif
+ifeq ($(UNAME_S),Darwin)
+	TEST_CIVAS := bin/tester_bins/macos/civas
+	TEST_CIVVM := bin/tester_bins/macos/civvm
+endif
 
 # Path to your compiler binary, relative to the root directory.
 TEST_CIVCC := bin/civicc

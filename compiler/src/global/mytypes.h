@@ -1,7 +1,6 @@
 #ifndef _CIVCC_MYTYPES_H_
 #define _CIVCC_MYTYPES_H_
 
-
 /*
  * This enumeration defines all monops
  */
@@ -30,5 +29,7 @@ typedef enum
 } binop;
 
 typedef enum { TP_void, TP_int, TP_float, TP_bool, TP_unknown } type;
+
+#include "symboltable.h"
 
 #endif  /* _CIVCC_MYTYPES_H_ */

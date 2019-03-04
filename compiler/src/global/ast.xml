@@ -21,7 +21,7 @@
         <type name="Link" ctype="node*" init="NULL" copy="lookup" />
         <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
         <type name="Type" ctype="type" init="TP_void" copy="literal" />
-        <type name="SymbolTable" ctype="symbol_table*" init="" copy="literal" />
+        <type name="SymbolTable" ctype="symbol_table*" init="NULL" copy="literal" />
     </attributetypes>
 
 <!--
@@ -164,7 +164,7 @@
                 <attribute name="SymbolTable">
                     <type name="SymbolTable">
                         <targets>
-                            <target mandatory="yes">
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>
@@ -1475,4 +1475,3 @@
     </syntaxtree>
 
 </definition>
-
