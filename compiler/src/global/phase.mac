@@ -31,7 +31,7 @@ ENDPHASE(ld)
 /******************************************************************************/
 
 
-PHASE(ca,
+PHASE(sa,
        "Perform context analysis",
        ALWAYS)
 
@@ -39,9 +39,9 @@ SUBPHASE( ri,
           "Rename identifiers",
           RIrenameIdentifiers,
           ALWAYS,
-          ca)
+          sa)
 
-ENDPHASE(pet)
+ENDPHASE(sa)
 
 
 /******************************************************************************/
