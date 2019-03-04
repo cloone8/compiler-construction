@@ -379,6 +379,17 @@ localfundef: funheader BRACE_L funbody BRACE_R
 
             $$ = TBmakeLocalfunction($1, NULL);
         }
+        | funheader BRACE_L BRACE_R
+        {
+            // Make a new function definition node, and link the function
+            // declaration from the header to the new definition
+            node* empty_body = TBmakeFunctionbody(NULL, NULL, NULL);
+            node* function_definition = TBmakeFunctiondefinition(TRUE, empty_body);
+
+            FUNCTION_DEFINITION($1) = function_definition;
+
+            $$ = TBmakeLocalfunction($1, NULL);
+        }
         ;
 
 vardecs: vardec
@@ -506,6 +517,7 @@ arrexpr: SQR_BRACKET_L exprs SQR_BRACKET_R
 
 block: BRACE_L BRACE_R
         {
+            $$ = NULL;
         }
     | BRACE_L statements BRACE_R
         {
