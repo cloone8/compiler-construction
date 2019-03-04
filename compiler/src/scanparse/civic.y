@@ -595,7 +595,7 @@ expr: BRACKET_L expr BRACKET_R
         {
             $$ = TBmakeExpr(TBmakeBinop(TBmakeLogicop(LO_or, $1, $3)));
         }
-    | MINUS expr %prec MINUS
+    | MINUS expr %prec STAR
         {
             $$ = TBmakeExpr(TBmakeMonop(MO_neg, $2));
         }
