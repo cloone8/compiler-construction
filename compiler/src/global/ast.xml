@@ -116,7 +116,28 @@
 
     <syntaxtree>
         <!--
-        Node Statement:
+        Node Program:
+         -->
+        <node name="Program">
+            <description>
+                Main node of the program to be used for metadata
+            </description>
+            <sons>
+                <son name="first">
+                    <targets>
+                            <target mandatory="yes" >
+                                <node name="Declaration" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                    </targets>
+                </son>
+            </sons>
+        </node>
+
+        <!--
+        Node Declaration:
          -->
         <node name="Declaration">
             <description>

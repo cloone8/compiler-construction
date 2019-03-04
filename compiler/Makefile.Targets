@@ -57,7 +57,7 @@
 TEST_DIRS := basic nested_funs arrays preprocess
 
 # Flags to pass to your compiler when running tests (e.g., a verbosity level).
-TEST_CFLAGS := ""
+TEST_CFLAGS := "-tc"
 
 # Whether to run tests that compare program output. Set to 1 after you have
 # implemented your assembly phase.
