@@ -151,4 +151,3 @@ node* SPdoRunPreProcessor(node *syntax_tree) {
 
     DBUG_RETURN(syntax_tree);
 }
-

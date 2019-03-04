@@ -707,7 +707,7 @@ boolconst: TRUEVAL
 %%
 
 static int yyerror(char *error) {
-    CTIabort("line %d, col %d\nError parsing source code: %s\n",
+    CTIerror("line %d, col %d\nError parsing source code: %s\n",
             global.line + 1, global.col + 1, error);
 
     return(0);
@@ -716,7 +716,8 @@ static int yyerror(char *error) {
 node *YYparseTree(void) {
     DBUG_ENTER("YYparseTree");
 
-    yyparse();
+    if(yyparse() == EXIT_FAILURE)
+        DBUG_RETURN(NULL);
 
     DBUG_RETURN(parseresult);
 }
