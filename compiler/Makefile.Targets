@@ -78,7 +78,7 @@ TEST_CIVCC := bin/civicc
 #
 
 
-src = global scanparse print codegen framework counters finalisation
+src = global scanparse print codegen framework counters finalisation semantics
 
 
 
@@ -107,3 +107,5 @@ codegen     = gen_byte_code.o
 counters    = count_map.o
 
 finalisation = finalise.o strlist.o
+
+semantics = symboltable.o
