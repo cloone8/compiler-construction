@@ -60,10 +60,11 @@ static int yyerror(char *errname);
 %type <node> ids
 
 %right LET
+%left OR AND
+%left EQ NE
+%left LE LT GE GT
 %left MINUS PLUS
 %left STAR SLASH PERCENT
-%left LE LT GE GT EQ NE
-%left OR AND
 %right CAST_BOOL CAST_INT CAST_FLOAT
 %right NOT
 
