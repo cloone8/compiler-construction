@@ -43,6 +43,27 @@
             <traversal id="FREE" name="Free Syntax Tree" default="user" include="free_node.h" />
             <traversal id="CHK" name="Check Syntax Tree" default="user" include="check.h" />
 
+            <traversal id="RI" name="Rename identifiers" default="sons" include="RIrenameIdentifiers.h">
+                <travuser>
+                    <node name="Global" />
+                    <node name="GlobalDefinition" />
+                    <node name="Function" />
+                    <node name="FunctionDefinition" />
+                    <node name="BasicParameter" />
+                    <node name="ArrayParameter" />
+                    <node name="FunctionVarDeclaration" />
+                    <node name="For" />
+                    <node name="VarAssign" />
+                    <node name="ArrayVarAssign" />
+                    <node name="BasicVarDeclaration" />
+                    <node name="ArrayVarDeclaration" />
+                    <node name="FunCall" />
+                    <node name="FunCallParameter" />
+                    <node name="varRead" />
+                    <node name="ArrayVarRead" />
+                </travuser>
+            </traversal>
+
         </general>
     </phases>
 

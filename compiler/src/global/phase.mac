@@ -31,11 +31,17 @@ ENDPHASE(ld)
 /******************************************************************************/
 
 
-PHASE(pet,
-       "Perform example transformations",
+PHASE(sa,
+       "Perform context analysis",
        ALWAYS)
 
-ENDPHASE(pet)
+SUBPHASE( ri,
+          "Rename identifiers",
+          RIrenameIdentifiers,
+          ALWAYS,
+          sa)
+
+ENDPHASE(sa)
 
 
 /******************************************************************************/
