@@ -1,4 +1,4 @@
-#include "RIrenameIdentifiers.h"
+#include "build_symbol_table.h"
 #include "symboltable.h"
 
 #include "types.h"
@@ -9,8 +9,51 @@
 #include "str.h"
 #include "memory.h"
 
-node *RIglobal(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIglobal");
+/*
+ * INFO structure
+ */
+struct INFO {
+    symbol_table* vars;
+};
+
+/*
+ * INFO macros
+ */
+#define GET_ST(__info_struct__) ((__info_struct__)->vars)
+
+/*
+ * INFO functions
+ */
+
+/**
+ * Creates a new info struct and sets the initial values
+ */
+static info *STBmakeInfo(void) {
+    DBUG_ENTER("STBmakeInfo");
+
+    info *result;
+
+    result = (info *)MEMmalloc(sizeof(info));
+
+    GET_ST(result) = symbol_table_make();
+
+    DBUG_RETURN(result);
+}
+
+/**
+ * Frees the memory of an info struct
+ */
+static info *STBfreeInfo(info *info) {
+    DBUG_ENTER("STBfreeInfo");
+
+    symbol_table_free(GET_ST(info));
+    info = MEMfree(info);
+
+    DBUG_RETURN(info);
+}
+
+node *STBglobal(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBglobal");
 
     if (GLOBAL_DIMENSIONS(arg_node) != NULL)
         GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
@@ -21,8 +64,8 @@ node *RIglobal(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIglobaldefinition(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIglobaldefinition");
+node *STBglobaldefinition(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBglobaldefinition");
 
     if (GLOBALDEFINITION_VALUES(arg_node) != NULL)
         GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
@@ -30,8 +73,8 @@ node *RIglobaldefinition(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIfunction(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIfunction");
+node *STBfunction(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBfunction");
 
     if (FUNCTION_PARAMETERS(arg_node) != NULL)
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
@@ -42,16 +85,16 @@ node *RIfunction(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIfunctiondefinition(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIfunctiondefinition");
+node *STBfunctiondefinition(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBfunctiondefinition");
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
 
-node *RIbasicparameter(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIbasicparameter");
+node *STBbasicparameter(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBbasicparameter");
 
     if (BASICPARAMETER_NEXT(arg_node) != NULL)
         BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
@@ -59,8 +102,8 @@ node *RIbasicparameter(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIarrayparameter(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIarrayparameter");
+node *STBarrayparameter(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBarrayparameter");
 
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
 
@@ -70,7 +113,7 @@ node *RIarrayparameter(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIfunctionvardeclaration(node *arg_node, info *arg_info) {
+node *STBfunctionvardeclaration(node *arg_node, info *arg_info) {
     DBUG_ENTER("functionvardeclaration");
 
     FUNCTIONVARDECLARATION_CURRENT(arg_node) = TRAVdo(FUNCTIONVARDECLARATION_CURRENT(arg_node), arg_info);
@@ -82,8 +125,8 @@ node *RIfunctionvardeclaration(node *arg_node, info *arg_info) {
 
 }
 
-node *RIfor(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIfor");
+node *STBfor(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBfor");
 
     FOR_COUNTERINIT(arg_node) = TRAVdo(FOR_COUNTERINIT(arg_node), arg_info);
 
@@ -97,8 +140,8 @@ node *RIfor(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIarrayvarassign(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIvarassign");
+node *STBarrayvarassign(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBvarassign");
 
     ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
 
@@ -107,15 +150,15 @@ node *RIarrayvarassign(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIvarassign(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIarrayvarassign");
+node *STBvarassign(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBarrayvarassign");
 
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
 
-node *RIbasicvardeclaration(node *arg_node, info *arg_info) {
+node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
     DBUG_ENTER("basicvardeclaration");
 
     if (BASICVARDECLARATION_INITVAL(arg_node) != NULL)
@@ -124,8 +167,8 @@ node *RIbasicvardeclaration(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIarrayvardeclaration(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIarrayvardeclaration");
+node *STBarrayvardeclaration(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBarrayvardeclaration");
 
     ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
 
@@ -135,8 +178,8 @@ node *RIarrayvardeclaration(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIfuncall(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIfuncall");
+node *STBfuncall(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBfuncall");
 
     if (FUNCALL_PARAMS(arg_node) != NULL)
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
@@ -144,8 +187,8 @@ node *RIfuncall(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *RIfuncallparameter(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIfuncallparameter");
+node *STBfuncallparameter(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBfuncallparameter");
 
     FUNCALLPARAMETER_VALUE(arg_node) = TRAVdo(FUNCALLPARAMETER_VALUE(arg_node), arg_info);
 
@@ -155,14 +198,14 @@ node *RIfuncallparameter(node *arg_node, info *arg_info) {
         DBUG_RETURN(arg_node);
 }
 
-node *RIvarread(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIvarread");
+node *STBvarread(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBvarread");
 
     DBUG_RETURN(arg_node);
 }
 
-node *RIarrayvarread(node *arg_node, info *arg_info) {
-    DBUG_ENTER("RIarrayvarread");
+node *STBarrayvarread(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBarrayvarread");
 
     ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
 
@@ -170,13 +213,17 @@ node *RIarrayvarread(node *arg_node, info *arg_info) {
 }
 
 
-node *RIrenameIdentifiers(node *syntaxtree) {
-    DBUG_ENTER("RIrenameIdentifiers");
+node *STBdo(node *syntaxtree) {
+    DBUG_ENTER("STBdo");
 
-    TRAVpush(TR_ri);
+    TRAVpush(TR_stb);
+    info* arg_info = STBmakeInfo();
 
     syntaxtree = TRAVdo(syntaxtree, NULL);
 
+    PROGRAM_SYMBOLTABLE(syntaxtree) = GET_ST(arg_info);
+
+    STBfreeInfo(arg_info);
     TRAVpop();
 
     DBUG_RETURN(syntaxtree);

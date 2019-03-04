@@ -35,9 +35,9 @@ PHASE(sa,
        "Perform context analysis",
        ALWAYS)
 
-SUBPHASE( ri,
-          "Rename identifiers",
-          RIrenameIdentifiers,
+SUBPHASE( stb,
+          "Building symbol table",
+          STBdo,
           ALWAYS,
           sa)
 

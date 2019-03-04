@@ -44,7 +44,7 @@
             <traversal id="FREE" name="Free Syntax Tree" default="user" include="free_node.h" />
             <traversal id="CHK" name="Check Syntax Tree" default="user" include="check.h" />
 
-            <traversal id="RI" name="Rename identifiers" default="sons" include="RIrenameIdentifiers.h">
+            <traversal id="STB" name="Build symbol table" default="sons" include="build_symbol_table.h">
                 <travuser>
                     <node name="Global" />
                     <node name="GlobalDefinition" />
