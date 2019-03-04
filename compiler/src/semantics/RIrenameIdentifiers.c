@@ -11,6 +11,9 @@
 node *RIglobal(node *arg_node, info *arg_info) {
     DBUG_ENTER("RIglobal");
 
+    if (GLOBAL_DIMENSIONS(arg_node) != NULL)
+        GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
+
     if (GLOBAL_DEFINITION(arg_node) != NULL)
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
 
@@ -19,9 +22,6 @@ node *RIglobal(node *arg_node, info *arg_info) {
 
 node *RIglobaldefinition(node *arg_node, info *arg_info) {
     DBUG_ENTER("RIglobaldefinition");
-
-    if (GLOBALDEFINITION_DIMENSIONS(arg_node) != NULL)
-        GLOBALDEFINITION_DIMENSIONS(arg_node) = TRAVdo(GLOBALDEFINITION_DIMENSIONS(arg_node), arg_info);
 
     if (GLOBALDEFINITION_VALUES(arg_node) != NULL)
         GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
@@ -46,7 +46,7 @@ node *RIfunctiondefinition(node *arg_node, info *arg_info) {
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
-    DBUG_RETURN(arg_node);   
+    DBUG_RETURN(arg_node);
 }
 
 node *RIbasicparameter(node *arg_node, info *arg_info) {
@@ -78,7 +78,7 @@ node *RIfunctionvardeclaration(node *arg_node, info *arg_info) {
         FUNCTIONVARDECLARATION_NEXT(arg_node) = TRAVdo(FUNCTIONVARDECLARATION_NEXT(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
-    
+
 }
 
 node *RIfor(node *arg_node, info *arg_info) {
@@ -93,7 +93,7 @@ node *RIfor(node *arg_node, info *arg_info) {
 
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
 
-    DBUG_RETURN(arg_node);   
+    DBUG_RETURN(arg_node);
 }
 
 node *RIarrayvarassign(node *arg_node, info *arg_info) {
@@ -111,7 +111,7 @@ node *RIvarassign(node *arg_node, info *arg_info) {
 
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
 
-    DBUG_RETURN(arg_node);    
+    DBUG_RETURN(arg_node);
 }
 
 node *RIbasicvardeclaration(node *arg_node, info *arg_info) {
