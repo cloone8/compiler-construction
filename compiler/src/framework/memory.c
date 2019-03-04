@@ -57,52 +57,66 @@
 #include "memory.h"
 
 
-void *MEMmalloc(int size)
-{
-  void *ptr;
+void *MEMmalloc(int size) {
+    void *ptr;
 
-  DBUG_ENTER("MEMmalloc");
+    DBUG_ENTER("MEMmalloc");
 
-  DBUG_ASSERT((size >= 0), "MEMmalloc called with negative size!");
+    DBUG_ASSERT((size >= 0), "MEMmalloc called with negative size!");
 
-  if (size > 0) {
-    /*
-     * Since some UNIX system (e.g. ALPHA) do return NULL for size 0 as well
-     * we do complain for ((NULL == tmp) && (size > 0)) only!!
-     */
-    ptr = malloc(size);
+    if (size > 0) {
+        /*
+        * Since some UNIX system (e.g. ALPHA) do return NULL for size 0 as well
+        * we do complain for ((NULL == tmp) && (size > 0)) only!!
+        */
+        ptr = malloc(size);
+
+        if (ptr == NULL) {
+        CTIabortOutOfMemory(size);
+        }
+    }
+    else {
+        ptr = NULL;
+    }
+
+    DBUG_RETURN(ptr);
+}
+
+void *MEMrealloc(void *prev, int newsize) {
+    void *ptr;
+
+    DBUG_ENTER("MEMrealloc");
+
+    DBUG_ASSERT((newsize > 0), "MEMrealloc called with negative or zero size!");
+    DBUG_ASSERT((prev != NULL), "MEMrealloc called with NULL previous pointer!");
+
+    ptr = realloc(prev, newsize);
 
     if (ptr == NULL) {
-      CTIabortOutOfMemory(size);
+        CTIabortOutOfMemory(newsize);
     }
-  }
-  else {
-    ptr = NULL;
-  }
 
-  DBUG_RETURN(ptr);
+    DBUG_RETURN(ptr);
 }
 
-void *MEMfree(void *address)
-{
-  DBUG_ENTER("MEMfree");
+void *MEMfree(void *address) {
+      DBUG_ENTER("MEMfree");
 
-  if(address != NULL) {
-    free(address);
-    address = NULL;
-  }
+     if(address != NULL) {
+        free(address);
+        address = NULL;
+      }
 
-  DBUG_RETURN(address);
+      DBUG_RETURN(address);
 }
 
-void *MEMcopy(int size, void *mem)
-{
-  void *result;
+void *MEMcopy(int size, void *mem) {
+      void *result;
 
-  DBUG_ENTER("MEMcopy");
+      DBUG_ENTER("MEMcopy");
 
-  result = MEMmalloc(size);
-  result = memcpy(result, mem, size);
+    result = MEMmalloc(size);
+    result = memcpy(result, mem, size);
 
-  DBUG_RETURN(result);
+    DBUG_RETURN(result);
 }

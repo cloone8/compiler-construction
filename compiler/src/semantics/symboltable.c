@@ -1,1 +1,97 @@
+#include "types.h"
+#include "dbug.h"
+#include "memory.h"
+#include "str.h"
+
+#include <stdlib.h>
+
 #include "symboltable.h"
+
+symbol_table* symbol_table_make(void) {
+    symbol_table* toreturn = MEMmalloc(sizeof(symbol_table));
+
+    toreturn->__entry_array_size = 10;
+    toreturn->next_id = 0;
+    toreturn->current_entries = 0;
+    toreturn->entries = MEMmalloc(sizeof(symbol_table_entry*) * 10);
+
+    return toreturn;
+}
+
+int symbol_table_free(symbol_table* tofree) {
+    for(int i = 0; i < tofree->current_entries; i++) {
+        symbol_table_entry* current = tofree->entries[i];
+        current->name = MEMfree(current->name);
+        MEMfree(current);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+static void increase_table_size(symbol_table* toincrease) {
+    size_t extra_size;
+
+    if(toincrease->__entry_array_size * 0.5 > 10) {
+        extra_size = 10;
+    } else if(toincrease->__entry_array_size * 0.5 < 1) {
+        extra_size = 1;
+    } else {
+        extra_size = toincrease->__entry_array_size * 0.5;
+    }
+
+    toincrease->__entry_array_size += extra_size;
+
+    toincrease->entries = MEMrealloc(toincrease->entries, toincrease->__entry_array_size);
+}
+
+int symbol_table_add(symbol_table* table, char* name, type var_type) {
+    symbol_table_entry* new_entry = MEMmalloc(sizeof(symbol_table_entry));
+    new_entry->idx = table->next_id++;
+    new_entry->name = STRcpy(name);
+    new_entry->vartype = var_type;
+
+    table->current_entries++;
+
+    if(table->current_entries > table->__entry_array_size) {
+        increase_table_size(table);
+    }
+
+    table->entries[table->current_entries - 1] = new_entry;
+
+    return EXIT_SUCCESS;
+}
+
+symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name) {
+    for(int i = 0; i < table->current_entries; i++) {
+        symbol_table_entry* current = table->entries[i];
+        if(STReq(current->name, name)) {
+            return current;
+        }
+    }
+
+    return NULL;
+}
+
+symbol_table_entry* symbol_table_get_idx(symbol_table* table, size_t idx) {
+    for(int i = 0; i < table->current_entries; i++) {
+        symbol_table_entry* current = table->entries[i];
+        if(current->idx == idx) {
+            return current;
+        }
+    }
+
+    return NULL;
+}
+
+int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_name) {
+    symbol_table_entry* tochange = symbol_table_get_idx(table, idx_to_update);
+
+    if(tochange == NULL) {
+        return EXIT_FAILURE;
+    }
+
+    tochange->name = MEMfree(tochange->name);
+    tochange->name = STRcpy(new_name);
+
+    return EXIT_SUCCESS;
+}
