@@ -545,55 +545,55 @@ expr: BRACKET_L expr BRACKET_R
         }
     | expr PLUS expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_add, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_add, $1, $3));
         }
     | expr MINUS expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_sub, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_sub, $1, $3));
         }
     | expr STAR expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_mul, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_mul, $1, $3));
         }
     | expr SLASH expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_div, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_div, $1, $3));
         }
     | expr PERCENT expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeArithop(AO_mod, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_mod, $1, $3));
         }
     | expr EQ expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_eq, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_eq, $1, $3));
         }
     | expr NE expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_ne, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_ne, $1, $3));
         }
     | expr LT expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_lt, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_lt, $1, $3));
         }
     | expr LE expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_le, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_le, $1, $3));
         }
     | expr GT expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_gt, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_gt, $1, $3));
         }
     | expr GE expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeRelop(RO_ge, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_ge, $1, $3));
         }
     | expr AND expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeLogicop(LO_and, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_and, $1, $3));
         }
     | expr OR expr
         {
-            $$ = TBmakeExpr(TBmakeBinop(TBmakeLogicop(LO_or, $1, $3)));
+            $$ = TBmakeExpr(TBmakeBinop(BO_or, $1, $3));
         }
     | MINUS expr %prec STAR
         {

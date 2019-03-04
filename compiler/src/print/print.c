@@ -73,7 +73,54 @@ node* PRTbinop (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbinop");
 
     putchar('(');
-    BINOP_OPERATORS(arg_node) = TRAVdo(BINOP_OPERATORS(arg_node), arg_info);
+    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
+
+    switch (BINOP_BINOPERATORS(arg_node))
+    {
+    case BO_add:
+        printf(" + ");
+        break;
+    case BO_sub:
+        printf(" - ");
+        break;
+    case BO_mul:
+        printf(" * ");
+        break;
+    case BO_div:
+        printf(" / ");
+        break;
+    case BO_mod:
+        printf(" %% ");
+        break;
+    case BO_lt:
+        printf(" < ");
+        break;
+    case BO_le:
+        printf(" <= ");
+        break;
+    case BO_ge:
+        printf(" >= ");
+        break;
+    case BO_gt:
+        printf(" > ");
+        break;
+    case BO_eq:
+        printf(" == ");
+        break;
+    case BO_ne:
+        printf(" != ");
+        break;
+    case BO_and:
+        printf(" && ");
+        break;
+    case BO_or:
+        printf(" || ");
+        break;
+    default:
+        printf(" UNKNOWN_LOGIC_OPERATOR ");
+    }
+
+    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     putchar(')');
 
     DBUG_RETURN (arg_node);
@@ -98,127 +145,6 @@ node* PRTdeclaration (node * arg_node, info * arg_info) {
 
     if(DECLARATION_NEXT(arg_node) != NULL)
         DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
-
-    DBUG_RETURN(arg_node);
-}
-
-
-/** <!--******************************************************************-->
- *
- * @fn PRTlogicop
- *
- * @brief Prints the node and its sons/attributes
- *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
- *
- * @return processed node
- *
- ***************************************************************************/
-node* PRTlogicop (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTlogicop");
-
-    LOGICOP_LEFT(arg_node) = TRAVdo(LOGICOP_LEFT(arg_node), arg_info);
-
-    switch (LOGICOP_LOGICOPERATORS(arg_node)) {
-        case LO_and:
-            printf(" && ");
-            break;
-        case LO_or:
-            printf(" || ");
-            break;
-        default:
-            printf(" UNKNOWN_LOGIC_OPERATOR ");
-    }
-
-    LOGICOP_RIGHT(arg_node) = TRAVdo(LOGICOP_RIGHT(arg_node), arg_info);
-
-    DBUG_RETURN(arg_node);
-}
-
-/** <!--******************************************************************-->
- *
- * @fn PRTrelop
- *
- * @brief Prints the node and its sons/attributes
- *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
- *
- * @return processed node
- *
- ***************************************************************************/
-node* PRTrelop (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTrelop");
-
-    RELOP_LEFT(arg_node) = TRAVdo(RELOP_LEFT(arg_node), arg_info);
-
-    switch (RELOP_RELOPERATORS(arg_node)) {
-        case RO_eq:
-            printf(" == ");
-            break;
-        case RO_ge:
-            printf(" >= ");
-            break;
-        case RO_gt:
-            printf(" > ");
-            break;
-        case RO_le:
-            printf(" <= ");
-            break;
-        case RO_lt:
-            printf(" < ");
-            break;
-        case RO_ne:
-            printf(" != ");
-            break;
-        default:
-            printf(" UNKNOWN_RELOP_OPERATOR ");
-    }
-
-    RELOP_RIGHT(arg_node) = TRAVdo(RELOP_RIGHT(arg_node), arg_info);
-
-    DBUG_RETURN(arg_node);
-}
-
-/** <!--******************************************************************-->
- *
- * @fn PRTarithop
- *
- * @brief Prints the node and its sons/attributes
- *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
- *
- * @return processed node
- *
- ***************************************************************************/
-node* PRTarithop (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTarithop");
-
-    ARITHOP_LEFT(arg_node) = TRAVdo(ARITHOP_LEFT(arg_node), arg_info);
-
-    switch (ARITHOP_ARITHOPERATORS(arg_node)) {
-        case AO_add:
-            printf(" + ");
-            break;
-        case AO_div:
-            printf(" / ");
-            break;
-        case AO_mod:
-            printf(" %% ");
-            break;
-        case AO_mul:
-            printf(" * ");
-            break;
-        case AO_sub:
-            printf(" - ");
-            break;
-        default:
-            printf(" UNKNOWN_ARITHOP_OPERATOR ");
-    }
-
-    ARITHOP_RIGHT(arg_node) = TRAVdo(ARITHOP_RIGHT(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
