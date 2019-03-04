@@ -77,7 +77,7 @@ static int yyerror(char *errname);
 
 program: declarations
             {
-                parseresult = $1;
+                parseresult = TBmakeProgram($1);
             }
             ;
 

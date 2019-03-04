@@ -1246,6 +1246,29 @@ node* PRTlocalfunction(node * arg_node, info * arg_info) {
     DBUG_RETURN (arg_node);
 }
 
+/** <!--******************************************************************-->
+ *
+ * @fn PRTprogram
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node letrec node to process
+ * @param arg_info pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
+
+node* PRTprogram(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("PRTlocalfunction");
+
+    printf("Printing program:\n");
+
+    PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
+
+    DBUG_RETURN (arg_node);
+}
+
 /** <!-- ****************************************************************** -->
  * @brief Prints the given syntaxtree
  *
@@ -1260,6 +1283,7 @@ node* PRTdoPrint(node *syntaxtree) {
     DBUG_ENTER("PRTdoPrint");
 
     DBUG_ASSERT((syntaxtree!= NULL), "PRTdoPrint called with empty syntaxtree");
+    DBUG_ASSERT((NODE_TYPE(syntaxtree) == N_program), "First node of syntaxtree not a 'program' node");
 
     printf("\n\n------------------------------\n\n");
 
