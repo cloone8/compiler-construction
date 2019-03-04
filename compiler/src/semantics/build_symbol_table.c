@@ -1,5 +1,6 @@
 #include "build_symbol_table.h"
-#include "symboltable.h"
+#include "varsymboltable.h"
+#include "funsymboltable.h"
 
 #include "types.h"
 #include "tree_basic.h"
@@ -13,13 +14,15 @@
  * INFO structure
  */
 struct INFO {
-    symbol_table* vars;
+    var_symbol_table* vars;
+    fun_symbol_table* funs;
 };
 
 /*
  * INFO macros
  */
-#define GET_ST(__info_struct__) ((__info_struct__)->vars)
+#define GET_VARS(__info_struct__) ((__info_struct__)->vars)
+#define GET_FUNS(__info_struct__) ((__info_struct__)->funs)
 
 /*
  * INFO functions
@@ -35,7 +38,8 @@ static info *STBmakeInfo(void) {
 
     result = (info *)MEMmalloc(sizeof(info));
 
-    GET_ST(result) = symbol_table_make();
+    GET_VARS(result) = var_symbol_table_make();
+    GET_FUNS(result) = fun_symbol_table_make();
 
     DBUG_RETURN(result);
 }
@@ -46,7 +50,9 @@ static info *STBmakeInfo(void) {
 static info *STBfreeInfo(info *info) {
     DBUG_ENTER("STBfreeInfo");
 
-    symbol_table_free(GET_ST(info));
+    var_symbol_table_free(GET_VARS(info));
+    fun_symbol_table_free(GET_FUNS(info));
+
     info = MEMfree(info);
 
     DBUG_RETURN(info);
@@ -221,7 +227,8 @@ node *STBdo(node *syntaxtree) {
 
     syntaxtree = TRAVdo(syntaxtree, NULL);
 
-    PROGRAM_SYMBOLTABLE(syntaxtree) = GET_ST(arg_info);
+    PROGRAM_VARSYMBOLTABLE(syntaxtree) = GET_VARS(arg_info);
+    PROGRAM_FUNSYMBOLTABLE(syntaxtree) = GET_FUNS(arg_info);
 
     STBfreeInfo(arg_info);
     TRAVpop();
