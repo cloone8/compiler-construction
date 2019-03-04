@@ -31,5 +31,4 @@ typedef enum
 
 typedef enum { TP_void, TP_int, TP_float, TP_bool, TP_unknown } type;
 
-
 #endif  /* _CIVCC_MYTYPES_H_ */

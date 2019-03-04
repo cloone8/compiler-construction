@@ -1,4 +1,5 @@
 #include "RIrenameIdentifiers.h"
+#include "symboltable.h"
 
 #include "types.h"
 #include "tree_basic.h"
