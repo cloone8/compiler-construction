@@ -16,6 +16,7 @@ lemon
 .ipynb_checkpoints
 .vscode
 .DS_Store
+y.dot
 
 ## Bron: https://github.com/github/gitignore
 
