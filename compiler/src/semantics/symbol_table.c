@@ -7,14 +7,14 @@
 
 #include "symbol_table.h"
 
-symbol_table* symbol_table_make(void) {
+symbol_table* symbol_table_make(symbol_table* parent) {
     DBUG_ENTER("symbol_table_make");
     symbol_table* toreturn = MEMmalloc(sizeof(symbol_table));
 
     toreturn->__entry_array_size = 10;
     toreturn->next_id = 0;
     toreturn->current_entries = 0;
-    toreturn->upper = NULL;
+    toreturn->upper = parent;
     toreturn->entries = MEMmalloc(sizeof(symbol_table_entry*) * 10);
 
     DBUG_RETURN(toreturn);

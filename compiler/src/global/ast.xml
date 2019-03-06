@@ -47,21 +47,19 @@
             <traversal id="STB" name="Build symbol table" default="sons" include="build_symbol_table.h">
                 <travuser>
                     <node name="Global" />
-                    <node name="GlobalDefinition" />
                     <node name="Function" />
                     <node name="FunctionDefinition" />
                     <node name="BasicParameter" />
                     <node name="ArrayParameter" />
-                    <node name="FunctionVarDeclaration" />
                     <node name="For" />
                     <node name="VarAssign" />
                     <node name="ArrayVarAssign" />
                     <node name="BasicVarDeclaration" />
                     <node name="ArrayVarDeclaration" />
                     <node name="FunCall" />
-                    <node name="FunCallParameter" />
-                    <node name="varRead" />
+                    <node name="VarRead" />
                     <node name="ArrayVarRead" />
+                    <node name="ArrayDimensionVars" />
                 </travuser>
             </traversal>
 
@@ -836,6 +834,17 @@
                     <type name="String">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="VarSymbolTable">
+                    <type name="SymbolTable">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>

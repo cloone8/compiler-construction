@@ -18,6 +18,7 @@ extern node *STBfuncall(node *arg_node, info *arg_info);
 extern node *STBfuncallparameter(node *arg_node, info *arg_info);
 extern node *STBvarread(node *arg_node, info *arg_info);
 extern node *STBarrayvarread(node *arg_node, info *arg_info);
+extern node *STBarraydimensionvars(node *arg_node, info *arg_info);
 
 extern node *STBdo(node *syntaxtree);
 

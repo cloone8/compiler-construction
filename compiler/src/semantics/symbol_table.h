@@ -22,7 +22,7 @@ struct __symbol_table {
 
 typedef struct __symbol_table symbol_table;
 
-symbol_table* symbol_table_make(void);
+symbol_table* symbol_table_make(symbol_table* parent);
 int symbol_table_free(symbol_table* tofree);
 int symbol_table_add(symbol_table* table, char* name, type var_type);
 symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name);
