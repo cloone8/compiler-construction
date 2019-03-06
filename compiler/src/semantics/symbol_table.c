@@ -14,6 +14,7 @@ symbol_table* symbol_table_make(void) {
     toreturn->__entry_array_size = 10;
     toreturn->next_id = 0;
     toreturn->current_entries = 0;
+    toreturn->upper = NULL;
     toreturn->entries = MEMmalloc(sizeof(symbol_table_entry*) * 10);
 
     DBUG_RETURN(toreturn);
@@ -22,7 +23,7 @@ symbol_table* symbol_table_make(void) {
 int symbol_table_free(symbol_table* tofree) {
     DBUG_ENTER("symbol_table_free");
 
-    for(int i = 0; i < tofree->current_entries; i++) {
+    for(size_t i = 0; i < tofree->current_entries; i++) {
         symbol_table_entry* current = tofree->entries[i];
         current->name = MEMfree(current->name);
         MEMfree(current);
@@ -76,7 +77,7 @@ int symbol_table_add(symbol_table* table, char* name, type var_type) {
 symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name) {
     DBUG_ENTER("symbol_table_get_name");
 
-    for(int i = 0; i < table->current_entries; i++) {
+    for(size_t i = 0; i < table->current_entries; i++) {
         symbol_table_entry* current = table->entries[i];
         if(STReq(current->name, name)) {
             DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Found name %s\n", name));
@@ -90,17 +91,24 @@ symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name) {
 
 symbol_table_entry* symbol_table_get_idx(symbol_table* table, size_t idx) {
     DBUG_ENTER("symbol_table_get_idx");
+    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("FINDING IDX %d", idx));
 
-    for(int i = 0; i < table->current_entries; i++) {
-        symbol_table_entry* current = table->entries[i];
-        if(current->idx == idx) {
-            DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Found idx %d\n", idx));
-            DBUG_RETURN(current);
-        }
+    DBUG_RETURN(table->entries[idx]);
+}
+
+symbol_table* symbol_table_move_up(symbol_table* table, size_t scopes) {
+    DBUG_ENTER("symbol_table_move_up");
+    DBUG_PRINT("symbol_table_move_up", ("scopes to traverse: %d\n", scopes));
+
+    if(scopes == 0) {
+        DBUG_RETURN(table);
     }
 
-    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Did not find idx %d\n", idx));
-    DBUG_RETURN(NULL);
+    if(scopes == 1) {
+        DBUG_RETURN(table->upper);
+    } else {
+        DBUG_RETURN(symbol_table_move_up(table->upper, scopes - 1));
+    }
 }
 
 int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_name) {

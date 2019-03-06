@@ -16,6 +16,7 @@ struct __symbol_table {
     size_t next_id;
     size_t current_entries;
     size_t __entry_array_size;
+    struct __symbol_table* upper;
     symbol_table_entry** entries;
 };
 
@@ -27,5 +28,6 @@ int symbol_table_add(symbol_table* table, char* name, type var_type);
 symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name);
 symbol_table_entry* symbol_table_get_idx(symbol_table* table, size_t idx);
 int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_name);
+symbol_table* symbol_table_move_up(symbol_table* table, size_t scopes);
 
 #endif
