@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "symbol_table.h"
+#include "ctinfo.h"
 
 symbol_table* symbol_table_make(symbol_table* parent) {
     DBUG_ENTER("symbol_table_make");
@@ -58,6 +59,11 @@ static void increase_table_size(symbol_table* toincrease) {
 int symbol_table_add(symbol_table* table, char* name, type var_type) {
     DBUG_ENTER("symbol_table_add");
 
+    if (symbol_table_get_name(table, name) != NULL) {
+        CTIerror("Var %s already in scope", name);
+        DBUG_RETURN(EXIT_FAILURE);
+    }
+
     symbol_table_entry* new_entry = MEMmalloc(sizeof(symbol_table_entry));
     new_entry->idx = table->next_id++;
     new_entry->name = STRcpy(name);
@@ -68,6 +74,7 @@ int symbol_table_add(symbol_table* table, char* name, type var_type) {
     if(table->current_entries > table->__entry_array_size) {
         increase_table_size(table);
     }
+
 
     table->entries[table->current_entries - 1] = new_entry;
 
