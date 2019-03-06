@@ -5,25 +5,25 @@
 
 #include <stdlib.h>
 
-#include "varsymboltable.h"
+#include "symbol_table.h"
 
-var_symbol_table* var_symbol_table_make(void) {
-    DBUG_ENTER("var_symbol_table_make");
-    var_symbol_table* toreturn = MEMmalloc(sizeof(var_symbol_table));
+symbol_table* symbol_table_make(void) {
+    DBUG_ENTER("symbol_table_make");
+    symbol_table* toreturn = MEMmalloc(sizeof(symbol_table));
 
     toreturn->__entry_array_size = 10;
     toreturn->next_id = 0;
     toreturn->current_entries = 0;
-    toreturn->entries = MEMmalloc(sizeof(var_symbol_table_entry*) * 10);
+    toreturn->entries = MEMmalloc(sizeof(symbol_table_entry*) * 10);
 
     DBUG_RETURN(toreturn);
 }
 
-int var_symbol_table_free(var_symbol_table* tofree) {
-    DBUG_ENTER("var_symbol_table_free");
+int symbol_table_free(symbol_table* tofree) {
+    DBUG_ENTER("symbol_table_free");
 
     for(int i = 0; i < tofree->current_entries; i++) {
-        var_symbol_table_entry* current = tofree->entries[i];
+        symbol_table_entry* current = tofree->entries[i];
         current->name = MEMfree(current->name);
         MEMfree(current);
     }
@@ -34,7 +34,7 @@ int var_symbol_table_free(var_symbol_table* tofree) {
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
-static void increase_table_size(var_symbol_table* toincrease) {
+static void increase_table_size(symbol_table* toincrease) {
     DBUG_ENTER("increase_table_size");
 
     size_t extra_size;
@@ -54,10 +54,10 @@ static void increase_table_size(var_symbol_table* toincrease) {
     DBUG_VOID_RETURN;
 }
 
-int var_symbol_table_add(var_symbol_table* table, char* name, type var_type) {
-    DBUG_ENTER("var_symbol_table_add");
+int symbol_table_add(symbol_table* table, char* name, type var_type) {
+    DBUG_ENTER("symbol_table_add");
 
-    var_symbol_table_entry* new_entry = MEMmalloc(sizeof(var_symbol_table_entry));
+    symbol_table_entry* new_entry = MEMmalloc(sizeof(symbol_table_entry));
     new_entry->idx = table->next_id++;
     new_entry->name = STRcpy(name);
     new_entry->vartype = var_type;
@@ -73,40 +73,40 @@ int var_symbol_table_add(var_symbol_table* table, char* name, type var_type) {
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
-var_symbol_table_entry* var_symbol_table_get_name(var_symbol_table* table, char* name) {
-    DBUG_ENTER("var_symbol_table_get_name");
+symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name) {
+    DBUG_ENTER("symbol_table_get_name");
 
     for(int i = 0; i < table->current_entries; i++) {
-        var_symbol_table_entry* current = table->entries[i];
+        symbol_table_entry* current = table->entries[i];
         if(STReq(current->name, name)) {
-            DBUG_PRINT("VAR_SYMBOL_TABLE_LOOKUP", ("Found name %s\n", name));
+            DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Found name %s\n", name));
             DBUG_RETURN(current);
         }
     }
 
-    DBUG_PRINT("VAR_SYMBOL_TABLE_LOOKUP", ("Did not find name %s\n", name));
+    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Did not find name %s\n", name));
     DBUG_RETURN(NULL);
 }
 
-var_symbol_table_entry* var_symbol_table_get_idx(var_symbol_table* table, size_t idx) {
-    DBUG_ENTER("var_symbol_table_get_idx");
+symbol_table_entry* symbol_table_get_idx(symbol_table* table, size_t idx) {
+    DBUG_ENTER("symbol_table_get_idx");
 
     for(int i = 0; i < table->current_entries; i++) {
-        var_symbol_table_entry* current = table->entries[i];
+        symbol_table_entry* current = table->entries[i];
         if(current->idx == idx) {
-            DBUG_PRINT("VAR_SYMBOL_TABLE_LOOKUP", ("Found idx %d\n", idx));
+            DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Found idx %d\n", idx));
             DBUG_RETURN(current);
         }
     }
 
-    DBUG_PRINT("VAR_SYMBOL_TABLE_LOOKUP", ("Did not find idx %d\n", idx));
+    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Did not find idx %d\n", idx));
     DBUG_RETURN(NULL);
 }
 
-int var_symbol_table_update(var_symbol_table* table, size_t idx_to_update, char* new_name) {
-    DBUG_ENTER("var_symbol_table_update");
+int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_name) {
+    DBUG_ENTER("symbol_table_update");
 
-    var_symbol_table_entry* tochange = var_symbol_table_get_idx(table, idx_to_update);
+    symbol_table_entry* tochange = symbol_table_get_idx(table, idx_to_update);
 
     if(tochange == NULL) {
         DBUG_RETURN(EXIT_FAILURE);

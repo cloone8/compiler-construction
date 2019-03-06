@@ -28,9 +28,10 @@ typedef enum
     BO_unknown
 } binop;
 
-typedef enum { TP_void, TP_int, TP_float, TP_bool, TP_unknown } type;
+typedef enum { TP_void, TP_int, TP_float, TP_bool,
+               TP_int_array, TP_float_array, TP_bool_array,
+               TP_unknown } type;
 
-#include "varsymboltable.h"
-#include "funsymboltable.h"
+#include "symbol_table.h"
 
 #endif  /* _CIVCC_MYTYPES_H_ */
