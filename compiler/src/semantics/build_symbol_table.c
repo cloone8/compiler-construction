@@ -13,6 +13,7 @@
  * INFO structure
  */
 struct INFO {
+
 };
 
 /*
@@ -55,6 +56,8 @@ node *STBglobal(node *arg_node, info *arg_info) {
 
     if (GLOBAL_DEFINITION(arg_node) != NULL)
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
+
+    symbol_table_add(PROGRAM_VARSYMBOLTABLE(arg_node), STRcpy(GLOBAL_NAME(arg_node)), GLOBAL_TYPE(arg_node));
 
     DBUG_RETURN(arg_node);
 }
@@ -213,6 +216,9 @@ node *STBdo(node *syntaxtree) {
 
     TRAVpush(TR_stb);
     info* arg_info = STBmakeInfo();
+
+    symbol_table* global_var_table = symbol_table_make();
+    PROGRAM_VARSYMBOLTABLE(syntaxtree) = global_var_table;
 
     syntaxtree = TRAVdo(syntaxtree, NULL);
 
