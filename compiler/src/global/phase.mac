@@ -36,7 +36,7 @@ PHASE(sa,
        ALWAYS)
 
 SUBPHASE( stb,
-          "Building symbol table",
+          "Checking variable scopes",
           STBdo,
           ALWAYS,
           sa)
