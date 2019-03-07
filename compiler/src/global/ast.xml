@@ -22,6 +22,7 @@
         <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
         <type name="Type" ctype="type" init="TP_void" copy="literal" />
         <type name="SymbolTable" ctype="symbol_table*" init="NULL" copy="literal" />
+        <type name="SymbolPointer" ctype="symbol_table_entry*" init="NULL" copy="literal" />
     </attributetypes>
 
 <!--
@@ -1340,6 +1341,17 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -1375,6 +1387,17 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -1403,6 +1426,17 @@
                     <type name="String">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>
@@ -1448,6 +1482,17 @@
                     <type name="String">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>
