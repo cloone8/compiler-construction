@@ -67,7 +67,7 @@
             <traversal id="FTB" name="Build function table" default="sons" include="build_function_table.h">
                 <travuser>
                     <node name="Function" />
-                    <node name="FunctionBody" />
+                    <node name="FunctionDefinition" />
                     <node name="BasicParameter" />
                     <node name="ArrayParameter" />
                 </travuser>

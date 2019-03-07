@@ -3,7 +3,7 @@
 #include "types.h"
 
 extern node *FTBfunction(node *arg_node, info *arg_info);
-extern node *FTBfunctionbody(node *arg_node, info *arg_info);
+extern node *FTBfunctiondefinition(node *arg_node, info *arg_info);
 extern node *FTBbasicparameter(node *arg_node, info *arg_info);
 extern node *FTBarrayparameter(node *arg_node, info *arg_info);
 

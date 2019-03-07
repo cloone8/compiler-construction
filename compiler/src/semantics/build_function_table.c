@@ -81,7 +81,7 @@ node *FTBfunction(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *FTBfunctionbody(node *arg_node, info *arg_info) {
+node *FTBfunctiondefinition(node *arg_node, info *arg_info) {
     DBUG_ENTER("FTBfunctionbody");
 
     DBUG_RETURN(arg_node);
