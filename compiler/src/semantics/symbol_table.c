@@ -54,7 +54,7 @@ static void increase_table_size(symbol_table* toincrease) {
 
     toincrease->__entry_array_size += extra_size;
 
-    toincrease->entries = MEMrealloc(toincrease->entries, toincrease->__entry_array_size);
+    toincrease->entries = MEMrealloc(toincrease->entries, toincrease->__entry_array_size * sizeof(symbol_table_entry*));
 
     DBUG_VOID_RETURN;
 }

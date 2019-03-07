@@ -157,6 +157,8 @@ node *STBarrayparameter(node *arg_node, info *arg_info) {
 
     symbol_table_add(current, ARRAYPARAMETER_NAME(arg_node), atype);
 
+    ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
+
     if (ARRAYPARAMETER_NEXT(arg_node) != NULL)
         ARRAYPARAMETER_NEXT(arg_node) = TRAVdo(ARRAYPARAMETER_NEXT(arg_node), arg_info);
 
@@ -304,7 +306,8 @@ node *STBarraydimensionvars(node *arg_node, info *arg_info) {
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
     symbol_table_add(current, ARRAYDIMENSIONVARS_NAME(arg_node), TP_int);
 
-    ARRAYDIMENSIONVARS_NEXT(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
+    if(ARRAYDIMENSIONVARS_NEXT(arg_node) != NULL)
+        ARRAYDIMENSIONVARS_NEXT(arg_node) = TRAVdo(ARRAYDIMENSIONVARS_NEXT(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }

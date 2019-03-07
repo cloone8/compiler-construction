@@ -11,7 +11,6 @@
 fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_depth) {
     DBUG_ENTER("fun_symbol_table_make");
     DBUG_PRINT("fun_symbol_table", ("Making new symbol table\n"));
-    printf("Making new symbol table\n");
     fun_symbol_table* toreturn = MEMmalloc(sizeof(fun_symbol_table));
 
     toreturn->__entry_array_size = 10;
@@ -54,7 +53,7 @@ static void increase_table_size(fun_symbol_table* toincrease) {
 
     toincrease->__entry_array_size += extra_size;
 
-    toincrease->entries = MEMrealloc(toincrease->entries, toincrease->__entry_array_size);
+    toincrease->entries = MEMrealloc(toincrease->entries, toincrease->__entry_array_size * sizeof(fun_symbol_table_entry*));
 
     DBUG_VOID_RETURN;
 }
@@ -82,7 +81,6 @@ int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, 
 
 
     table->entries[table->current_entries - 1] = new_entry;
-    printf("Added %zu %s %d %zu\n", new_entry->idx, new_entry->name, new_entry->returntype, new_entry->paramamount);
     DBUG_PRINT("fun_symbol_table", ("Added %zu %s %d %zu\n", new_entry->idx, new_entry->name, new_entry->returntype, new_entry->paramamount));
     DBUG_RETURN(EXIT_SUCCESS);
 }
