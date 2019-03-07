@@ -75,7 +75,8 @@ node *FTBfunction(node *arg_node, info *arg_info) {
     PARAMS(arg_info) = NULL;
     PARAMCOUNT(arg_info) = 0;
 
-    // fun_symbol_table_add(CURRENT_SYMBOL_TABLE(arg_node))
+    fun_symbol_table_add(CURRENT_SYMBOL_TABLE(arg_info), FUNCTION_NAME(arg_node),
+                         FUNCTION_TYPE(arg_node), paramcount, parameters);
 
     DBUG_RETURN(arg_node);
 }
