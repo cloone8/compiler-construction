@@ -14,7 +14,6 @@ extern node *STBvarassign(node *arg_node, info *arg_info);
 extern node *STBarrayvarassign(node *arg_node, info *arg_info);
 extern node *STBbasicvardeclaration(node *arg_node, info *arg_info);
 extern node *STBarrayvardeclaration(node *arg_node, info *arg_info);
-extern node *STBfuncall(node *arg_node, info *arg_info);
 extern node *STBfuncallparameter(node *arg_node, info *arg_info);
 extern node *STBvarread(node *arg_node, info *arg_info);
 extern node *STBarrayvarread(node *arg_node, info *arg_info);
