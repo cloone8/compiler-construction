@@ -1,0 +1,137 @@
+#include "types.h"
+#include "dbug.h"
+#include "memory.h"
+#include "str.h"
+
+#include <stdlib.h>
+
+#include "fun_symbol_table.h"
+#include "ctinfo.h"
+
+fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent) {
+    DBUG_ENTER("symbol_table_make");
+    DBUG_PRINT("symbol_table", ("Making new symbol table\n"));
+
+    fun_symbol_table* toreturn = MEMmalloc(sizeof(fun_symbol_table));
+
+    toreturn->__entry_array_size = 10;
+    toreturn->next_id = 0;
+    toreturn->current_entries = 0;
+    toreturn->upper = parent;
+    toreturn->entries = MEMmalloc(sizeof(fun_symbol_table_entry*) * 10);
+
+    DBUG_RETURN(toreturn);
+}
+
+int fun_symbol_table_free(fun_symbol_table* tofree) {
+    DBUG_ENTER("fun_symbol_table_free");
+
+    for(size_t i = 0; i < tofree->current_entries; i++) {
+        fun_symbol_table_entry* current = tofree->entries[i];
+        current->name = MEMfree(current->name);
+        MEMfree(current);
+    }
+
+    MEMfree(tofree->entries);
+    MEMfree(tofree);
+
+    DBUG_RETURN(EXIT_SUCCESS);
+}
+
+static void increase_table_size(fun_symbol_table* toincrease) {
+    DBUG_ENTER("increase_table_size");
+
+    size_t extra_size;
+
+    if(toincrease->__entry_array_size * 0.5 > 10) {
+        extra_size = 10;
+    } else if(toincrease->__entry_array_size * 0.5 < 1) {
+        extra_size = 1;
+    } else {
+        extra_size = toincrease->__entry_array_size * 0.5;
+    }
+
+    toincrease->__entry_array_size += extra_size;
+
+    toincrease->entries = MEMrealloc(toincrease->entries, toincrease->__entry_array_size);
+
+    DBUG_VOID_RETURN;
+}
+
+int fun_symbol_table_add(fun_symbol_table* table, char* name, type var_type) {
+    DBUG_ENTER("fun_symbol_table_add");
+
+    if (fun_symbol_table_get_name(table, name) != NULL) {
+        CTIerror("Var %s already in scope", name);
+        DBUG_RETURN(EXIT_FAILURE);
+    }
+
+    fun_symbol_table_entry* new_entry = MEMmalloc(sizeof(fun_symbol_table_entry));
+    new_entry->idx = table->next_id++;
+    new_entry->name = STRcpy(name);
+    new_entry->vartype = var_type;
+
+    table->current_entries++;
+
+    if(table->current_entries > table->__entry_array_size) {
+        increase_table_size(table);
+    }
+
+
+    table->entries[table->current_entries - 1] = new_entry;
+
+    DBUG_PRINT("symbol_table", ("Added %zu %s %d\n", new_entry->idx, new_entry->name, new_entry->vartype));
+    DBUG_RETURN(EXIT_SUCCESS);
+}
+
+fun_symbol_table_entry* fun_symbol_table_get_name(fun_symbol_table* table, char* name) {
+    DBUG_ENTER("symbol_table_get_name");
+
+    for(size_t i = 0; i < table->current_entries; i++) {
+        fun_symbol_table_entry* current = table->entries[i];
+        if(STReq(current->name, name)) {
+            DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Found name %s\n", name));
+            DBUG_RETURN(current);
+        }
+    }
+
+    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Did not find name %s\n", name));
+    DBUG_RETURN(NULL);
+}
+
+fun_symbol_table_entry* fun_symbol_table_get_idx(fun_symbol_table* table, size_t idx) {
+    DBUG_ENTER("symbol_table_get_idx");
+    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("FINDING IDX %d", idx));
+
+    DBUG_RETURN(table->entries[idx]);
+}
+
+fun_symbol_table* fun_symbol_table_move_up(fun_symbol_table* table, size_t scopes) {
+    DBUG_ENTER("symbol_table_move_up");
+    DBUG_PRINT("symbol_table_move_up", ("scopes to traverse: %d\n", scopes));
+
+    if(scopes == 0) {
+        DBUG_RETURN(table);
+    }
+
+    if(scopes == 1) {
+        DBUG_RETURN(table->upper);
+    } else {
+        DBUG_RETURN(symbol_table_move_up(table->upper, scopes - 1));
+    }
+}
+
+int fun_symbol_table_update(fun_symbol_table* table, size_t idx_to_update, char* new_name) {
+    DBUG_ENTER("symbol_table_update");
+
+    fun_symbol_table_entry* tochange = fun_symbol_table_get_idx(table, idx_to_update);
+
+    if(tochange == NULL) {
+        DBUG_RETURN(EXIT_FAILURE);
+    }
+
+    tochange->name = MEMfree(tochange->name);
+    tochange->name = STRcpy(new_name);
+
+    DBUG_RETURN(EXIT_SUCCESS);
+}
