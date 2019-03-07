@@ -116,10 +116,12 @@ node *STBfunctiondefinition(node *arg_node, info *arg_info) {
     DBUG_ASSERT((function_declaration != NULL), "No parent function found");
     PARENT_FUNCTION(arg_info) = NULL;
 
-    symbol_table* new_scope = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info));
+    symbol_table* new_scope = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), ++CURRENT_SCOPE(arg_info));
+
+    FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node) = new_scope;
+
     symbol_table* old_scope = CURRENT_SYMBOL_TABLE(arg_info);
     CURRENT_SYMBOL_TABLE(arg_info) = new_scope;
-    CURRENT_SCOPE(arg_info)++;
 
     if (FUNCTION_PARAMETERS(function_declaration) != NULL) {
         FUNCTION_PARAMETERS(function_declaration) = TRAVdo(FUNCTION_PARAMETERS(function_declaration), arg_info);
@@ -164,10 +166,13 @@ node *STBarrayparameter(node *arg_node, info *arg_info) {
 node *STBfor(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBfor");
 
-    symbol_table* new_scope = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info));
+    symbol_table* new_scope = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), ++CURRENT_SCOPE(arg_info));
+
+    FOR_VARSYMBOLTABLE(arg_node) = new_scope;
+
     symbol_table* old_scope = CURRENT_SYMBOL_TABLE(arg_info);
     CURRENT_SYMBOL_TABLE(arg_info) = new_scope;
-    CURRENT_SCOPE(arg_info)++;
+
 
     FOR_COUNTER(arg_node) = TRAVdo(FOR_COUNTER(arg_node), arg_info);
 
@@ -310,7 +315,7 @@ node *STBdo(node *syntaxtree) {
     TRAVpush(TR_stb);
     info* arg_info = STBmakeInfo();
 
-    symbol_table* global_var_table = symbol_table_make(NULL);
+    symbol_table* global_var_table = symbol_table_make(NULL, 0);
     PROGRAM_VARSYMBOLTABLE(syntaxtree) = global_var_table;
     CURRENT_SYMBOL_TABLE(arg_info) = global_var_table;
 

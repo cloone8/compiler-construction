@@ -78,11 +78,28 @@ node *FTBfunction(node *arg_node, info *arg_info) {
     fun_symbol_table_add(CURRENT_SYMBOL_TABLE(arg_info), FUNCTION_NAME(arg_node),
                          FUNCTION_TYPE(arg_node), paramcount, parameters);
 
+    if(FUNCTION_DEFINITION(arg_node) != NULL) {
+        FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
+    }
+
     DBUG_RETURN(arg_node);
 }
 
 node *FTBfunctiondefinition(node *arg_node, info *arg_info) {
     DBUG_ENTER("FTBfunctionbody");
+
+    fun_symbol_table* new_scope = fun_symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), ++CURRENT_SCOPE(arg_info));
+
+    FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node) = new_scope;
+
+    fun_symbol_table* old_scope = CURRENT_SYMBOL_TABLE(arg_info);
+    CURRENT_SYMBOL_TABLE(arg_info) = new_scope;
+    CURRENT_SCOPE(arg_info)++;
+
+    FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
+
+    CURRENT_SYMBOL_TABLE(arg_info) = old_scope;
+    CURRENT_SCOPE(arg_info)--;
 
     DBUG_RETURN(arg_node);
 }
@@ -90,11 +107,32 @@ node *FTBfunctiondefinition(node *arg_node, info *arg_info) {
 node *FTBbasicparameter(node *arg_node, info *arg_info) {
     DBUG_ENTER("FTBbasicparameter");
 
+    size_t current_param = PARAMCOUNT(arg_info)++;
+
+    if(BASICPARAMETER_NEXT(arg_node) != NULL) {
+        BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
+    } else {
+        PARAMS(arg_info) = MEMmalloc(PARAMCOUNT(arg_info) * sizeof(type));
+    }
+
+    PARAMS(arg_info)[current_param] = BASICPARAMETER_TYPE(arg_node);
+
     DBUG_RETURN(arg_node);
 }
 
 node *FTBarrayparameter(node *arg_node, info *arg_info) {
     DBUG_ENTER("FTBarrayparameter");
+
+    size_t current_param = PARAMCOUNT(arg_info)++;
+
+    if(ARRAYPARAMETER_NEXT(arg_node) != NULL) {
+        ARRAYPARAMETER_NEXT(arg_node) = TRAVdo(ARRAYPARAMETER_NEXT(arg_node), arg_info);
+    } else {
+        PARAMS(arg_info) = MEMmalloc(PARAMCOUNT(arg_info) * sizeof(type));
+    }
+
+    type atype = type_to_array_type(ARRAYPARAMETER_TYPE(arg_node));
+    PARAMS(arg_info)[current_param] = atype;
 
     DBUG_RETURN(arg_node);
 }
@@ -105,7 +143,7 @@ node *FTBdo(node *syntaxtree) {
     TRAVpush(TR_ftb);
     info* arg_info = FTBmakeInfo();
 
-    fun_symbol_table* global_fun_table = fun_symbol_table_make(NULL);
+    fun_symbol_table* global_fun_table = fun_symbol_table_make(NULL, 0);
     PROGRAM_FUNSYMBOLTABLE(syntaxtree) = global_fun_table;
     CURRENT_SYMBOL_TABLE(arg_info) = global_fun_table;
 

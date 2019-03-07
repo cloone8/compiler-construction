@@ -8,16 +8,17 @@
 #include "fun_symbol_table.h"
 #include "ctinfo.h"
 
-fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent) {
-    DBUG_ENTER("symbol_table_make");
-    DBUG_PRINT("symbol_table", ("Making new symbol table\n"));
-
+fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_depth) {
+    DBUG_ENTER("fun_symbol_table_make");
+    DBUG_PRINT("fun_symbol_table", ("Making new symbol table\n"));
+    printf("Making new symbol table\n");
     fun_symbol_table* toreturn = MEMmalloc(sizeof(fun_symbol_table));
 
     toreturn->__entry_array_size = 10;
     toreturn->next_id = 0;
     toreturn->current_entries = 0;
     toreturn->upper = parent;
+    toreturn->table_depth = table_depth;
     toreturn->entries = MEMmalloc(sizeof(fun_symbol_table_entry*) * 10);
 
     DBUG_RETURN(toreturn);
@@ -62,7 +63,7 @@ int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, 
     DBUG_ENTER("fun_symbol_table_add");
 
     if (fun_symbol_table_get_name(table, name) != NULL) {
-        CTIerror("Var %s already in scope", name);
+        CTIerror("Function %s already in scope", name);
         DBUG_RETURN(EXIT_FAILURE);
     }
 
@@ -81,29 +82,29 @@ int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, 
 
 
     table->entries[table->current_entries - 1] = new_entry;
-
-    DBUG_PRINT("symbol_table", ("Added %zu %s %d\n", new_entry->idx, new_entry->name, new_entry->returntype));
+    printf("Added %zu %s %d %zu\n", new_entry->idx, new_entry->name, new_entry->returntype, new_entry->paramamount);
+    DBUG_PRINT("fun_symbol_table", ("Added %zu %s %d %zu\n", new_entry->idx, new_entry->name, new_entry->returntype, new_entry->paramamount));
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
 fun_symbol_table_entry* fun_symbol_table_get_name(fun_symbol_table* table, char* name) {
-    DBUG_ENTER("symbol_table_get_name");
+    DBUG_ENTER("fun_symbol_table_get_name");
 
     for(size_t i = 0; i < table->current_entries; i++) {
         fun_symbol_table_entry* current = table->entries[i];
         if(STReq(current->name, name)) {
-            DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Found name %s\n", name));
+            DBUG_PRINT("FUN_SYMBOL_TABLE_LOOKUP", ("Found name %s\n", name));
             DBUG_RETURN(current);
         }
     }
 
-    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Did not find name %s\n", name));
+    DBUG_PRINT("FUN_SYMBOL_TABLE_LOOKUP", ("Did not find name %s\n", name));
     DBUG_RETURN(NULL);
 }
 
 fun_symbol_table_entry* fun_symbol_table_get_idx(fun_symbol_table* table, size_t idx) {
-    DBUG_ENTER("symbol_table_get_idx");
-    DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("FINDING IDX %d", idx));
+    DBUG_ENTER("fun_symbol_table_get_idx");
+    DBUG_PRINT("FUN_SYMBOL_TABLE_LOOKUP", ("FINDING IDX %d", idx));
 
     DBUG_RETURN(table->entries[idx]);
 }
@@ -124,7 +125,7 @@ fun_symbol_table* fun_symbol_table_move_up(fun_symbol_table* table, size_t scope
 }
 
 int fun_symbol_table_update(fun_symbol_table* table, size_t idx_to_update, char* new_name) {
-    DBUG_ENTER("symbol_table_update");
+    DBUG_ENTER("fun_symbol_table_update");
 
     fun_symbol_table_entry* tochange = fun_symbol_table_get_idx(table, idx_to_update);
 
@@ -150,6 +151,6 @@ size_t fun_symbol_table_get_param_amount(fun_symbol_table *table, char *fun_name
     DBUG_ENTER("fun_symbol_table_get_param_amount");
 
     fun_symbol_table_entry* result = fun_symbol_table_get_name(table, fun_name);
-    
+
     DBUG_RETURN(result->paramamount);
 }

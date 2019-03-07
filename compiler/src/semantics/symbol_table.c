@@ -8,7 +8,7 @@
 #include "symbol_table.h"
 #include "ctinfo.h"
 
-symbol_table* symbol_table_make(symbol_table* parent) {
+symbol_table* symbol_table_make(symbol_table* parent, size_t table_depth) {
     DBUG_ENTER("symbol_table_make");
     DBUG_PRINT("symbol_table", ("Making new symbol table\n"));
 
@@ -18,6 +18,7 @@ symbol_table* symbol_table_make(symbol_table* parent) {
     toreturn->next_id = 0;
     toreturn->current_entries = 0;
     toreturn->upper = parent;
+    toreturn->table_depth = table_depth;
     toreturn->entries = MEMmalloc(sizeof(symbol_table_entry*) * 10);
 
     DBUG_RETURN(toreturn);

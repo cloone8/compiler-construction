@@ -17,6 +17,7 @@ typedef struct __fun_symbol_table_entry fun_symbol_table_entry;
 struct __fun_symbol_table {
     size_t next_id;
     size_t current_entries;
+    size_t table_depth;
     size_t __entry_array_size;
     struct __fun_symbol_table* upper;
     fun_symbol_table_entry** entries;
@@ -24,7 +25,7 @@ struct __fun_symbol_table {
 
 typedef struct __fun_symbol_table fun_symbol_table;
 
-fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent);
+fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_depth);
 int fun_symbol_table_free(fun_symbol_table* tofree);
 int fun_symbol_table_add(fun_symbol_table *table, char *name, type return_type, size_t param_amount, type* param_types);
 fun_symbol_table_entry* fun_symbol_table_get_name(fun_symbol_table* table, char* name);

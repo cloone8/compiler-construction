@@ -14,6 +14,7 @@ typedef struct __symbol_table_entry symbol_table_entry;
 
 struct __symbol_table {
     size_t next_id;
+    size_t table_depth;
     size_t current_entries;
     size_t __entry_array_size;
     struct __symbol_table* upper;
@@ -22,7 +23,7 @@ struct __symbol_table {
 
 typedef struct __symbol_table symbol_table;
 
-symbol_table* symbol_table_make(symbol_table* parent);
+symbol_table* symbol_table_make(symbol_table* parent, size_t table_depth);
 int symbol_table_free(symbol_table* tofree);
 int symbol_table_add(symbol_table* table, char* name, type var_type);
 symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name);
