@@ -116,6 +116,6 @@ counters    = count_map.o
 
 finalisation = finalise.o strlist.o
 
-semantics = symbol_table.o build_symbol_table.o fun_symbol_table.o build_function_table.o
+semantics = symbol_table.o build_symbol_table.o fun_symbol_table.o build_function_table.o check_fun_scope.o
 
 util = util.o

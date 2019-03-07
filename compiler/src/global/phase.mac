@@ -47,6 +47,12 @@ SUBPHASE( ftb,
           ALWAYS,
           sa)
 
+SUBPHASE( cfs,
+          "Check function scope",
+          CFSdo,
+          ALWAYS,
+          sa)
+
 ENDPHASE(sa)
 
 
