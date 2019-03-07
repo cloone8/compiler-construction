@@ -10,6 +10,8 @@
 
 symbol_table* symbol_table_make(symbol_table* parent) {
     DBUG_ENTER("symbol_table_make");
+    DBUG_PRINT("symbol_table", ("Making new symbol table\n"));
+
     symbol_table* toreturn = MEMmalloc(sizeof(symbol_table));
 
     toreturn->__entry_array_size = 10;
@@ -78,6 +80,7 @@ int symbol_table_add(symbol_table* table, char* name, type var_type) {
 
     table->entries[table->current_entries - 1] = new_entry;
 
+    DBUG_PRINT("symbol_table", ("Added %zu %s %d\n", new_entry->idx, new_entry->name, new_entry->vartype));
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
