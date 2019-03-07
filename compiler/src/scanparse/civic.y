@@ -493,11 +493,13 @@ statement: ID LET expr SEMICOLON
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr BRACKET_R block
         {
-            $$ = TBmakeFor($4, $6, $8, NULL, $10);
+            node* counter = TBmakeBasicvardeclaration($4, TP_int, $6);
+            $$ = TBmakeFor(counter, $8, NULL, $10);
         }
         | FOR BRACKET_L INTTYPE ID LET expr COMMA expr COMMA expr BRACKET_R block
         {
-            $$ = TBmakeFor($4, $6, $8, $10, $12);
+            node* counter = TBmakeBasicvardeclaration($4, TP_int, $6);
+            $$ = TBmakeFor(counter, $8, $10, $12);
         }
         | RETURN SEMICOLON
         {

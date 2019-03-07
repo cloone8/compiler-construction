@@ -788,10 +788,10 @@
                 For loop.
             </description>
             <sons>
-                <son name="counterinit">
+                <son name="counter">
                     <targets>
                         <target mandatory="yes">
-                        <node name="Expr" />
+                        <node name="BasicVarDeclaration" />
                             <phases>
                                 <all />
                             </phases>
@@ -830,17 +830,6 @@
                 </son>
             </sons>
             <attributes>
-                <attribute name="countername">
-                    <type name="String">
-                        <targets>
-                            <target mandatory="yes">
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
-                        </targets>
-                    </type>
-                </attribute>
                 <attribute name="VarSymbolTable">
                     <type name="SymbolTable">
                         <targets>

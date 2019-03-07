@@ -178,9 +178,7 @@ node *STBfor(node *arg_node, info *arg_info) {
     CURRENT_SYMBOL_TABLE(arg_info) = new_scope;
     CURRENT_SCOPE(arg_info)++;
 
-    symbol_table_add(new_scope, FOR_COUNTERNAME(arg_node), TP_int);
-
-    FOR_COUNTERINIT(arg_node) = TRAVdo(FOR_COUNTERINIT(arg_node), arg_info);
+    FOR_COUNTER(arg_node) = TRAVdo(FOR_COUNTER(arg_node), arg_info);
 
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
 
