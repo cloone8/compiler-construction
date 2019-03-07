@@ -8,6 +8,7 @@
 
 #include "str.h"
 #include "memory.h"
+#include "ctinfo.h"
 
 #include "util.h"
 
@@ -202,6 +203,18 @@ node *STBfor(node *arg_node, info *arg_info) {
 node *STBarrayvarassign(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBvarassign");
 
+    symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
+    char* name = ARRAYVARASSIGN_VARNAME(arg_node);
+    size_t scope = CURRENT_SCOPE(arg_info);
+
+    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+
+    if (entry_pointer == NULL) {
+        CTIerror("Var %s not in scope", name);
+    } else {
+        ARRAYVARASSIGN_VARPOINTER(arg_node) = entry_pointer;
+    }
+
     ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
 
     ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
@@ -211,6 +224,18 @@ node *STBarrayvarassign(node *arg_node, info *arg_info) {
 
 node *STBvarassign(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarrayvarassign");
+
+    symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
+    char *name = VARASSIGN_VARNAME(arg_node);
+    size_t scope = CURRENT_SCOPE(arg_info);
+
+    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+
+    if (entry_pointer == NULL) {
+        CTIerror("Var %s not in scope", name);
+    } else {
+        VARASSIGN_VARPOINTER(arg_node) = entry_pointer;
+    }
 
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
 
@@ -245,23 +270,39 @@ node *STBarrayvardeclaration(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *STBfuncall(node *arg_node, info *arg_info) {
-    DBUG_ENTER("STBfuncall");
-
-    if (FUNCALL_PARAMS(arg_node) != NULL)
-        FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
-
-    DBUG_RETURN(arg_node);
-}
-
 node *STBvarread(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBvarread");
+
+    symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
+    char* name = VARREAD_VARNAME(arg_node);
+    size_t scope = CURRENT_SCOPE(arg_info);
+
+    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+
+    if (entry_pointer == NULL) {
+        CTIerror("Var %s not in scope", name);
+    } else {
+        VARREAD_VARPOINTER(arg_node) = entry_pointer;
+    }
 
     DBUG_RETURN(arg_node);
 }
 
 node *STBarrayvarread(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarrayvarread");
+
+    symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
+    char* name = ARRAYVARREAD_ARRAYVARNAME(arg_node);
+    size_t scope = CURRENT_SCOPE(arg_info);
+
+    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+
+    if (entry_pointer == NULL) {
+        CTIerror("Var %s not in scope", name);
+    }
+    else {
+        ARRAYVARREAD_VARPOINTER(arg_node) = entry_pointer;
+    }
 
     ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
 
