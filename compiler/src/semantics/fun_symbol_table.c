@@ -58,7 +58,7 @@ static void increase_table_size(fun_symbol_table* toincrease) {
     DBUG_VOID_RETURN;
 }
 
-int fun_symbol_table_add(fun_symbol_table* table, char* name, type var_type) {
+int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, size_t param_amount, type* param_types) {
     DBUG_ENTER("fun_symbol_table_add");
 
     if (fun_symbol_table_get_name(table, name) != NULL) {
@@ -69,7 +69,9 @@ int fun_symbol_table_add(fun_symbol_table* table, char* name, type var_type) {
     fun_symbol_table_entry* new_entry = MEMmalloc(sizeof(fun_symbol_table_entry));
     new_entry->idx = table->next_id++;
     new_entry->name = STRcpy(name);
-    new_entry->vartype = var_type;
+    new_entry->returntype = return_type;
+    new_entry->paramamount = param_amount;
+    new_entry->paramtypes = param_types;
 
     table->current_entries++;
 
@@ -80,7 +82,7 @@ int fun_symbol_table_add(fun_symbol_table* table, char* name, type var_type) {
 
     table->entries[table->current_entries - 1] = new_entry;
 
-    DBUG_PRINT("symbol_table", ("Added %zu %s %d\n", new_entry->idx, new_entry->name, new_entry->vartype));
+    DBUG_PRINT("symbol_table", ("Added %zu %s %d\n", new_entry->idx, new_entry->name, new_entry->returntype));
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
@@ -107,8 +109,8 @@ fun_symbol_table_entry* fun_symbol_table_get_idx(fun_symbol_table* table, size_t
 }
 
 fun_symbol_table* fun_symbol_table_move_up(fun_symbol_table* table, size_t scopes) {
-    DBUG_ENTER("symbol_table_move_up");
-    DBUG_PRINT("symbol_table_move_up", ("scopes to traverse: %d\n", scopes));
+    DBUG_ENTER("fun_symbol_table_move_up");
+    DBUG_PRINT("fun_symbol_table_move_up", ("scopes to traverse: %d\n", scopes));
 
     if(scopes == 0) {
         DBUG_RETURN(table);
@@ -117,7 +119,7 @@ fun_symbol_table* fun_symbol_table_move_up(fun_symbol_table* table, size_t scope
     if(scopes == 1) {
         DBUG_RETURN(table->upper);
     } else {
-        DBUG_RETURN(symbol_table_move_up(table->upper, scopes - 1));
+        DBUG_RETURN(fun_symbol_table_move_up(table->upper, scopes - 1));
     }
 }
 
@@ -134,4 +136,20 @@ int fun_symbol_table_update(fun_symbol_table* table, size_t idx_to_update, char*
     tochange->name = STRcpy(new_name);
 
     DBUG_RETURN(EXIT_SUCCESS);
+}
+
+type* fun_symbol_table_get_param_types(fun_symbol_table* table, char* fun_name) {
+    DBUG_ENTER("fun_symbol_table_get_param_types");
+
+    fun_symbol_table_entry *result = fun_symbol_table_get_name(table, fun_name);
+
+    DBUG_RETURN(result->paramtypes);
+}
+
+size_t fun_symbol_table_get_param_amount(fun_symbol_table *table, char *fun_name) {
+    DBUG_ENTER("fun_symbol_table_get_param_amount");
+
+    fun_symbol_table_entry* result = fun_symbol_table_get_name(table, fun_name);
+    
+    DBUG_RETURN(result->paramamount);
 }
