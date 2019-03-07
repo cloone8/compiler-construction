@@ -58,22 +58,6 @@ static info *STBfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-static type type_to_array_type(type current) {
-    DBUG_ENTER("type_to_array_type");
-    DBUG_ASSERT((current != TP_void && current != TP_unknown), "Invalid type given");
-
-    switch(current) {
-        case TP_bool:
-            DBUG_RETURN(TP_bool_array);
-        case TP_int:
-            DBUG_RETURN(TP_int_array);
-        case TP_float:
-            DBUG_RETURN(TP_float_array);
-        default:
-            DBUG_RETURN(current);
-    }
-}
-
 static symbol_table_entry* is_in_scope(symbol_table* deepest_table, char* to_find, size_t scope) {
     DBUG_ENTER("is_in_scope");
     symbol_table* current_table = deepest_table;

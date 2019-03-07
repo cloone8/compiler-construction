@@ -21,8 +21,9 @@
         <type name="Link" ctype="node*" init="NULL" copy="lookup" />
         <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
         <type name="Type" ctype="type" init="TP_void" copy="literal" />
-        <type name="SymbolTable" ctype="symbol_table*" init="NULL" copy="literal" />
+        <type name="VarSymbolTable" ctype="symbol_table*" init="NULL" copy="literal" />
         <type name="SymbolPointer" ctype="symbol_table_entry*" init="NULL" copy="literal" />
+        <type name="FunSymbolTable" ctype="fun_symbol_table*" init="NULL" copy="literal" />
     </attributetypes>
 
 <!--
@@ -60,6 +61,15 @@
                     <node name="VarRead" />
                     <node name="ArrayVarRead" />
                     <node name="ArrayDimensionVars" />
+                </travuser>
+            </traversal>
+
+            <traversal id="FTB" name="Build function table" default="sons" include="build_function_table.h">
+                <travuser>
+                    <node name="Function" />
+                    <node name="FunctionBody" />
+                    <node name="BasicParameter" />
+                    <node name="ArrayParameter" />
                 </travuser>
             </traversal>
 
@@ -160,7 +170,7 @@
             </sons>
             <attributes>
                 <attribute name="VarSymbolTable">
-                    <type name="SymbolTable">
+                    <type name="VarSymbolTable">
                         <targets>
                             <target mandatory="no">
                                 <phases>
@@ -171,7 +181,7 @@
                     </type>
                 </attribute>
                 <attribute name="FunSymbolTable">
-                    <type name="SymbolTable">
+                    <type name="FunSymbolTable">
                         <targets>
                             <target mandatory="no">
                                 <phases>
@@ -442,7 +452,7 @@
                     </type>
                 </attribute>
                 <attribute name="VarSymbolTable">
-                    <type name="SymbolTable">
+                    <type name="VarSymbolTable">
                         <targets>
                             <target mandatory="no">
                                 <phases>
@@ -453,7 +463,7 @@
                     </type>
                 </attribute>
                 <attribute name="FunSymbolTable">
-                    <type name="SymbolTable">
+                    <type name="FunSymbolTable">
                         <targets>
                             <target mandatory="no">
                                 <phases>
@@ -831,7 +841,7 @@
             </sons>
             <attributes>
                 <attribute name="VarSymbolTable">
-                    <type name="SymbolTable">
+                    <type name="VarSymbolTable">
                         <targets>
                             <target mandatory="no">
                                 <phases>

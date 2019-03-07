@@ -41,6 +41,12 @@ SUBPHASE( stb,
           ALWAYS,
           sa)
 
+SUBPHASE( ftb,
+          "Finding functions",
+          FTBdo,
+          ALWAYS,
+          sa)
+
 ENDPHASE(sa)
 
 

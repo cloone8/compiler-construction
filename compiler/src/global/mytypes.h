@@ -33,5 +33,6 @@ typedef enum { TP_void, TP_int, TP_float, TP_bool,
                TP_unknown } type;
 
 #include "symbol_table.h"
+#include "fun_symbol_table.h"
 
 #endif  /* _CIVCC_MYTYPES_H_ */
