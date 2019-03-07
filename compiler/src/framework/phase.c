@@ -59,6 +59,7 @@
 #include "check.h"
 #include "print.h"
 
+#include "util.h"
 
 static
 void CheckEnableDbug(compiler_phase_t phase)
@@ -178,6 +179,8 @@ node *PHrunSubPhase(compiler_phase_t subphase, node *syntax_tree, bool cond)
 node *PHrunCycle(compiler_phase_t cycle, node *syntax_tree, bool cond, bool reset)
 {
   DBUG_ENTER("PHrunCycle");
+
+  IS_UNUSED(reset);
 
   DBUG_ASSERTF(PHIphaseType(cycle) == PHT_cycle,
                 ("PHrunCycle called with incompatible phase: %s",

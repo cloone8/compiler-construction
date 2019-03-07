@@ -9,6 +9,8 @@
 #include "str.h"
 #include "memory.h"
 
+#include "util.h"
+
 /*
  * INFO structure
  */

@@ -109,6 +109,7 @@ version="1.0">
 #include "free.h"
 #include "str.h"
 #include "memory.h"
+#include "util.h"
 
 /*****************************************************************************
  *
@@ -231,6 +232,9 @@ node *CHKdoTreeCheck(node *syntax_tree)
       <xsl:with-param name="name"><xsl:value-of select="@name" /></xsl:with-param>
     </xsl:call-template>
     <xsl:value-of select="'{'"/>
+      <!-- Done to silence compiler warnings -->
+    <xsl:value-of select="'IS_UNUSED(arg_info);'"/>
+    <xsl:value-of select="'IS_UNUSED(arg_node);'"/>
     <xsl:if test="attributes/attribute[key(&quot;arraytypes&quot;, ./type/@name)]">
       <xsl:value-of select="'int cnt;'" />
     </xsl:if>

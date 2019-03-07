@@ -127,6 +127,8 @@ version="1.0">
 #include "memory.h"
 #include "dbug.h"
 
+#include "util.h"
+
 #define FREETRAV(node, info) (node != NULL) ? TRAVdo(node, info) : node
 #define FREECOND(node, info)                                    \
   (INFO_FREE_FLAG(info) != arg_node)                            \
@@ -175,6 +177,9 @@ version="1.0">
   <xsl:apply-templates select="@name"/>
   <!-- start of body -->
   <xsl:value-of select="'{'"/>
+  <!-- Done to silence compiler warnings -->
+  <xsl:value-of select="'IS_UNUSED(arg_info);'"/>
+  <xsl:value-of select="'IS_UNUSED(arg_node);'"/>
   <!-- if there is a for loop for initialising attributes, we
        need a variable cnt, which is created here -->
   <xsl:if test="attributes/attribute[key(&quot;arraytypes&quot;, ./type/@name)]">

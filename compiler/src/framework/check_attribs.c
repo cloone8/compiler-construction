@@ -51,7 +51,7 @@
 #include "tree_basic.h"
 #include "traverse.h"
 #include "dbug.h"
-
+#include "util.h"
 
 /** <!--******************************************************************-->
  *
@@ -69,7 +69,7 @@ char *
 CHKMattribString(char *attr, info * arg_info)
 {
   DBUG_ENTER("CHKMattribString");
-
+  IS_UNUSED(arg_info);
   /* do nothing */
 
   DBUG_RETURN (attr);
@@ -92,7 +92,7 @@ char *
 CHKMattribSharedString(char *attr, info * arg_info)
 {
   DBUG_ENTER("CHKMattribSharedString");
-
+  IS_UNUSED(arg_info);
   /* do nothing */
 
   DBUG_RETURN(attr);
@@ -141,7 +141,7 @@ node *
 CHKMattribLink(node * attr, info * arg_info)
 {
   DBUG_ENTER("CHKMattribLink");
-
+  IS_UNUSED(arg_info);
   /*
    * NEVER do anything with this kind of attribute
    * as you cannot make sure the node you reference
@@ -167,7 +167,7 @@ node *
 CHKMattribExtLink(node * attr, info * arg_info)
 {
   DBUG_ENTER("CHKMattribExtLink");
-
+  IS_UNUSED(arg_info);
   DBUG_RETURN(attr);
 }
 

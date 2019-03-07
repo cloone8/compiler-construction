@@ -23,7 +23,7 @@
 #include "globals.h"
 #include "ctinfo.h"
 #include "str.h"
-
+#include "util.h"
 
 /*
  * INFO structure
@@ -237,7 +237,7 @@ node* PRTvarassign (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTvarread");
-
+    IS_UNUSED(arg_info);
     printf("%s", VARREAD_VARNAME(arg_node));
 
     DBUG_RETURN(arg_node);
@@ -296,7 +296,7 @@ node* PRTcast (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTboolconst");
-
+    IS_UNUSED(arg_info);
     switch (BOOLCONST_VALUE(arg_node))
     {
         case TRUE:
@@ -327,7 +327,7 @@ node* PRTboolconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTintconst");
-
+    IS_UNUSED(arg_info);
     printf("%d", INTCONST_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);
@@ -348,7 +348,7 @@ node* PRTintconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTfloatconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTfloatconst");
-
+    IS_UNUSED(arg_info);
     printf("%.10f", FLOATCONST_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);

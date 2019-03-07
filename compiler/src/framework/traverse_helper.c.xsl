@@ -84,16 +84,19 @@
 #include "dbug.h"
 #include "tree_basic.h"
 #include "traverse.h"
+#include "util.h"
 
 #define TRAV(son, info)    if (son != NULL) { son = TRAVdo(son, info); }
 
 node *TRAVnone(node *arg_node, info *arg_info)
 {
+   IS_UNUSED(arg_info);
    return(arg_node);
 }
 
 node *TRAVerror(node *arg_node, info *arg_info)
 {
+  IS_UNUSED(arg_info);
   DBUG_ASSERT((FALSE), "Illegal node type found.");
 
   return(arg_node);

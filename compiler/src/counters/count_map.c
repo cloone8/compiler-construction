@@ -48,7 +48,7 @@ static countMapItem* CMaddItem(countMap* map, char* name) {
  * given map. Otherwise returns NULL
  */
 countMapItem* CMgetItem(countMap* map, char* name) {
-    for(int i = 0; i < map->itemCount; i++) {
+    for(size_t i = 0; i < map->itemCount; i++) {
         countMapItem* item = map->items[i];
         if(STReq(item->name, name)) {
             return item;
@@ -76,7 +76,7 @@ void CMaddOccurence(countMap* map, char* name) {
  * map.
  */
 void CMfree(countMap* map) {
-    for(int i = 0; i < map->itemCount; i++) {
+    for(size_t i = 0; i < map->itemCount; i++) {
         countMapItem* item = map->items[i];
         MEMfree(item->name);
         MEMfree(item);

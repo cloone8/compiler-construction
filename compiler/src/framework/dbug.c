@@ -66,6 +66,7 @@
 
 #include "dbug.h"
 
+#include "util.h"
 
 #define HAVE_STRTOK
 #define HAVE_STRRCHR
@@ -1474,6 +1475,7 @@ LOCAL BOOLEAN Writable (char *pathname)
 #endif
 
 #ifndef unix
+    IS_UNUSED(pathname);
     granted = TRUE;
 #else
     granted = FALSE;
