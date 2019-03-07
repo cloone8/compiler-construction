@@ -137,6 +137,7 @@
 #include "free.h"
 #include "dbug.h"
 #include "ctinfo.h"
+#include "util.h"
 
 #if 0
 #include "check_mem.h"
@@ -214,15 +215,17 @@ hash_key_t GetHashKey_Pointer(void *data)
   hash_key_t hash_key;
 
   DBUG_ENTER("GetHashKey_Pointer");
-
   /*
    * hash key: bits 9 .. 5
    *  ->  0 <= key < 2^5
    */
   hash_key = (((hash_key_t) data >> 5) & 0x1f);
 
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wtype-limits"
   DBUG_ASSERT(((hash_key >= 0) && (hash_key < (HASH_KEYS_POINTER))),
                "hash key for pointers out of bounds!");
+  #pragma GCC diagnostic pop
 
   DBUG_RETURN(hash_key);
 }
@@ -258,9 +261,11 @@ hash_key_t GetHashKey_String(void *data)
     hash_key %= (HASH_KEYS_STRING);
   }
 
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wtype-limits"
   DBUG_ASSERT(((hash_key >= 0) && (hash_key < (HASH_KEYS_STRING))),
                "hash key for strings out of bounds!");
-
+  #pragma GCC diagnostic pop
   /*
    * use the offset HASH_KEYS_POINTERS in order to get disjoint hash key spaces
    * for pointers and strings
@@ -1118,6 +1123,8 @@ lut_t *LUTremoveLut(lut_t *lut)
 
 void LUTtouchContentLut(lut_t *lut, info *arg_info)
 {
+  IS_UNUSED(arg_info);
+
   void **tmp;
   hash_key_t k;
   lut_size_t i;

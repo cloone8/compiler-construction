@@ -93,6 +93,7 @@
 
 #include "ctinfo.h"
 
+#include "util.h"
 
 static char *message_buffer=NULL;
 static int message_buffer_size=0;
@@ -129,44 +130,44 @@ static int warnings=0;
 static
 void ProcessMessage(char *buffer, int line_length)
 {
-  int index, column, last_space;
+    int index, column, last_space;
 
-  DBUG_ENTER("ProcessMessage");
+    DBUG_ENTER("ProcessMessage");
 
-  index=0;
-  last_space=0;
-  column=0;
+    index=0;
+    last_space=0;
+    column=0;
 
-  while (buffer[index]!='\0') {
-    if (buffer[index]=='\t') {
-      buffer[index]=' ';
-    }
+    while (buffer[index]!='\0') {
+        if (buffer[index]=='\t') {
+            buffer[index]=' ';
+        }
 
-    if (buffer[index]==' ') {
-      last_space=index;
-    }
+        if (buffer[index]==' ') {
+            last_space=index;
+        }
 
-    if (buffer[index]=='\n') {
-      buffer[index]='@';
-      column=0;
-    }
-    else {
-      if (column==line_length) {
-        if (buffer[last_space]==' ') {
-          buffer[last_space]='@';
-          column=index-last_space;
+        if (buffer[index]=='\n') {
+            buffer[index]='@';
+            column=0;
         }
         else {
-          break;
+            if (column==line_length) {
+                if (buffer[last_space]==' ') {
+                    buffer[last_space]='@';
+                    column=index-last_space;
+                }
+                else {
+                    break;
+                }
+            }
         }
-      }
+
+        index++;
+        column++;
     }
 
-    index++;
-    column++;
-  }
-
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -182,50 +183,48 @@ void ProcessMessage(char *buffer, int line_length)
  *
  ******************************************************************************/
 
-static
-void Format2Buffer(const char *format, va_list arg_p)
-{
-  int len;
-  va_list arg_p_copy;
+static void Format2Buffer(const char *format, va_list arg_p) {
+    int len;
+    va_list arg_p_copy;
 
-  DBUG_ENTER("Format2Buffer");
-
-  va_copy(arg_p_copy, arg_p);
-  len = vsnprintf(message_buffer, message_buffer_size, format, arg_p_copy);
-  va_end(arg_p_copy);
-
-  if (len < 0) {
-    DBUG_ASSERT((message_buffer_size == 0), "message buffer corruption");
-    /*
-     * Output error due to non-existing message buffer
-     */
-
-    len = 120;
-
-    message_buffer = (char*) MEMmalloc(len+2);
-    message_buffer_size = len+2;
-
-    va_copy(arg_p_copy, arg_p);
-    len = vsnprintf(message_buffer, message_buffer_size, format, arg_p_copy);
-    va_end(arg_p_copy);
-    DBUG_ASSERT((len >= 0), "message buffer corruption");
-  }
-
-  if (len >= message_buffer_size) {
-    /* buffer too small  */
-
-    MEMfree(message_buffer);
-    message_buffer = (char*) MEMmalloc(len+2);
-    message_buffer_size = len+2;
+    DBUG_ENTER("Format2Buffer");
 
     va_copy(arg_p_copy, arg_p);
     len = vsnprintf(message_buffer, message_buffer_size, format, arg_p_copy);
     va_end(arg_p_copy);
 
-    DBUG_ASSERT((len < message_buffer_size), "message buffer corruption");
-  }
+    if (len < 0) {
+        DBUG_ASSERT((message_buffer_size == 0), "message buffer corruption");
+        /*
+         * Output error due to non-existing message buffer
+         */
 
-  DBUG_VOID_RETURN;
+        len = 120;
+
+        message_buffer = (char*) MEMmalloc(len+2);
+        message_buffer_size = len+2;
+
+        va_copy(arg_p_copy, arg_p);
+        len = vsnprintf(message_buffer, message_buffer_size, format, arg_p_copy);
+        va_end(arg_p_copy);
+        DBUG_ASSERT((len >= 0), "message buffer corruption");
+    }
+
+    if (len >= message_buffer_size) {
+        /* buffer too small  */
+
+        MEMfree(message_buffer);
+        message_buffer = (char*) MEMmalloc(len+2);
+        message_buffer_size = len+2;
+
+        va_copy(arg_p_copy, arg_p);
+        len = vsnprintf(message_buffer, message_buffer_size, format, arg_p_copy);
+        va_end(arg_p_copy);
+
+        DBUG_ASSERT((len < message_buffer_size), "message buffer corruption");
+    }
+
+    DBUG_VOID_RETURN;
 }
 
 /** <!--********************************************************************-->
@@ -244,21 +243,20 @@ void Format2Buffer(const char *format, va_list arg_p)
  *
  ******************************************************************************/
 
-char *CTIgetErrorMessageVA(int line, const char *format, va_list arg_p)
-{
-  char *first_line, *res;
+char *CTIgetErrorMessageVA(int line, const char *format, va_list arg_p) {
+    char *first_line, *res;
 
-  DBUG_ENTER("CTIgetErrorMessageVA");
-  Format2Buffer(format, arg_p);
-  ProcessMessage(message_buffer,
-                  message_line_length - strlen(error_message_header));
+    DBUG_ENTER("CTIgetErrorMessageVA");
+    Format2Buffer(format, arg_p);
+    ProcessMessage(message_buffer,
+                                    message_line_length - strlen(error_message_header));
 
-  first_line = (char *)MEMmalloc(32 * sizeof(char));
-  sprintf(first_line, "line %d @", line);
-  res = STRcat(first_line, message_buffer);
-  first_line = MEMfree(first_line);
+    first_line = (char *)MEMmalloc(32 * sizeof(char));
+    sprintf(first_line, "line %d @", line);
+    res = STRcat(first_line, message_buffer);
+    first_line = MEMfree(first_line);
 
-  DBUG_RETURN(res);
+    DBUG_RETURN(res);
 }
 
 
@@ -276,30 +274,28 @@ char *CTIgetErrorMessageVA(int line, const char *format, va_list arg_p)
  *          stderr.
  *
  *   @param header  string which precedes each line of the message, e.g.
-                    ERROR or WARNING.
+                                        ERROR or WARNING.
  *   @param format  format string like in printf family of functions
  *
  ******************************************************************************/
 
-static
-void PrintMessage(const char *header, const char *format, va_list arg_p)
-{
-  char *line;
+static void PrintMessage(const char *header, const char *format, va_list arg_p) {
+    char *line;
 
-  DBUG_ENTER("PrintMessage");
+    DBUG_ENTER("PrintMessage");
 
-  Format2Buffer(format, arg_p);
+    Format2Buffer(format, arg_p);
 
-  ProcessMessage(message_buffer, message_line_length - strlen(header));
+    ProcessMessage(message_buffer, message_line_length - strlen(header));
 
-  line = strtok(message_buffer, "@");
+    line = strtok(message_buffer, "@");
 
-  while (line != NULL) {
-    fprintf(stderr, "%s%s\n", header, line);
-    line = strtok(NULL, "@");
-  }
+    while (line != NULL) {
+        fprintf(stderr, "%s%s\n", header, line);
+        line = strtok(NULL, "@");
+    }
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -312,12 +308,10 @@ void PrintMessage(const char *header, const char *format, va_list arg_p)
  *
  ******************************************************************************/
 
-static
-void CleanUp()
-{
-  DBUG_ENTER("CleanUp");
+static void CleanUp() {
+    DBUG_ENTER("CleanUp");
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -329,20 +323,18 @@ void CleanUp()
  *
  ******************************************************************************/
 
-static
-void AbortCompilation()
-{
-  DBUG_ENTER("AbortCompilation");
+static void AbortCompilation() {
+    DBUG_ENTER("AbortCompilation");
 
-  fprintf(stderr, "\n*** Compilation failed ***\n");
-  fprintf(stderr, "*** %d Error(s), %d Warning(s)\n\n",
-           errors, warnings);
+    fprintf(stderr, "\n*** Compilation failed ***\n");
+    fprintf(stderr, "*** %d Error(s), %d Warning(s)\n\n",
+                     errors, warnings);
 
-  CleanUp();
+    CleanUp();
 
-  exit(1);
+    exit(1);
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -365,16 +357,15 @@ void AbortCompilation()
  *
  ******************************************************************************/
 
-static
-void InternalCompilerErrorBreak(int sig)
-{
-  fprintf(stderr,
-           "\n\n"
-           "OOOPS your program crashed the compiler 8-((\n\n");
+static void InternalCompilerErrorBreak(int sig) {
+    IS_UNUSED(sig);
+    fprintf(stderr,
+                     "\n\n"
+                     "OOOPS your program crashed the compiler 8-((\n\n");
 
-  CleanUp();
+    CleanUp();
 
-  exit(1);
+    exit(1);
 }
 
 
@@ -397,8 +388,10 @@ void InternalCompilerErrorBreak(int sig)
 static
 void UserForcedBreak(int sig)
 {
-  CleanUp();
-  exit(0);
+    IS_UNUSED(sig);
+
+    CleanUp();
+    exit(0);
 }
 
 
@@ -412,13 +405,13 @@ void UserForcedBreak(int sig)
 
 void CTIinstallInterruptHandlers(void)
 {
-  DBUG_ENTER("CTIinstallInterruptHandlers");
+    DBUG_ENTER("CTIinstallInterruptHandlers");
 
-  signal(SIGSEGV, InternalCompilerErrorBreak); /* Segmentation Fault */
-  signal(SIGBUS, InternalCompilerErrorBreak);  /* Bus Error */
-  signal(SIGINT, UserForcedBreak);     /* Interrupt (Control-C) */
+    signal(SIGSEGV, InternalCompilerErrorBreak); /* Segmentation Fault */
+    signal(SIGBUS, InternalCompilerErrorBreak);  /* Bus Error */
+    signal(SIGINT, UserForcedBreak);     /* Interrupt (Control-C) */
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -435,20 +428,20 @@ void CTIinstallInterruptHandlers(void)
 
 void CTIerror(const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIerror");
+    DBUG_ENTER("CTIerror");
 
-  va_start(arg_p, format);
+    va_start(arg_p, format);
 
-  fprintf(stderr, "\n");
-  PrintMessage(error_message_header, format, arg_p);
+    fprintf(stderr, "\n");
+    PrintMessage(error_message_header, format, arg_p);
 
-  va_end(arg_p);
+    va_end(arg_p);
 
-  errors++;
+    errors++;
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -466,22 +459,22 @@ void CTIerror(const char *format, ...)
 
 void CTIerrorLine(int line, const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIerrorLine");
+    DBUG_ENTER("CTIerrorLine");
 
-  va_start(arg_p, format);
+    va_start(arg_p, format);
 
-  fprintf(stderr, "\n");
-  fprintf(stderr, "%sline %d\n",
-           error_message_header, line);
-  PrintMessage(error_message_header, format, arg_p);
+    fprintf(stderr, "\n");
+    fprintf(stderr, "%sline %d\n",
+                     error_message_header, line);
+    PrintMessage(error_message_header, format, arg_p);
 
-  va_end(arg_p);
+    va_end(arg_p);
 
-  errors++;
+    errors++;
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -499,16 +492,16 @@ void CTIerrorLine(int line, const char *format, ...)
 
 void CTIerrorLineVA(int line, const char *format, va_list arg_p)
 {
-  DBUG_ENTER("CTIerrorLineVA");
+    DBUG_ENTER("CTIerrorLineVA");
 
-  fprintf(stderr, "\n");
-  fprintf(stderr, "%sline %d\n",
-           error_message_header, line);
-  PrintMessage(error_message_header, format, arg_p);
+    fprintf(stderr, "\n");
+    fprintf(stderr, "%sline %d\n",
+                     error_message_header, line);
+    PrintMessage(error_message_header, format, arg_p);
 
-  errors++;
+    errors++;
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -526,17 +519,17 @@ void CTIerrorLineVA(int line, const char *format, va_list arg_p)
 
 void CTIerrorContinued(const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIerrorContinued");
+    DBUG_ENTER("CTIerrorContinued");
 
-  va_start(arg_p, format);
+    va_start(arg_p, format);
 
-  PrintMessage(error_message_header, format, arg_p);
+    PrintMessage(error_message_header, format, arg_p);
 
-  va_end(arg_p);
+    va_end(arg_p);
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -552,9 +545,9 @@ void CTIerrorContinued(const char *format, ...)
 
 int CTIgetErrorMessageLineLength(void)
 {
-  DBUG_ENTER("CTIgetErrorMessageLineLength");
+    DBUG_ENTER("CTIgetErrorMessageLineLength");
 
-  DBUG_RETURN(message_line_length - strlen(error_message_header));
+    DBUG_RETURN(message_line_length - strlen(error_message_header));
 }
 
 
@@ -571,24 +564,24 @@ int CTIgetErrorMessageLineLength(void)
 
 void CTIabortOnBottom(char *err_msg)
 {
-  char *line;
+    char *line;
 
-  DBUG_ENTER("CTIabortOnBottom");
+    DBUG_ENTER("CTIabortOnBottom");
 
-  fprintf(stderr, "\n");
+    fprintf(stderr, "\n");
 
-  line = strtok(err_msg, "@");
+    line = strtok(err_msg, "@");
 
-  while (line != NULL) {
-    fprintf(stderr, "%s%s\n", error_message_header, line);
-    line = strtok(NULL, "@");
-  }
+    while (line != NULL) {
+        fprintf(stderr, "%s%s\n", error_message_header, line);
+        line = strtok(NULL, "@");
+    }
 
-  errors++;
+    errors++;
 
-  AbortCompilation();
+    AbortCompilation();
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -606,22 +599,22 @@ void CTIabortOnBottom(char *err_msg)
 
 void CTIabort(const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIabort");
+    DBUG_ENTER("CTIabort");
 
-  va_start(arg_p, format);
+    va_start(arg_p, format);
 
-  fprintf(stderr, "\n");
-  PrintMessage(abort_message_header, format, arg_p);
+    fprintf(stderr, "\n");
+    PrintMessage(abort_message_header, format, arg_p);
 
-  va_end(arg_p);
+    va_end(arg_p);
 
-  errors++;
+    errors++;
 
-  AbortCompilation();
+    AbortCompilation();
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -639,24 +632,24 @@ void CTIabort(const char *format, ...)
 
 void CTIabortLine(int line, const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIabortLine");
+    DBUG_ENTER("CTIabortLine");
 
-  va_start(arg_p, format);
+    va_start(arg_p, format);
 
-  fprintf(stderr, "\n");
-  fprintf(stderr, "%sline %d\n",
-           abort_message_header, line);
-  PrintMessage(abort_message_header, format, arg_p);
+    fprintf(stderr, "\n");
+    fprintf(stderr, "%sline %d\n",
+                     abort_message_header, line);
+    PrintMessage(abort_message_header, format, arg_p);
 
-  va_end(arg_p);
+    va_end(arg_p);
 
-  errors++;
+    errors++;
 
-  AbortCompilation();
+    AbortCompilation();
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -670,13 +663,13 @@ void CTIabortLine(int line, const char *format, ...)
 
 void CTIabortOnError(void)
 {
-  DBUG_ENTER("CTIabortOnError");
+    DBUG_ENTER("CTIabortOnError");
 
-  if (errors > 0) {
-    AbortCompilation();
-  }
+    if (errors > 0) {
+        AbortCompilation();
+    }
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -694,22 +687,22 @@ void CTIabortOnError(void)
 
 void CTIwarnLine(int line, const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIwarnLine");
+    DBUG_ENTER("CTIwarnLine");
 
-  if (global.verbosity >= 1) {
-    va_start(arg_p, format);
+    if (global.verbosity >= 1) {
+        va_start(arg_p, format);
 
-    fprintf(stderr, "%sline %d\n", warn_message_header, line);
-    PrintMessage(warn_message_header, format, arg_p);
+        fprintf(stderr, "%sline %d\n", warn_message_header, line);
+        PrintMessage(warn_message_header, format, arg_p);
 
-    va_end(arg_p);
+        va_end(arg_p);
 
-    warnings++;
-  }
+        warnings++;
+    }
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -726,21 +719,21 @@ void CTIwarnLine(int line, const char *format, ...)
 
 void CTIwarn(const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIwarn");
+    DBUG_ENTER("CTIwarn");
 
-  if (global.verbosity >= 1) {
-    va_start(arg_p, format);
+    if (global.verbosity >= 1) {
+        va_start(arg_p, format);
 
-    PrintMessage(warn_message_header, format, arg_p);
+        PrintMessage(warn_message_header, format, arg_p);
 
-    va_end(arg_p);
+        va_end(arg_p);
 
-    warnings++;
-  }
+        warnings++;
+    }
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -756,19 +749,19 @@ void CTIwarn(const char *format, ...)
 
 void CTIwarnContinued(const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIwarnContinued");
+    DBUG_ENTER("CTIwarnContinued");
 
-  if (global.verbosity >= 1) {
-    va_start(arg_p, format);
+    if (global.verbosity >= 1) {
+        va_start(arg_p, format);
 
-    PrintMessage(warn_message_header, format, arg_p);
+        PrintMessage(warn_message_header, format, arg_p);
 
-    va_end(arg_p);
-  }
+        va_end(arg_p);
+    }
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -784,9 +777,9 @@ void CTIwarnContinued(const char *format, ...)
 
 int CTIgetWarnMessageLineLength()
 {
-  DBUG_ENTER("CTIgetWarnMessageLineLength");
+    DBUG_ENTER("CTIgetWarnMessageLineLength");
 
-  DBUG_RETURN(message_line_length - strlen(warn_message_header));
+    DBUG_RETURN(message_line_length - strlen(warn_message_header));
 }
 
 
@@ -803,19 +796,19 @@ int CTIgetWarnMessageLineLength()
 
 void CTIstate(const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTIstate");
+    DBUG_ENTER("CTIstate");
 
-  if (global.verbosity >= 3) {
-    va_start(arg_p, format);
+    if (global.verbosity >= 3) {
+        va_start(arg_p, format);
 
-    PrintMessage(state_message_header, format, arg_p);
+        PrintMessage(state_message_header, format, arg_p);
 
-    va_end(arg_p);
-  }
+        va_end(arg_p);
+    }
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -831,19 +824,19 @@ void CTIstate(const char *format, ...)
 
 void CTInote(const char *format, ...)
 {
-  va_list arg_p;
+    va_list arg_p;
 
-  DBUG_ENTER("CTInote");
+    DBUG_ENTER("CTInote");
 
-  if (global.verbosity >= 2) {
-    va_start(arg_p, format);
+    if (global.verbosity >= 2) {
+        va_start(arg_p, format);
 
-    PrintMessage(note_message_header, format, arg_p);
+        PrintMessage(note_message_header, format, arg_p);
 
-    va_end(arg_p);
-  }
+        va_end(arg_p);
+    }
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -856,23 +849,22 @@ void CTInote(const char *format, ...)
  *
  ******************************************************************************/
 
-void CTIterminateCompilation(node *syntax_tree)
-{
-  DBUG_ENTER("CTIterminateCompilation");
+void CTIterminateCompilation(node *syntax_tree) {
+    DBUG_ENTER("CTIterminateCompilation");
+    IS_UNUSED(syntax_tree);
+    /*
+     *  At last, we display a success message.
+     */
 
-  /*
-   *  At last, we display a success message.
-   */
+    CTIstate(" ");
+    CTIstate("*** Compilation successful ***");
 
-  CTIstate(" ");
-  CTIstate("*** Compilation successful ***");
+    CTIstate("*** 0 error(s), %d warning(s)", warnings);
+    CTIstate(" ");
 
-  CTIstate("*** 0 error(s), %d warning(s)", warnings);
-  CTIstate(" ");
+    exit(0);
 
-  exit(0);
-
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 
@@ -895,22 +887,21 @@ void CTIterminateCompilation(node *syntax_tree)
  *
  ******************************************************************************/
 
-void CTIabortOutOfMemory(unsigned int request)
-{
-  DBUG_ENTER("CTIabortOutOfMemory");
+void CTIabortOutOfMemory(unsigned int request) {
+    DBUG_ENTER("CTIabortOutOfMemory");
 
-  fprintf(stderr,
-	   "\n"
-	   "%sOut of memory:\n"
-	   "%s %u bytes requested\n",
-	   abort_message_header,
-	   abort_message_header, request);
+    fprintf(stderr,
+         "\n"
+         "%sOut of memory:\n"
+         "%s %u bytes requested\n",
+         abort_message_header,
+         abort_message_header, request);
 
-  errors++;
+    errors++;
 
-  AbortCompilation();
+    AbortCompilation();
 
-  DBUG_VOID_RETURN;
+    DBUG_VOID_RETURN;
 }
 
 

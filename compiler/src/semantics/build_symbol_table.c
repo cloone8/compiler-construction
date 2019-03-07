@@ -10,6 +10,8 @@
 #include "memory.h"
 #include "ctinfo.h"
 
+#include "util.h"
+
 /*
  * INFO structure
  */

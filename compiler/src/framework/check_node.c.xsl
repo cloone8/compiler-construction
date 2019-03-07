@@ -116,6 +116,7 @@ version="1.0">
 #include "tree_basic.h"
 #include "traverse.h"
 #include "dbug.h"
+#include "util.h"
 
 #define CHKMTRAV(node, info) (node != NULL) ? TRAVdo(node, info) : node
 #define CHKMCOND(node, info)                                    \
@@ -134,7 +135,7 @@ version="1.0">
 node *CHKMpostfun(node * arg_node, info * arg_info)
 {
 DBUG_ENTER("CHKMpostfun");
-
+IS_UNUSED(arg_info);
 DBUG_RETURN(arg_node);
 }
   </xsl:text>
