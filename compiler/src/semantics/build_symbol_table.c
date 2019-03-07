@@ -71,19 +71,23 @@ static type type_to_array_type(type current) {
     }
 }
 
-static bool is_in_scope(symbol_table* deepest_table, char* to_find, size_t scope) {
+static symbol_table_entry* is_in_scope(symbol_table* deepest_table, char* to_find, size_t scope) {
+    DBUG_ENTER("is_in_scope");
     symbol_table* current_table = deepest_table;
 
     for(size_t scopes_left = scope; scopes_left > 0; scopes_left--) {
         symbol_table_entry* result = symbol_table_get_name(current_table, to_find);
 
-        if(result != NULL)
-            return TRUE;
+        if(result != NULL) {
+            DBUG_PRINT("is_in_scope", ("Variable %s is in scope\n", to_find));
+            DBUG_RETURN(result);
+        }
 
         current_table = symbol_table_move_up(current_table, 1);
     }
 
-    return FALSE;
+    DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope\n", to_find));
+    DBUG_RETURN(NULL);
 }
 
 node *STBglobal(node *arg_node, info *arg_info) {
