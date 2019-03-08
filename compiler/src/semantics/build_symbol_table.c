@@ -62,20 +62,20 @@ static symbol_table_entry* is_in_scope(symbol_table* deepest_table, char* to_fin
     DBUG_ENTER("is_in_scope");
     symbol_table* current_table = deepest_table;
 
-    for(size_t scopes_left = scope + 1; scopes_left >= 1; scopes_left--) {
+    for(size_t scopes_left = scope + 1; scopes_left > 0; scopes_left--) {
         symbol_table_entry* result = symbol_table_get_name(current_table, to_find);
 
         if(result != NULL) {
-            DBUG_PRINT("is_in_scope", ("Variable %s is in scope\n", to_find));
+            DBUG_PRINT("is_in_scope", ("Variable %s is in scope", to_find));
             DBUG_RETURN(result);
         }
 
-        DBUG_PRINT("is_in_scope", ("Variable %s not found, checking next table\n"));
+        DBUG_PRINT("is_in_scope", ("Variable %s not found, checking next table"));
 
         current_table = symbol_table_move_up(current_table, 1);
     }
 
-    DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope\n", to_find));
+    DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope", to_find));
     DBUG_RETURN(NULL);
 }
 
