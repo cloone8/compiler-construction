@@ -76,7 +76,7 @@
             <traversal id="CFS" name="Check function call scoping" default="sons" include="check_fun_scope.h">
                 <travuser>
                     <node name="FunctionDefinition" />
-                    <node name="FunctionCall" />
+                    <node name="FunCall" />
                 </travuser>
             </traversal>
 
