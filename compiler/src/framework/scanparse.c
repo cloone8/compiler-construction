@@ -135,7 +135,7 @@ node* SPdoRunPreProcessor(node *syntax_tree) {
 
     if (err) {
         char* rm_intermediate_file_str = STRcat(DELETE_COMMAND, processedfile);
-        system(rm_intermediate_file_str);
+        err = system(rm_intermediate_file_str);
 
         rm_intermediate_file_str = MEMfree(rm_intermediate_file_str);
         cppcallstr = MEMfree(cppcallstr);
