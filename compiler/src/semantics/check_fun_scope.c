@@ -80,7 +80,7 @@ static fun_symbol_table_entry* is_in_scope(fun_symbol_table* deepest_table, char
     DBUG_RETURN(NULL);
 }
 
-static bool valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node) {
+static void valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node) {
     DBUG_ENTER("check_parameter_count");
 
     DBUG_ASSERT((NODE_TYPE(funcall_node) == N_funcall), "valid_parameter_count called with an invalid node type!");
@@ -96,7 +96,12 @@ static bool valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funca
         param = FUNCALLPARAMETER_NEXT(param);
     }
 
-    DBUG_RETURN(count_actual == count_expected);
+    if(count_actual != count_expected) {
+        CTIerror("Invalid parameter count in function call for %s: Expected %zu but got %zu",
+                  FUNCALL_FUNCTIONNAME(funcall_node), count_expected, count_actual);
+    }
+
+    DBUG_VOID_RETURN;
 }
 
 node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
@@ -117,7 +122,7 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
     // } else {
     //     // FUNCALL
     // }
-    
+
 
     DBUG_RETURN(NULL);
 }
