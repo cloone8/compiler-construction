@@ -167,7 +167,6 @@ node* BSPfunctionbody(node* arg_node, info* arg_info) {
     DBUG_ENTER("BSPfunctionbody");
 
     FUNBODY(arg_info) = arg_node;
-    CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node);
 
     // Construct the new assignment block
     if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
@@ -178,6 +177,9 @@ node* BSPfunctionbody(node* arg_node, info* arg_info) {
 
     // Append the new assignments to the start of the statements tree
     node* new_head = ASSIGNS(arg_info);
+
+    if(new_head == NULL)
+        DBUG_RETURN(arg_node);
 
     node* new_assigns_tail = new_head;
 
