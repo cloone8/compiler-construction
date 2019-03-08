@@ -23,6 +23,7 @@
         <type name="Type" ctype="type" init="TP_void" copy="literal" />
         <type name="VarSymbolTable" ctype="symbol_table*" init="NULL" copy="literal" />
         <type name="SymbolPointer" ctype="symbol_table_entry*" init="NULL" copy="literal" />
+        <type name="FunctionPointer" ctype="fun_symbol_table_entry*" init="NULL" copy="literal" />
         <type name="FunSymbolTable" ctype="fun_symbol_table*" init="NULL" copy="literal" />
     </attributetypes>
 
@@ -471,6 +472,17 @@
                 </attribute>
                 <attribute name="FunSymbolTable">
                     <type name="FunSymbolTable">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="funpointer">
+                    <type name="FunctionPointer">
                         <targets>
                             <target mandatory="no">
                                 <phases>
@@ -1049,6 +1061,17 @@
                     <type name="String">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="funpointer">
+                    <type name="FunctionPointer">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>
