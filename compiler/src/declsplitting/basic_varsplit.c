@@ -70,15 +70,21 @@ node* BSPprogram(node* arg_node, info* arg_info) {
 
     node* init_declaration = TBmakeDeclaration(init_function, PROGRAM_FIRST(arg_node));
 
-    PROGRAM_FIRST(arg_node) = init_declaration;
+
 
     INITBODY(arg_info) = init_body;
 
+    if (PROGRAM_FIRST(arg_node) =! NULL) {
+        PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
+    }
+
+    PROGRAM_FIRST(arg_node) = init_declaration;
     DBUG_RETURN(arg_node);
 }
 
 node* BSPglobal(node* arg_node, info* arg_info) {
     DBUG_ENTER("BSPglobal");
+    printf("APPENDING");
 
     // Only split if the global is both a definition AND has an initialiser value
     if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
