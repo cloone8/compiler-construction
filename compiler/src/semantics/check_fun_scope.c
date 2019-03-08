@@ -100,23 +100,33 @@ node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
 node *CFSfuncall(node *arg_node, info *arg_info) {
     DBUG_ENTER("CFSfuncall");
 
+    char* fun_name = FUNCALL_FUNCTIONNAME(arg_node);
+
+    fun_symbol_table_entry* entry = is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), fun_name, CURRENT_SCOPE(arg_info));
+
+    // if (entry == NULL) {
+    //     CTIerror("Fun %s not in scope", fun_name);
+    // } else {
+    //     // FUNCALL
+    // }
+    
+
     DBUG_RETURN(NULL);
 }
 
 node *CFSdo(node *syntaxtree) {
     DBUG_ENTER("CFSdo");
 
-    // TRAVpush(TR_cfs);
-    // info *arg_info = STBmakeInfo();
+    TRAVpush(TR_cfs);
+    info *arg_info = CFSmakeInfo();
 
-    // symbol_table *global_var_table = symbol_table_make(NULL);
-    // PROGRAM_VARSYMBOLTABLE(syntaxtree) = global_var_table;
-    // CURRENT_SYMBOL_TABLE(arg_info) = global_var_table;
+    fun_symbol_table *global_fun_table = PROGRAM_FUNSYMBOLTABLE(syntaxtree);
+    CURRENT_SYMBOL_TABLE(arg_info) = global_fun_table;
 
-    // syntaxtree = TRAVdo(syntaxtree, arg_info);
+    syntaxtree = TRAVdo(syntaxtree, arg_info);
 
-    // STBfreeInfo(arg_info);
-    // TRAVpop();
+    CFSfreeInfo(arg_info);
+    TRAVpop();
 
     DBUG_RETURN(syntaxtree);
 }
