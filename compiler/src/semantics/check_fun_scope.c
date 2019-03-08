@@ -64,6 +64,33 @@ static info *CFSfreeInfo(info *info)
     DBUG_RETURN(info);
 }
 
+static fun_symbol_table_entry* is_in_scope(fun_symbol_table* deepest_table, char* to_find, size_t scope) {
+    DBUG_ENTER("is_in_scope");
+    symbol_table* current_table = deepest_table;
+
+    for(size_t scopes_left = scope + 1; scopes_left >= 1; scopes_left--) {
+        symbol_table_entry* result = symbol_table_get_name(current_table, to_find);
+
+        if(result != NULL) {
+            DBUG_PRINT("is_in_scope", ("Variable %s is in scope\n", to_find));
+            DBUG_RETURN(result);
+        }
+
+        DBUG_PRINT("is_in_scope", ("Variable %s not found, checking next table\n"));
+
+        current_table = symbol_table_move_up(current_table, 1);
+    }
+
+    DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope\n", to_find));
+    DBUG_RETURN(NULL);
+}
+
+static bool valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node) {
+    DBUG_ENTER("check_parameter_count");
+
+    DBUG_RETURN(FALSE);
+}
+
 node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
     DBUG_ENTER("CFSfuctiiondefinition");
 
