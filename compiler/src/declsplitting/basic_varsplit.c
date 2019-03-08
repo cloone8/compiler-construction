@@ -74,7 +74,7 @@ node* BSPprogram(node* arg_node, info* arg_info) {
 
     INITBODY(arg_info) = init_body;
 
-    if (PROGRAM_FIRST(arg_node) =! NULL) {
+    if (PROGRAM_FIRST(arg_node) != NULL) {
         PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
     }
 
