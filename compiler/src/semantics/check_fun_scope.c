@@ -80,7 +80,7 @@ static fun_symbol_table_entry* is_in_scope(fun_symbol_table* deepest_table, char
     DBUG_RETURN(NULL);
 }
 
-static void valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node) {
+static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node) {
     DBUG_ENTER("check_parameter_count");
 
     DBUG_ASSERT((NODE_TYPE(funcall_node) == N_funcall), "valid_parameter_count called with an invalid node type!");
@@ -107,7 +107,16 @@ static void valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funca
 node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
     DBUG_ENTER("CFSfuctiiondefinition");
 
-    DBUG_RETURN(NULL);
+    fun_symbol_table* old = CURRENT_SYMBOL_TABLE(arg_info);
+    CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node);
+    CURRENT_SCOPE(arg_info)++;
+
+    FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
+
+    CURRENT_SCOPE(arg_info)--;
+    CURRENT_SYMBOL_TABLE(arg_info) = old;
+
+    DBUG_RETURN(arg_node);
 }
 
 node *CFSfuncall(node *arg_node, info *arg_info) {
@@ -117,14 +126,15 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
 
     fun_symbol_table_entry* entry = is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), fun_name, CURRENT_SCOPE(arg_info));
 
-    // if (entry == NULL) {
-    //     CTIerror("Fun %s not in scope", fun_name);
-    // } else {
-    //     // FUNCALL
-    // }
+    if (entry == NULL) {
+        CTIerror("Fun %s not in scope", fun_name);
+    } else {
+        FUNCALL_FUNPOINTER(arg_node) = entry;
+    }
 
+    check_valid_parameter_count(entry, arg_node);
 
-    DBUG_RETURN(NULL);
+    DBUG_RETURN(arg_node);
 }
 
 node *CFSdo(node *syntaxtree) {
