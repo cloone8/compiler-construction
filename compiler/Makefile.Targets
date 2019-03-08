@@ -86,7 +86,8 @@ TEST_CIVCC := bin/civicc
 #
 
 
-src = global scanparse print codegen framework counters finalisation semantics util
+src = global scanparse print codegen framework counters finalisation semantics \
+      util declsplitting
 
 
 
@@ -119,3 +120,5 @@ finalisation = finalise.o strlist.o
 semantics = symbol_table.o build_symbol_table.o fun_symbol_table.o build_function_table.o check_fun_scope.o
 
 util = util.o
+
+declsplitting = basic_varsplit.o array_varsplit.o
