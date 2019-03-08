@@ -65,21 +65,22 @@ static info *BSPfreeInfo(info *info) {
 node* BSPprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("BSPprogram");
 
+    node* old_first = PROGRAM_FIRST(arg_node);
+
     node* init_body = TBmakeFunctionbody(NULL, NULL, NULL);
     node* init_definition = TBmakeFunctiondefinition(FALSE, init_body);
     node* init_function = TBmakeFunction("__init", TP_void, NULL, init_definition);
 
-    node* init_declaration = TBmakeDeclaration(init_function, PROGRAM_FIRST(arg_node));
-
-
+    node* init_declaration = TBmakeDeclaration(init_function, old_first);
 
     INITBODY(arg_info) = init_body;
 
-    if (PROGRAM_FIRST(arg_node) != NULL) {
-        PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
+    PROGRAM_FIRST(arg_node) = init_declaration;
+
+    if (DECLARATION_NEXT(old_first) != NULL) {
+        DECLARATION_NEXT(old_first) = TRAVdo(DECLARATION_NEXT(old_first), arg_info);
     }
 
-    PROGRAM_FIRST(arg_node) = init_declaration;
     DBUG_RETURN(arg_node);
 }
 
@@ -115,7 +116,7 @@ node* BSPglobal(node* arg_node, info* arg_info) {
 
         // If the initialiser function currently has no statements, make this the statement.
         if(current_final_statement == NULL) {
-            current_final_statement = new_statement;
+            FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
         } else {
             append_statement_to_tail(current_final_statement, new_statement);
         }
@@ -131,7 +132,7 @@ node* BSPbasicvardeclaration(node* arg_node, info* arg_info) {
     if(BASICVARDECLARATION_INITVAL(arg_node) != NULL) {
         node* initval = BASICVARDECLARATION_INITVAL(arg_node);
         symbol_table_entry* varentry = symbol_table_get_name(CURRENT_SYMBOL_TABLE(arg_info),
-                                                             BASICPARAMETER_NAME(arg_node));
+                                                             BASICVARDECLARATION_VARNAME(arg_node));
 
         DBUG_ASSERT((varentry != NULL), "Couldn't find symbol table entry");
 
@@ -154,11 +155,16 @@ node* BSPbasicvardeclaration(node* arg_node, info* arg_info) {
 node* BSPfunctiondefinition(node* arg_node, info* arg_info) {
     DBUG_ENTER("BSPfunctiondefinition");
 
+    symbol_table* old_table = CURRENT_SYMBOL_TABLE(arg_info);
+    DBUG_ASSERT((FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node) != NULL), "varsymboltable was NULL!");
+
     CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node);
 
     if(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) != NULL) {
         FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
     }
+
+    CURRENT_SYMBOL_TABLE(arg_info) = old_table;
 
     DBUG_RETURN(arg_node);
 }
@@ -173,13 +179,14 @@ node* BSPfunctionbody(node* arg_node, info* arg_info) {
         FUNCTIONBODY_VARDECLARATIONS(arg_node) = TRAVdo(FUNCTIONBODY_VARDECLARATIONS(arg_node), arg_info);
     }
 
-    node* current_head = FUNCTIONBODY_STATEMENTS(arg_node);
-
     // Append the new assignments to the start of the statements tree
     node* new_head = ASSIGNS(arg_info);
 
-    if(new_head == NULL)
+    if(new_head == NULL) {
         DBUG_RETURN(arg_node);
+    }
+
+    node* current_head = FUNCTIONBODY_STATEMENTS(arg_node);
 
     node* new_assigns_tail = new_head;
 
