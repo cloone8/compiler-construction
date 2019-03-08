@@ -83,7 +83,7 @@
 
             <traversal id="BSP" name="Var inits to regular assignments" default="sons" include="basic_varsplit.h">
                 <travuser>
-                    <node name = "Program" />
+                    <node name="Program" />
                     <node name="Global" />
                     <node name="BasicVarDeclaration" />
                     <node name="FunctionBody" />
