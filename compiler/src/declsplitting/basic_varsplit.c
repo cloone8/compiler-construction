@@ -3,6 +3,7 @@
 #include "types.h"
 #include "tree_basic.h"
 #include "traverse.h"
+#include "free_node.h"
 #include "dbug.h"
 
 #include "str.h"
@@ -174,6 +175,12 @@ node* BSPfunctionbody(node* arg_node, info* arg_info) {
     if(FUNCTIONBODY_LOCALFUNCTIONS(arg_node) != NULL) {
         FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(arg_node), arg_info);
     }
+
+    FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = NULL;
+    FUNCTIONBODY_STATEMENTS(arg_node) = NULL;
+    FUNCTIONBODY_VARDECLARATIONS(arg_node) = NULL;
+
+    FREEfunctionbody(arg_node, NULL);
 
     DBUG_RETURN(new_body);
 }

@@ -75,7 +75,7 @@ SUBPHASE( bsp,
 //           i2a)
 
 #ifndef DBUG_OFF
-SUBPHASE(prt_ast, "Printing transformed AST", PRTdoPrint, ALWAYS, i2a)
+SUBPHASE(prt_sp_ast, "Printing split AST", PRTdoPrint, ALWAYS, i2a)
 #endif
 
 ENDPHASE(i2a)
