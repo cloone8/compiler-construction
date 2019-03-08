@@ -58,6 +58,26 @@ ENDPHASE(sa)
 
 /******************************************************************************/
 
+PHASE(i2a,
+      "Splitting variable declarations and assignments",
+      ALWAYS)
+
+SUBPHASE( bsp,
+          "Splitting basic variables",
+          BSPdo,
+          ALWAYS,
+          i2a)
+
+SUBPHASE( asp,
+          "Splitting array variables",
+          ASPdo,
+          ALWAYS,
+          i2a)
+
+ENDPHASE(i2a)
+
+/******************************************************************************/
+
 
 PHASE(cg,
        "Generating Code",
