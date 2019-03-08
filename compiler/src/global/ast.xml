@@ -83,7 +83,7 @@
 
             <traversal id="BSP" name="Var inits to regular assignments" default="sons" include="basic_varsplit.h">
                 <travuser>
-                    <node name = "Program" />
+                    <node name="Program" />
                     <node name="Global" />
                     <node name="BasicVarDeclaration" />
                     <node name="FunctionBody" />
@@ -813,6 +813,17 @@
                     <type name="Bool">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>

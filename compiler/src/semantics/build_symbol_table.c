@@ -83,17 +83,19 @@ node *STBglobal(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBglobal");
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
+    symbol_table_entry* entrypointer;
 
     if (GLOBAL_DIMENSIONS(arg_node) != NULL) {
         type globaltype = type_to_array_type(GLOBAL_TYPE(arg_node));
-        symbol_table_add(current, GLOBAL_NAME(arg_node), globaltype);
+        entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), globaltype);
 
         GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
     } else {
-        symbol_table_add(current, GLOBAL_NAME(arg_node), GLOBAL_TYPE(arg_node));
+        entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), GLOBAL_TYPE(arg_node));
     }
 
     if (GLOBAL_DEFINITION(arg_node) != NULL) {
+        GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node)) = entrypointer;
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
     }
 

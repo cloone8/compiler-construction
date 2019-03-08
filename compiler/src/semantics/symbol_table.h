@@ -25,7 +25,7 @@ typedef struct __symbol_table symbol_table;
 
 symbol_table* symbol_table_make(symbol_table* parent, size_t table_depth);
 int symbol_table_free(symbol_table* tofree);
-int symbol_table_add(symbol_table* table, char* name, type var_type);
+symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_type);
 symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name);
 symbol_table_entry* symbol_table_get_idx(symbol_table* table, size_t idx);
 int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_name);
