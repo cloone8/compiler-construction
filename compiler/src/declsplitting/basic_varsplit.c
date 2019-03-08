@@ -85,13 +85,24 @@ node* BSPprogram(node* arg_node, info* arg_info) {
 
 node* BSPglobal(node* arg_node, info* arg_info) {
     DBUG_ENTER("BSPglobal");
-    printf("APPENDING");
+
+    switch(GLOBAL_TYPE(arg_node)) {
+        case TP_bool_array:
+        case TP_float_array:
+        case TP_int_array:
+            DBUG_PRINT("BSPglobal", ("Global has an array type, skipping"));
+            DBUG_RETURN(arg_node);
+        default:
+            break;
+    }
 
     // Only split if the global is both a definition AND has an initialiser value
     if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
         node* def = GLOBAL_DEFINITION(arg_node);
         symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
-        node* initval = GLOBALDEFINITION_VALUES(def);
+
+        node* initval = EXPRARRAY_CURRENT(GLOBALDEFINITION_VALUES(def));
+
         GLOBALDEFINITION_VALUES(def) = NULL;
 
         // Create a new variable assignment statement
