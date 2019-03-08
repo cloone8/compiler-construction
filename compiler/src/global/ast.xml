@@ -81,6 +81,21 @@
                 </travuser>
             </traversal>
 
+            <traversal id="BSP" name="Var inits to regular assignments" default="sons" include="basic_varsplit.h">
+                <travuser>
+                    <node name = "Program" />
+                    <node name="Global" />
+                    <node name="BasicVarDeclaration" />
+                    <node name="FunctionBody" />
+                </travuser>
+            </traversal>
+
+            <traversal id="ASP" name="ArrayVar inits to regular assignments" default="sons" include="array_varsplit.h">
+                <travuser>
+                </travuser>
+            </traversal>
+
+
         </general>
     </phases>
 
