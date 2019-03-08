@@ -16,7 +16,7 @@ node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
 
 }
 
-node *CFSfunctioncall(node *arg_node, info *arg_info) {
+node *CFSfuncall(node *arg_node, info *arg_info) {
 
 }
 

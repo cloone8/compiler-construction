@@ -94,7 +94,6 @@ node *FTBfunctiondefinition(node *arg_node, info *arg_info) {
 
     fun_symbol_table* old_scope = CURRENT_SYMBOL_TABLE(arg_info);
     CURRENT_SYMBOL_TABLE(arg_info) = new_scope;
-    CURRENT_SCOPE(arg_info)++;
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
