@@ -69,7 +69,8 @@ node* BSPprogram(node* arg_node, info* arg_info) {
 
     node* init_body = TBmakeFunctionbody(NULL, NULL, NULL);
     node* init_definition = TBmakeFunctiondefinition(FALSE, init_body);
-    node* init_function = TBmakeFunction("__init", TP_void, NULL, init_definition);
+    char* funname = STRcpy("__init");
+    node* init_function = TBmakeFunction(funname, TP_void, NULL, init_definition);
 
     node* init_declaration = TBmakeDeclaration(init_function, old_first);
 

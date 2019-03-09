@@ -20,6 +20,9 @@ export void primes(int n) {
     int primesPrinted = 0;
 
     bool isprime(int n) {
+        int kaka = 5;
+        int lala = 9;
+        int primesPrinted = 5;
         if(n < 2) {
             return false;
         }
