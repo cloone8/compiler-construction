@@ -58,27 +58,6 @@ static info *STBfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-static symbol_table_entry* is_in_scope(symbol_table* deepest_table, char* to_find, size_t scope) {
-    DBUG_ENTER("is_in_scope");
-    symbol_table* current_table = deepest_table;
-
-    for(size_t scopes_left = scope + 1; scopes_left > 0; scopes_left--) {
-        symbol_table_entry* result = symbol_table_get_name(current_table, to_find);
-
-        if(result != NULL) {
-            DBUG_PRINT("is_in_scope", ("Variable %s is in scope", to_find));
-            DBUG_RETURN(result);
-        }
-
-        DBUG_PRINT("is_in_scope", ("Variable %s not found, checking next table"));
-
-        current_table = symbol_table_move_up(current_table, 1);
-    }
-
-    DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope", to_find));
-    DBUG_RETURN(NULL);
-}
-
 node *STBglobal(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBglobal");
 
@@ -200,9 +179,8 @@ node *STBarrayvarassign(node *arg_node, info *arg_info) {
 
     symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
     char* name = ARRAYVARASSIGN_VARNAME(arg_node);
-    size_t scope = CURRENT_SCOPE(arg_info);
 
-    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+    symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
         CTIerror("Var %s not in scope", name);
@@ -222,9 +200,8 @@ node *STBvarassign(node *arg_node, info *arg_info) {
 
     symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
     char *name = VARASSIGN_VARNAME(arg_node);
-    size_t scope = CURRENT_SCOPE(arg_info);
 
-    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+    symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
         CTIerror("Var %s not in scope", name);
@@ -270,9 +247,8 @@ node *STBvarread(node *arg_node, info *arg_info) {
 
     symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
     char* name = VARREAD_VARNAME(arg_node);
-    size_t scope = CURRENT_SCOPE(arg_info);
 
-    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+    symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
         CTIerror("Var %s not in scope", name);
@@ -288,9 +264,8 @@ node *STBarrayvarread(node *arg_node, info *arg_info) {
 
     symbol_table *current = CURRENT_SYMBOL_TABLE(arg_info);
     char* name = ARRAYVARREAD_ARRAYVARNAME(arg_node);
-    size_t scope = CURRENT_SCOPE(arg_info);
 
-    symbol_table_entry *entry_pointer = is_in_scope(current, name, scope);
+    symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
         CTIerror("Var %s not in scope", name);

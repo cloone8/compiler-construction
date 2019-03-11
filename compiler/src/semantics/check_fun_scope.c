@@ -59,27 +59,6 @@ static info *CFSfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-static fun_symbol_table_entry* is_in_scope(fun_symbol_table* deepest_table, char* to_find, size_t scope) {
-    DBUG_ENTER("is_in_scope");
-    fun_symbol_table* current_table = deepest_table;
-
-    for(size_t scopes_left = scope + 1; scopes_left > 0; scopes_left--) {
-        fun_symbol_table_entry* result = fun_symbol_table_get_name(current_table, to_find);
-
-        if(result != NULL) {
-            DBUG_PRINT("is_in_scope", ("Function %s is in scope", to_find));
-            DBUG_RETURN(result);
-        }
-
-        DBUG_PRINT("is_in_scope", ("Function %s not found, checking next table"));
-
-        current_table = fun_symbol_table_move_up(current_table, 1);
-    }
-
-    DBUG_PRINT("is_in_scope", ("Function %s is NOT in scope", to_find));
-    DBUG_RETURN(NULL);
-}
-
 static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node) {
     DBUG_ENTER("check_parameter_count");
 
@@ -124,7 +103,7 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
 
     char* fun_name = FUNCALL_FUNCTIONNAME(arg_node);
 
-    fun_symbol_table_entry* entry = is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), fun_name, CURRENT_SCOPE(arg_info));
+    fun_symbol_table_entry* entry = fun_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), fun_name);
 
     if (entry == NULL) {
         CTIerror("Fun %s not in scope", fun_name);
