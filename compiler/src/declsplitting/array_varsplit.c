@@ -21,7 +21,7 @@ struct INFO {
     node* initbody;
     node* currentfunbody;
     symbol_table* currentsymtable;
-    node* newassignblock;
+    node* programnode;
 };
 
 /*
@@ -31,7 +31,7 @@ struct INFO {
 #define INITBODY(__arg_info_struct__) ((__arg_info_struct__)->initbody)
 #define FUNBODY(__arg_info_struct__) ((__arg_info_struct__)->currentfunbody)
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->currentsymtable)
-#define ASSIGNS(__arg_info_struct__) ((__arg_info_struct__)->newassignblock)
+#define PROGRAM_NODE(__arg_info_struct__) ((__arg_info_struct__)->programnode)
 /*
  * INFO functions
  */
@@ -47,7 +47,7 @@ static info *ASPmakeInfo(void) {
     result->initbody = NULL;
     result->currentfunbody = NULL;
     result->currentsymtable = NULL;
-    result->newassignblock = NULL;
+    result->programnode = NULL;
 
     DBUG_RETURN(result);
 }
@@ -105,6 +105,7 @@ node* ASPprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("ASPprogram");
 
     node* old_first = PROGRAM_FIRST(arg_node);
+    PROGRAM_NODE(arg_info) = arg_node;
     fun_symbol_table_entry* init_fun = fun_is_in_scope(PROGRAM_FUNSYMBOLTABLE(arg_node), "__init");
     CURRENT_SYMBOL_TABLE(arg_info) = PROGRAM_VARSYMBOLTABLE(arg_node);
 
@@ -157,11 +158,10 @@ node* ASPglobal(node* arg_node, info* arg_info) {
 
         node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
 
-        dims = TRAVdo(dims, arg_info);
-        
-        node* new_final = STATEMENTS_CURRENT(dims_decls);
-        append_declaration_to_tail(new_final, STATEMENTS_NEXT(dims_decls));
+        node* old_first = PROGRAM_FIRST(PROGRAM_NODE(arg_info));
+        append_declaration_to_tail(dims_decls, old_first);
 
+        PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = dims_decls;
     }
 
     DBUG_RETURN(arg_node);
@@ -196,41 +196,7 @@ node* ASPfunctionbody(node* arg_node, info* arg_info) {
 
     FUNBODY(arg_info) = arg_node;
 
-    // Construct the new assignment block
-    if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
-        FUNCTIONBODY_VARDECLARATIONS(arg_node) = TRAVdo(FUNCTIONBODY_VARDECLARATIONS(arg_node), arg_info);
-    }
-
-    // Append the new assignments to the start of the statements tree
-    node* new_head = ASSIGNS(arg_info);
-
-    if(new_head == NULL) {
-        DBUG_RETURN(arg_node);
-    }
-
-    node* current_head = FUNCTIONBODY_STATEMENTS(arg_node);
-
-    node* new_assigns_tail = new_head;
-
-    append_statement_to_tail(new_assigns_tail, current_head);
-
-    ASSIGNS(arg_info) = NULL;
-
-    node* new_body = TBmakeFunctionbody(FUNCTIONBODY_VARDECLARATIONS(arg_node),
-                                        FUNCTIONBODY_LOCALFUNCTIONS(arg_node),
-                                        new_head);
-
-    if(FUNCTIONBODY_LOCALFUNCTIONS(arg_node) != NULL) {
-        FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(arg_node), arg_info);
-    }
-
-    FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = NULL;
-    FUNCTIONBODY_STATEMENTS(arg_node) = NULL;
-    FUNCTIONBODY_VARDECLARATIONS(arg_node) = NULL;
-
-    FREEfunctionbody(arg_node, NULL);
-
-    DBUG_RETURN(new_body);
+    DBUG_RETURN(arg_node);
 }
 
 node *ASPdo(node *syntaxtree) {
