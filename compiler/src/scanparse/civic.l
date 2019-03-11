@@ -94,7 +94,7 @@
                             }
 
 [0-9]*\.[0-9]+              {
-                                yylval.cflt=atof(yytext);
+                                yylval.cflt = getFloatFromText(yytext, global.line, global.col);
                                 FILTER(FLOAT);
                             }
 

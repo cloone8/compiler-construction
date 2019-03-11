@@ -4,6 +4,7 @@
 #include <memory.h>
 #include <errno.h>
 #include <limits.h>
+#include <math.h>
 
 #include "types.h"
 #include "tree_basic.h"
@@ -114,4 +115,24 @@ int getIntFromText(char* text, int line, int col) {
     }
 
     return toreturn;
+}
+
+int getFloatFromText(char* text, int line, int col) {
+    float val = strtof(text, NULL);
+    if (val == 0.0 || fabsf(val) == HUGE_VALF) {
+        // Conversion error
+        if (errno == EINVAL) {
+            CTIabort("Float parsing error at line %d col %d!",  line, col);
+        }
+
+        // Out of range
+        if (errno == ERANGE) {
+            CTIabort("Float out of range at line %d col %d!",  line, col);
+        }
+    }
+    if(val < 0) {
+        CTIabort("Float out of range at line %d col %d!",  line, col);
+    }
+
+    return val;
 }
