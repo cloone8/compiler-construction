@@ -78,6 +78,8 @@ node* BSPprogram(node* arg_node, info* arg_info) {
 
     PROGRAM_FIRST(arg_node) = init_declaration;
 
+    fun_symbol_table_add(PROGRAM_FUNSYMBOLTABLE(arg_node), funname, TP_void, 0, NULL);
+
     if (DECLARATION_NEXT(old_first) != NULL) {
         DECLARATION_NEXT(old_first) = TRAVdo(DECLARATION_NEXT(old_first), arg_info);
     }
