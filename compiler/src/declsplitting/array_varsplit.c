@@ -11,6 +11,9 @@
 
 #include "util.h"
 
+// Must fit at least as many characters as the amount of numbers in a size_t
+#define BUF_SIZE (50)
+
 /*
  * INFO structure
  */
@@ -60,11 +63,50 @@ static info *ASPfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
+static node* convert_dims_to_vars(char* global_name, symbol_table* symtable, node* dimensions) {
+    DBUG_ENTER("convert_dims_to_vars");
+    DBUG_ASSERT((NODE_TYPE(dimensions) == N_exprarray), "convert_dims_to_vars called without exprarray as argument!");
+    DBUG_ASSERT((dimensions != NULL), "convert_dims_to_vars called with NULL as argument!");
+
+    node* decls = NULL;
+    node* current_dim = dimensions;
+    size_t dimcount = 0;
+
+    while(current_dim != NULL) {
+        node* dim_value = EXPRARRAY_CURRENT(current_dim);
+        node* new_definition = TBmakeGlobaldefinition(FALSE, TBmakeExprarray(NULL, dim_value));
+
+        char name_buffer[BUF_SIZE];
+        char* new_global_name = STRcatn(4, "tmp-", snprintf(name_buffer, BUF_SIZE, "%zu", dimcount++), "-", global_name);
+
+        node* new_global = TBmakeGlobal(new_global_name, TP_int, new_definition, NULL);
+        node* new_decls = TBmakeDeclaration(new_global, NULL);
+
+        if(decls == NULL) {
+            decls = new_decls;
+        } else {
+            append_declaration_to_tail(decls, new_decls);
+        }
+
+
+
+        node* new_varread = TBmakeVarread(new_global_name);
+        VARREAD_VARPOINTER(new_varread) = symbol_table_add(symtable, new_global_name, TP_int);
+        EXPRARRAY_CURRENT(current_dim) = new_varread;
+
+        current_dim = EXPRARRAY_NEXT(current_dim);
+    }
+
+    DBUG_RETURN(decls);
+}
+
+
 node* ASPprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("ASPprogram");
 
     node* old_first = PROGRAM_FIRST(arg_node);
     fun_symbol_table_entry* init_fun = fun_is_in_scope(PROGRAM_FUNSYMBOLTABLE(arg_node), "__init");
+    CURRENT_SYMBOL_TABLE(arg_info) = PROGRAM_VARSYMBOLTABLE(arg_node);
 
     DBUG_ASSERT((init_fun != NULL), "Could not find __init() function!");
 
@@ -108,23 +150,15 @@ node* ASPglobal(node* arg_node, info* arg_info) {
     DBUG_ASSERT((GLOBAL_DIMENSIONS(arg_node) != NULL), "DIMS is NULL");
 
 
-
     // Only split if the global is both a definition AND has an initialiser value
     if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
         node* dims = GLOBAL_DIMENSIONS(arg_node);
         node* def = GLOBAL_DEFINITION(arg_node);
 
-        node* dims_decls = convert_dims_to_vars(dims);
+        node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
 
         dims = TRAVdo(dims, arg_info);
     }
-
-    DBUG_RETURN(arg_node);
-}
-
-static node* convert_dims_to_vars(node* dimensions) {
-    DBUG_ENTER("convert_dims_to_vars");
-
 
     DBUG_RETURN(arg_node);
 }
