@@ -198,6 +198,18 @@ node* ASPfunctionbody(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node* ASPdeclaration(node* arg_node, info* arg_info) {
+    DBUG_ENTER("ASPdeclaration");
+
+    if(DECLARATION_NEXT(arg_node) != NULL) {
+        DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
+    }
+
+    DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
+
+    DBUG_RETURN(arg_node);
+}
+
 node *ASPdo(node *syntaxtree) {
     DBUG_ENTER("ASPdo");
 
