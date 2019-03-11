@@ -151,7 +151,7 @@ node* ASPglobal(node* arg_node, info* arg_info) {
     DBUG_ASSERT((GLOBAL_DIMENSIONS(arg_node) != NULL), "DIMS is NULL");
 
 
-    // Only split if the global is both a definition AND has an initialiser value
+    // Split the dimensions first
     if(GLOBAL_DEFINITION(arg_node) != NULL) {
         node* dims = GLOBAL_DIMENSIONS(arg_node);
         node* def = GLOBAL_DEFINITION(arg_node);
