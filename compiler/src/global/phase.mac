@@ -68,6 +68,10 @@ SUBPHASE( asp,
           ALWAYS,
           i2a)
 
+#ifndef DBUG_OFF
+SUBPHASE(prt_sp_ast1, "Printing array split AST", PRTdoPrint, ALWAYS, i2a)
+#endif
+
 SUBPHASE( bsp,
           "Splitting basic variables",
           BSPdo,
@@ -75,7 +79,7 @@ SUBPHASE( bsp,
           i2a)
 
 #ifndef DBUG_OFF
-SUBPHASE(prt_sp_ast, "Printing split AST", PRTdoPrint, ALWAYS, i2a)
+SUBPHASE(prt_sp_ast, "Printing total split AST", PRTdoPrint, ALWAYS, i2a)
 #endif
 
 ENDPHASE(i2a)

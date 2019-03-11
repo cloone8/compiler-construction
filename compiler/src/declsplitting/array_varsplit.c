@@ -11,6 +11,9 @@
 
 #include "util.h"
 
+#include "symbol_table.h"
+#include "fun_symbol_table.h"
+
 // Must fit at least as many characters as the amount of numbers in a size_t
 #define BUF_SIZE (50)
 
@@ -75,10 +78,12 @@ static node* convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
     while(current_dim != NULL) {
         node* dim_value = EXPRARRAY_CURRENT(current_dim);
         node* new_definition = TBmakeGlobaldefinition(FALSE, TBmakeExprarray(NULL, dim_value));
-
         char name_buffer[BUF_SIZE];
         snprintf(name_buffer, BUF_SIZE, "%zu", dimcount++);
         char *new_global_name = STRcatn(4, "tmp-", name_buffer, "-", global_name);
+
+        symbol_table_entry* var_entry = symbol_table_add(symtable, new_global_name, TP_int);
+        GLOBALDEFINITION_VARPOINTER(new_definition) = var_entry;
 
         node* new_global = TBmakeGlobal(new_global_name, TP_int, new_definition, NULL);
         node* new_decls = TBmakeDeclaration(new_global, NULL);
@@ -90,7 +95,7 @@ static node* convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
         }
 
         node* new_varread = TBmakeVarread(new_global_name);
-        VARREAD_VARPOINTER(new_varread) = symbol_table_add(symtable, new_global_name, TP_int);
+        VARREAD_VARPOINTER(new_varread) = var_entry;
         EXPRARRAY_CURRENT(current_dim) = new_varread;
 
         current_dim = EXPRARRAY_NEXT(current_dim);
@@ -105,30 +110,25 @@ node* ASPprogram(node* arg_node, info* arg_info) {
 
     node* old_first = PROGRAM_FIRST(arg_node);
     PROGRAM_NODE(arg_info) = arg_node;
-    fun_symbol_table_entry* init_fun = fun_is_in_scope(PROGRAM_FUNSYMBOLTABLE(arg_node), "__init");
     CURRENT_SYMBOL_TABLE(arg_info) = PROGRAM_VARSYMBOLTABLE(arg_node);
 
-    DBUG_ASSERT((init_fun != NULL), "Could not find __init() function!");
+    node* init_body = TBmakeFunctionbody(NULL, NULL, NULL);
+    node* init_definition = TBmakeFunctiondefinition(FALSE, init_body);
+    FUNCTIONDEFINITION_FUNSYMBOLTABLE(init_definition) = fun_symbol_table_make(PROGRAM_FUNSYMBOLTABLE(arg_node), 1);
+    FUNCTIONDEFINITION_VARSYMBOLTABLE(init_definition) = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), 1);
+    char* funname = STRcpy("__init");
+    node* init_function = TBmakeFunction(funname, TP_void, NULL, init_definition);
 
-    // Go through all declarations, and find the __init() declaration.
-    // We do this to find its function body.
+    node* init_declaration = TBmakeDeclaration(init_function, old_first);
 
-    node* current_decl = old_first;
-    while(current_decl != NULL) {
-        if(NODE_TYPE(DECLARATION_CURRENT(current_decl)) == N_function) {
-            node* function_n = DECLARATION_CURRENT(current_decl);
-            if(STReq("__init", FUNCTION_NAME(function_n))) {
-                INITBODY(arg_info) = FUNCTIONDEFINITION_FUNCTIONBODY(FUNCTION_DEFINITION(function_n));
-            }
-        }
+    INITBODY(arg_info) = init_body;
 
-        current_decl = DECLARATION_NEXT(current_decl);
-    }
+    PROGRAM_FIRST(arg_node) = init_declaration;
 
-    DBUG_ASSERT((INITBODY(arg_info) != NULL), "__init() function body was not found!");
+    fun_symbol_table_add(PROGRAM_FUNSYMBOLTABLE(arg_node), funname, TP_void, 0, NULL);
 
-    if (DECLARATION_NEXT(old_first) != NULL) {
-        DECLARATION_NEXT(old_first) = TRAVdo(DECLARATION_NEXT(old_first), arg_info);
+    if (DECLARATION_NEXT(init_declaration) != NULL) {
+        DECLARATION_NEXT(init_declaration) = TRAVdo(DECLARATION_NEXT(init_declaration), arg_info);
     }
 
     DBUG_RETURN(arg_node);

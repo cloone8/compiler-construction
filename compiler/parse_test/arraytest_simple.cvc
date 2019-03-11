@@ -1,4 +1,6 @@
+int test1 = 1;
 int[2, 3] a;
 int[2, 2] b = [[1, 2], [3, 4]];
 int[6, 7] c;
 int[8, 9] d;
+int test2 = 5;
