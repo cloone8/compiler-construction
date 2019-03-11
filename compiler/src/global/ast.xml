@@ -86,8 +86,10 @@
                     <node name="Program" />
                     <node name="Global" />
                     <node name="BasicVarDeclaration" />
+                    <node name="ArrayVarDeclaration" />
                     <node name="FunctionDefinition" />
                     <node name="FunctionBody" />
+                    <node name="Declaration" />
                 </travuser>
             </traversal>
 

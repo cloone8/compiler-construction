@@ -3,6 +3,7 @@
 #include "types.h"
 
 #define IS_UNUSED(x) ((void) x)
+#define STR_BUF_SIZE (50)
 
 type type_to_array_type(type current);
 void append_statement_to_tail(node* block_to_append_to, node* statement_to_append);
