@@ -437,9 +437,35 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
 
     // Do dimensions first
     node* dims = ARRAYVARDECLARATION_DIMENSIONS(arg_node);
+    size_t dimension_count = count_dims(dims);
+
     fun_convert_dims_to_vars(ARRAYVARDECLARATION_VARNAME(arg_node), dims, arg_info);
+    symbol_table_entry* varentry = symbol_table_get_name(CURRENT_SYMBOL_TABLE(arg_info), ARRAYVARDECLARATION_VARNAME(arg_node));
+
+    DBUG_ASSERT((varentry != NULL), "Could not find arrayvardeclaration in symbol table!");
 
     // Now the the initial value
+    if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
+        node* initval = ARRAYVARDECLARATION_INITVAL(arg_node);
+
+        if(!(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL))) {
+            // List of values given
+
+            size_t indices[dimension_count];
+
+            for(size_t i = 0; i < dimension_count; i++) {
+                indices[i] = 0;
+            }
+
+            node* new_statements = exprarray_to_inits(ARRAYVARDECLARATION_VARNAME(arg_node), varentry, dimension_count, 0, indices, initval);
+
+            if(new_statements != NULL) {
+                append_statement_to_tail(ASSIGNS(arg_info), new_statements);
+            }
+        } else {
+            // Single value given
+        }
+    }
 
     DBUG_RETURN(arg_node);
 }

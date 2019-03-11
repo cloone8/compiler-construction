@@ -623,10 +623,12 @@ node* PRTfunctiondefinition (node * arg_node, info * arg_info) {
 
     if (FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node) != NULL) {
         print_fun_symbol_table(FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node));
+        putchar('\n');
     }
 
     if (FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node) != NULL) {
         print_symbol_table(FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node));
+        putchar('\n');
     }
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
@@ -1283,10 +1285,12 @@ node* PRTprogram(node * arg_node, info * arg_info) {
 
     if (PROGRAM_FUNSYMBOLTABLE(arg_node) != NULL) {
         print_fun_symbol_table(PROGRAM_FUNSYMBOLTABLE(arg_node));
+        putchar('\n');
     }
 
     if (PROGRAM_VARSYMBOLTABLE(arg_node) != NULL) {
         print_symbol_table(PROGRAM_VARSYMBOLTABLE(arg_node));
+        putchar('\n');
     }
 
     PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
