@@ -62,15 +62,15 @@ PHASE(i2a,
       "Splitting variable declarations and assignments",
       ALWAYS)
 
-SUBPHASE( bsp,
-          "Splitting basic variables",
-          BSPdo,
-          ALWAYS,
-          i2a)
-
 SUBPHASE( asp,
           "Splitting array variables",
           ASPdo,
+          ALWAYS,
+          i2a)
+
+SUBPHASE( bsp,
+          "Splitting basic variables",
+          BSPdo,
           ALWAYS,
           i2a)
 
