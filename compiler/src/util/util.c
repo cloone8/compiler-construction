@@ -43,8 +43,7 @@ void append_declaration_to_tail(node *current_final_declaration, node *new_final
     DBUG_ASSERT((NODE_TYPE(current_final_declaration) == N_declaration), "append_declaration_to_tail called with current_final_declaration not being a declaration type node");
     DBUG_ASSERT((NODE_TYPE(new_final_declaration) == N_declaration), "append_declaration_to_tail called with new_final_declaration not being a declaration type node");
 
-    while (DECLARATION_NEXT(current_final_declaration) != NULL)
-    {
+    while (DECLARATION_NEXT(current_final_declaration) != NULL) {
         current_final_declaration = DECLARATION_NEXT(current_final_declaration);
     }
     // End found, link the new node to the end

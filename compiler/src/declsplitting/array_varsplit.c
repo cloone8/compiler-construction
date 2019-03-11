@@ -118,8 +118,8 @@ node* ASPglobal(node* arg_node, info* arg_info) {
 
         dims = TRAVdo(dims, arg_info);
         
-        // node* new_final = STATEMENTS_CURRENT(dims_decls);
-        // append_statement_to_tail(new_final, STATEMENTS_NEXT(dims_decls));
+        node* new_final = STATEMENTS_CURRENT(dims_decls);
+        append_declaration_to_tail(new_final, STATEMENTS_NEXT(dims_decls));
 
     }
 
