@@ -158,6 +158,10 @@ node* ASPglobal(node* arg_node, info* arg_info) {
         node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
 
         dims = TRAVdo(dims, arg_info);
+        
+        node* new_final = STATEMENTS_CURRENT(dims_decls);
+        append_declaration_to_tail(new_final, STATEMENTS_NEXT(dims_decls));
+
     }
 
     DBUG_RETURN(arg_node);
