@@ -2,6 +2,7 @@
 #include "dbug.h"
 #include "tree_basic.h"
 #include "util.h"
+#include "fun_symbol_table.h"
 
 type type_to_array_type(type current) {
     DBUG_ENTER("type_to_array_type");
@@ -33,4 +34,46 @@ void append_statement_to_tail(node* current_final_statement, node* new_final_sta
     STATEMENTS_NEXT(current_final_statement) = new_final_statement;
 
     DBUG_VOID_RETURN;
+}
+
+fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find) {
+    DBUG_ENTER("fun_is_in_scope");
+    fun_symbol_table* current_table = deepest_table;
+
+    while(current_table != NULL) {
+        fun_symbol_table_entry* result = fun_symbol_table_get_name(current_table, to_find);
+
+        if(result != NULL) {
+            DBUG_PRINT("fun_is_in_scope", ("Function %s is in scope", to_find));
+            DBUG_RETURN(result);
+        }
+
+        DBUG_PRINT("fun_is_in_scope", ("Function %s not found, checking next table"));
+
+        current_table = fun_symbol_table_move_up(current_table, 1);
+    }
+
+    DBUG_PRINT("fun_is_in_scope", ("Function %s is NOT in scope", to_find));
+    DBUG_RETURN(NULL);
+}
+
+symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find) {
+    DBUG_ENTER("var_is_in_scope");
+    symbol_table* current_table = deepest_table;
+
+    while(current_table != NULL) {
+        symbol_table_entry* result = symbol_table_get_name(current_table, to_find);
+
+        if(result != NULL) {
+            DBUG_PRINT("var_is_in_scope", ("Variable %s is in scope", to_find));
+            DBUG_RETURN(result);
+        }
+
+        DBUG_PRINT("var_is_in_scope", ("Variable %s not found, checking next table"));
+
+        current_table = symbol_table_move_up(current_table, 1);
+    }
+
+    DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope", to_find));
+    DBUG_RETURN(NULL);
 }
