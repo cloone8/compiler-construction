@@ -95,43 +95,50 @@ int getIntFromText(char* text, int line, int col) {
     if (val == 0) {
         // Conversion error
         if (errno == EINVAL) {
-            CTIabort("Integer parsing error at line %d col %d!",  line, col);
+            CTIerror("Integer parsing error at line %d col %d!",  line, col);
+            return 0;
         }
 
         // Out of range
         if (errno == ERANGE) {
-            CTIabort("Integer out of range at line %d col %d!",  line, col);
+            CTIerror("Integer out of range at line %d col %d!",  line, col);
+            return 0;
         }
     }
 
     if(val < INT_MIN || val > INT_MAX) {
-        CTIabort("Integer out of range at line %d col %d!",  line, col);
+        CTIerror("Integer out of range at line %d col %d!",  line, col);
+        return 0;
     }
 
     int toreturn = (int) val;
 
     if(toreturn < 0) {
-        CTIabort("Integer out of range at line %d col %d!",  line, col);
+        CTIerror("Integer out of range at line %d col %d!",  line, col);
+        return 0;
     }
 
     return toreturn;
 }
 
-int getFloatFromText(char* text, int line, int col) {
+float getFloatFromText(char* text, int line, int col) {
     float val = strtof(text, NULL);
     if (val == 0.0 || fabsf(val) == HUGE_VALF) {
         // Conversion error
         if (errno == EINVAL) {
-            CTIabort("Float parsing error at line %d col %d!",  line, col);
+            CTIerror("Float parsing error at line %d col %d!",  line, col);
+            return 0.0f;
         }
 
         // Out of range
         if (errno == ERANGE) {
-            CTIabort("Float out of range at line %d col %d!",  line, col);
+            CTIerror("Float out of range at line %d col %d!",  line, col);
+            return 0.0f;
         }
     }
     if(val < 0) {
-        CTIabort("Float out of range at line %d col %d!",  line, col);
+        CTIerror("Float out of range at line %d col %d!",  line, col);
+        return 0.0f;
     }
 
     return val;
