@@ -66,27 +66,19 @@ node* BSPprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("BSPprogram");
 
     node* old_first = PROGRAM_FIRST(arg_node);
-    fun_symbol_table_entry* init_fun = fun_is_in_scope(PROGRAM_FUNSYMBOLTABLE(arg_node), "__init");
-    CURRENT_SYMBOL_TABLE(arg_info) = PROGRAM_VARSYMBOLTABLE(arg_node);
 
-    DBUG_ASSERT((init_fun != NULL), "Could not find __init() function!");
+    node* init_body = TBmakeFunctionbody(NULL, NULL, NULL);
+    node* init_definition = TBmakeFunctiondefinition(FALSE, init_body);
+    char* funname = STRcpy("__init");
+    node* init_function = TBmakeFunction(funname, TP_void, NULL, init_definition);
 
-    // Go through all declarations, and find the __init() declaration.
-    // We do this to find its function body.
+    node* init_declaration = TBmakeDeclaration(init_function, old_first);
 
-    node* current_decl = old_first;
-    while(current_decl != NULL) {
-        if(NODE_TYPE(DECLARATION_CURRENT(current_decl)) == N_function) {
-            node* function_n = DECLARATION_CURRENT(current_decl);
-            if(STReq("__init", FUNCTION_NAME(function_n))) {
-                INITBODY(arg_info) = FUNCTIONDEFINITION_FUNCTIONBODY(FUNCTION_DEFINITION(function_n));
-            }
-        }
+    INITBODY(arg_info) = init_body;
 
-        current_decl = DECLARATION_NEXT(current_decl);
-    }
+    PROGRAM_FIRST(arg_node) = init_declaration;
 
-    DBUG_ASSERT((INITBODY(arg_info) != NULL), "__init() function body was not found!");
+    fun_symbol_table_add(PROGRAM_FUNSYMBOLTABLE(arg_node), funname, TP_void, 0, NULL);
 
     if (DECLARATION_NEXT(old_first) != NULL) {
         DECLARATION_NEXT(old_first) = TRAVdo(DECLARATION_NEXT(old_first), arg_info);
