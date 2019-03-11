@@ -87,10 +87,10 @@ node* ASPglobal(node* arg_node, info* arg_info) {
     DBUG_ENTER("ASPglobal");
 
     switch(GLOBAL_TYPE(arg_node)) {
-        case TP_bool_array:
-        case TP_float_array:
-        case TP_int_array:
-            DBUG_PRINT("ASPglobal", ("Global has an array type, skipping"));
+        case TP_bool:
+        case TP_float:
+        case TP_int:
+            DBUG_PRINT("ASPglobal", ("Global has no array type, skipping"));
             DBUG_RETURN(arg_node);
         default:
             break;

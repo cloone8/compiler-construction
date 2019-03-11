@@ -1,4 +1,8 @@
+#include "civic.h"
+
 int twos = 0;
+
+int[1] a = [1,2,3];
 
 int two() {
     twos = twos + 1;
