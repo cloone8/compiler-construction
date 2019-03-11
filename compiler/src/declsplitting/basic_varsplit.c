@@ -192,18 +192,21 @@ node* BSPfunctionbody(node* arg_node, info* arg_info) {
 
     // Append the new assignments to the start of the statements tree
     node* new_head = ASSIGNS(arg_info);
+    ASSIGNS(arg_info) = NULL;
 
     if(new_head == NULL) {
         DBUG_RETURN(arg_node);
     }
 
-    node* current_head = FUNCTIONBODY_STATEMENTS(arg_node);
+    if(FUNCTIONBODY_STATEMENTS(arg_node) != NULL) {
+        node* current_head = FUNCTIONBODY_STATEMENTS(arg_node);
 
-    node* new_assigns_tail = new_head;
+        node* new_assigns_tail = new_head;
 
-    append_statement_to_tail(new_assigns_tail, current_head);
+        append_statement_to_tail(new_assigns_tail, current_head);
 
-    ASSIGNS(arg_info) = NULL;
+        ASSIGNS(arg_info) = NULL;
+    }
 
     node* new_body = TBmakeFunctionbody(FUNCTIONBODY_VARDECLARATIONS(arg_node),
                                         FUNCTIONBODY_LOCALFUNCTIONS(arg_node),
