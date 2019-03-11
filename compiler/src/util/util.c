@@ -20,6 +20,22 @@ type type_to_array_type(type current) {
     }
 }
 
+type array_type_to_type(type current) {
+    DBUG_ENTER("array_type_to_type");
+    DBUG_ASSERT((current != TP_void && current != TP_unknown), "Invalid type given");
+
+    switch(current) {
+        case TP_bool_array:
+            DBUG_RETURN(TP_bool);
+        case TP_int_array:
+            DBUG_RETURN(TP_int);
+        case TP_float_array:
+            DBUG_RETURN(TP_float);
+        default:
+            DBUG_RETURN(current);
+    }
+}
+
 void append_statement_to_tail(node* block_to_append_to, node* new_final_statement) {
     DBUG_ENTER("append_statement_to_tail");
 

@@ -90,6 +90,7 @@
                     <node name="FunctionDefinition" />
                     <node name="FunctionBody" />
                     <node name="Declaration" />
+                    <node name="For" />
                 </travuser>
             </traversal>
         </general>

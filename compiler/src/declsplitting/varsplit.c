@@ -211,12 +211,6 @@ static node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
     DBUG_RETURN(toreturn);
 }
 
-static node* single_init_statements() {
-    DBUG_ENTER("single_init_statements");
-    node* toreturn = NULL;
-    DBUG_RETURN(toreturn);
-}
-
 node* VSPprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("VSPprogram");
 
@@ -294,12 +288,9 @@ static node* global_array(node* arg_node, info* arg_info) {
 
             node* initval = GLOBALDEFINITION_VALUES(def);
 
-            GLOBALDEFINITION_VALUES(def) = NULL;
-
-
-            if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL)) {
-                node* new_statements = single_init_statements();
-            } else {
+            if(!(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL))) {
+                // List of values given
+                GLOBALDEFINITION_VALUES(def) = NULL;
                 size_t indices[dimension_count];
 
                 for(size_t i = 0; i < dimension_count; i++) {
@@ -447,6 +438,22 @@ node* VSPdeclaration(node* arg_node, info* arg_info) {
     }
 
     DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
+
+    DBUG_RETURN(arg_node);
+}
+
+node* VSPfor(node* arg_node, info* arg_info) {
+    DBUG_ENTER("VSPfor");
+
+    if(FOR_CODE(arg_node) != NULL) {
+        FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
+    }
+
+    if(FOR_CONDITION(arg_node) != NULL) {
+        FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
+    }
+
+    // Purposefully skip for counter
 
     DBUG_RETURN(arg_node);
 }
