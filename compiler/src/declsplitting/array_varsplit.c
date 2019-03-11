@@ -114,7 +114,7 @@ node* ASPglobal(node* arg_node, info* arg_info) {
         node* dims = GLOBAL_DIMENSIONS(arg_node);
         node* def = GLOBAL_DEFINITION(arg_node);
 
-        node* dims_decls = convert_dims_to_vars(dims, arg_info);
+        node* dims_decls = convert_dims_to_vars(dims);
 
         dims = TRAVdo(dims, arg_info);
     }
@@ -122,7 +122,7 @@ node* ASPglobal(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-static node* convert_dims_to_vars(node* dimensions, info* arg_info) {
+static node* convert_dims_to_vars(node* dimensions) {
     DBUG_ENTER("convert_dims_to_vars");
 
 
