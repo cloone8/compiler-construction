@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <memory.h>
+#include <errno.h>
+#include <limits.h>
 
 #include "types.h"
 #include "tree_basic.h"
@@ -85,4 +87,31 @@ node* funcallExprsToParams(node *exprarray) {
     }
 
     return params_head;
+}
+
+int getIntFromText(char* text, int line, int col) {
+    long val = strtol(text, NULL, 10);
+    if (val == 0) {
+        // Conversion error
+        if (errno == EINVAL) {
+            CTIabort("Integer parsing error at line %d col %d!",  line, col);
+        }
+
+        // Out of range
+        if (errno == ERANGE) {
+            CTIabort("Integer out of range at line %d col %d!",  line, col);
+        }
+    }
+
+    if(val < INT_MIN || val > INT_MAX) {
+        CTIabort("Integer out of range at line %d col %d!",  line, col);
+    }
+
+    int toreturn = (int) val;
+
+    if(toreturn < 0) {
+        CTIabort("Integer out of range at line %d col %d!",  line, col);
+    }
+
+    return toreturn;
 }
