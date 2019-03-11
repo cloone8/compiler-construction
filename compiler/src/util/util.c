@@ -20,13 +20,14 @@ type type_to_array_type(type current) {
     }
 }
 
-void append_statement_to_tail(node* current_final_statement, node* new_final_statement) {
+void append_statement_to_tail(node* block_to_append_to, node* new_final_statement) {
     DBUG_ENTER("append_statement_to_tail");
 
-    DBUG_ASSERT((current_final_statement != NULL), "append_statement_to_tail called with NULL current final statement");
-    DBUG_ASSERT((NODE_TYPE(current_final_statement) == N_statements), "append_statement_to_tail called with current_final_statement not being a statement type node");
+    DBUG_ASSERT((block_to_append_to != NULL), "append_statement_to_tail called with NULL current final statement");
+    DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_statements), "append_statement_to_tail called with block_to_append_to not being a statement type node");
     DBUG_ASSERT((NODE_TYPE(new_final_statement) == N_statements), "append_statement_to_tail called with new_final_statement not being a statement type node");
 
+    node* current_final_statement = block_to_append_to;
     while(STATEMENTS_NEXT(current_final_statement) != NULL) {
         current_final_statement = STATEMENTS_NEXT(current_final_statement);
     }
@@ -36,13 +37,14 @@ void append_statement_to_tail(node* current_final_statement, node* new_final_sta
     DBUG_VOID_RETURN;
 }
 
-void append_declaration_to_tail(node *current_final_declaration, node *new_final_declaration) {
+void append_declaration_to_tail(node *block_to_append_to, node *new_final_declaration) {
     DBUG_ENTER("append_declaration_to_tail");
 
-    DBUG_ASSERT((current_final_declaration != NULL), "append_declaration_to_tail called with NULL current final declaration");
-    DBUG_ASSERT((NODE_TYPE(current_final_declaration) == N_declaration), "append_declaration_to_tail called with current_final_declaration not being a declaration type node");
+    DBUG_ASSERT((block_to_append_to != NULL), "append_declaration_to_tail called with NULL current final declaration");
+    DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_declaration), "append_declaration_to_tail called with block_to_append_to not being a declaration type node");
     DBUG_ASSERT((NODE_TYPE(new_final_declaration) == N_declaration), "append_declaration_to_tail called with new_final_declaration not being a declaration type node");
 
+    node* current_final_declaration = block_to_append_to;
     while (DECLARATION_NEXT(current_final_declaration) != NULL) {
         current_final_declaration = DECLARATION_NEXT(current_final_declaration);
     }
