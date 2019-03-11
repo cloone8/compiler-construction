@@ -162,12 +162,19 @@ static node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
 
         if(current_nesting_level == init_nesting_level) {
             DBUG_PRINT("exprarray_to_inits", ("Max nesting level of %zu reached, filling", current_nesting_level + 1));
-
             // We have arrived at the deepest nesting level. Time to actually create the statement.
-            DBUG_ASSERT((NODE_TYPE(current_expr) == N_exprarray), "Something went wrong during recursion at exprarray_to_inits");
+            if(NODE_TYPE(current_expr) != N_exprarray) {
+                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level - 1);
+                DBUG_RETURN(NULL);
+            }
 
             node* value = EXPRARRAY_CURRENT(current_expr);
-            DBUG_ASSERT((NODE_TYPE(value) == N_expr), "Expected expr, got something else!");
+
+            if(NODE_TYPE(value) == N_exprarray) {
+                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level + 1);
+                DBUG_RETURN(NULL);
+            }
+
             EXPRARRAY_CURRENT(current_expr) = NULL;
             node* new_varassign = TBmakeArrayvarassign(STRcpy(varname), indices_to_positions(init_nesting_level, indices), value);
             ARRAYVARASSIGN_VARPOINTER(new_varassign) = varentry;
@@ -182,6 +189,9 @@ static node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
             DBUG_PRINT("exprarray_to_inits", ("Now at nesting level of %zu", current_nesting_level + 1));
             // If the nesting level is not 1, this means that we have to traverse deeper into the expression array
             node* new_inits = exprarray_to_inits(varname, varentry, init_nesting_level, current_nesting_level + 1, indices, EXPRARRAY_CURRENT(current_expr));
+            if(new_inits == NULL) {
+                DBUG_RETURN(NULL);
+            }
 
             if(toreturn == NULL) {
                 toreturn = new_inits;
@@ -292,7 +302,9 @@ static node* global_array(node* arg_node, info* arg_info) {
             }
 
             node* new_statements = exprarray_to_inits(GLOBAL_NAME(arg_node), varentry, dimension_count, 0, indices, initval);
-            prepend_to_initialiser(new_statements, arg_info);
+            if(new_statements != NULL) {
+                prepend_to_initialiser(new_statements, arg_info);
+            }
         }
     }
 
