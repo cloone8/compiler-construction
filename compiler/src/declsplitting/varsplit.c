@@ -7,6 +7,7 @@
 #include "dbug.h"
 
 #include "str.h"
+#include "ctinfo.h"
 #include "memory.h"
 
 #include "symbol_table.h"
@@ -65,6 +66,45 @@ static info *VSPfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
+static void append_to_initialiser(node* new_statement, info* arg_info) {
+    node* current_final_statement = FUNCTIONBODY_STATEMENTS(INITBODY(arg_info));
+
+    // If the initialiser function currently has no statements, make this the statement.
+    if(current_final_statement == NULL) {
+        FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
+    } else {
+        append_statement_to_tail(current_final_statement, new_statement);
+    }
+}
+
+static void prepend_to_initialiser(node* new_statement, info* arg_info) {
+    node* current_final_statement = FUNCTIONBODY_STATEMENTS(INITBODY(arg_info));
+
+    // If the initialiser function currently has no statements, make this the statement.
+    if(current_final_statement == NULL) {
+        FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
+    } else {
+        append_statement_to_tail(new_statement, current_final_statement);
+        FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
+    }
+}
+
+static size_t count_dims(node* dimensions) {
+    DBUG_ENTER("count_dims");
+    DBUG_ASSERT((NODE_TYPE(dimensions) == N_exprarray), "count_dims called without exprarray as argument!");
+    DBUG_ASSERT((dimensions != NULL), "count_dims called with NULL as argument!");
+    size_t count = 0;
+
+    node* current_dim = dimensions;
+
+    while(current_dim != NULL) {
+        count++;
+        current_dim = EXPRARRAY_NEXT(current_dim);
+    }
+
+    DBUG_RETURN(count);
+}
+
 static node* convert_dims_to_vars(char* global_name, symbol_table* symtable, node* dimensions) {
     DBUG_ENTER("convert_dims_to_vars");
     DBUG_ASSERT((NODE_TYPE(dimensions) == N_exprarray), "convert_dims_to_vars called without exprarray as argument!");
@@ -101,6 +141,75 @@ static node* convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
     }
 
     DBUG_RETURN(decls);
+}
+
+static node* indices_to_positions(size_t index_amount, size_t *indices) {
+    DBUG_ENTER("indices_to_positions");
+    DBUG_PRINT("indices_to_positions", ("Converting %zu indices to nodes", index_amount));
+    node* head = NULL;
+
+    for(size_t i = index_amount; i > 0; i--) {
+        head = TBmakeExprarray(head, TBmakeExpr(TBmakeConstant(TBmakeIntconst(indices[i - 1]))));
+    }
+
+    DBUG_RETURN(head);
+}
+
+static node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
+                                size_t init_nesting_level, size_t current_nesting_level,
+                                size_t* indices, node* exprs) {
+    DBUG_ENTER("exprarray_to_inits");
+    DBUG_PRINT("exprarray_to_inits", ("Arrived at nesting level %zu of %zu", current_nesting_level + 1, init_nesting_level));
+    node* toreturn = NULL;
+
+    node* current_expr = exprs;
+    size_t current_index = 0;
+
+    while(current_expr != NULL) {
+        // Reset the indices
+        for(size_t i = current_nesting_level - 1; i < init_nesting_level; i++) {
+            indices[i] = current_index;
+        }
+
+        if(current_nesting_level == init_nesting_level) {
+            DBUG_PRINT("exprarray_to_inits", ("Max nesting level of %zu reached, filling", current_nesting_level + 1));
+
+            // We have arrived at the deepest nesting level. Time to actually create the statement.
+            DBUG_ASSERT((NODE_TYPE(current_expr) == N_exprarray), "Something went wrong during recursion at exprarray_to_inits");
+
+            node* value = EXPRARRAY_CURRENT(current_expr);
+            DBUG_ASSERT((NODE_TYPE(value) == N_expr), "Expected expr, got something else!");
+            EXPRARRAY_CURRENT(current_expr) = NULL;
+            node* new_varassign = TBmakeArrayvarassign(STRcpy(varname), indices_to_positions(init_nesting_level, indices), value);
+            ARRAYVARASSIGN_VARPOINTER(new_varassign) = varentry;
+            node* statement = TBmakeStatements(new_varassign, NULL);
+
+            if(toreturn == NULL) {
+                toreturn = statement;
+            } else {
+                append_statement_to_tail(toreturn, statement);
+            }
+        } else {
+            DBUG_PRINT("exprarray_to_inits", ("Now at nesting level of %zu", current_nesting_level + 1));
+            // If the nesting level is not 1, this means that we have to traverse deeper into the expression array
+            node* new_inits = exprarray_to_inits(varname, varentry, init_nesting_level, current_nesting_level + 1, indices, EXPRARRAY_CURRENT(current_expr));
+
+            if(toreturn == NULL) {
+                toreturn = new_inits;
+            } else {
+                append_statement_to_tail(toreturn, new_inits);
+            }
+        }
+
+        current_index++;
+        node* tmp = current_expr;
+        current_expr = EXPRARRAY_NEXT(current_expr);
+        EXPRARRAY_NEXT(tmp) = NULL;
+        EXPRARRAY_CURRENT(tmp) = NULL;
+        FREEexprarray(tmp, NULL);
+    }
+
+    DBUG_RETURN(toreturn);
 }
 
 node* VSPprogram(node* arg_node, info* arg_info) {
@@ -150,17 +259,10 @@ static node* global_basic(node* arg_node, info* arg_info) {
         VARASSIGN_VARPOINTER(new_assign) = varentry;
         node* new_statement = TBmakeStatements(new_assign, NULL);
 
-
-        node* current_final_statement = FUNCTIONBODY_STATEMENTS(INITBODY(arg_info));
-
-        // If the initialiser function currently has no statements, make this the statement.
-        if(current_final_statement == NULL) {
-            FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
-        } else {
-            append_statement_to_tail(current_final_statement, new_statement);
-        }
+        prepend_to_initialiser(new_statement, arg_info);
     }
 
+    DBUG_PRINT("global_basic", ("Done processing %s", GLOBAL_NAME(arg_node)));
     DBUG_RETURN(arg_node);
 }
 
@@ -170,22 +272,48 @@ static node* global_array(node* arg_node, info* arg_info) {
     DBUG_ASSERT((GLOBAL_DIMENSIONS(arg_node) != NULL), "DIMS is NULL");
 
     // Split the dimensions first
-    if(GLOBAL_DEFINITION(arg_node) != NULL) {
-        node* dims = GLOBAL_DIMENSIONS(arg_node);
+    node* dims = GLOBAL_DIMENSIONS(arg_node);
 
-        node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
+    size_t dimension_count = count_dims(dims);
 
-        node* old_first = PROGRAM_FIRST(PROGRAM_NODE(arg_info));
-        append_declaration_to_tail(dims_decls, old_first);
+    node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
 
-        PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = dims_decls;
+    node* old_first = PROGRAM_FIRST(PROGRAM_NODE(arg_info));
+    append_declaration_to_tail(dims_decls, old_first);
+
+    PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = dims_decls;
+
+    // Now split the initial value
+    if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
+        node* def = GLOBAL_DEFINITION(arg_node);
+        symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
+
+        node* initval = GLOBALDEFINITION_VALUES(def);
+
+        GLOBALDEFINITION_VALUES(def) = NULL;
+
+
+        if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL)) {
+            // Singular value given
+        } else {
+            size_t indices[dimension_count];
+
+            for(size_t i = 0; i < dimension_count; i++) {
+                indices[i] = 0;
+            }
+
+            node* new_statements = exprarray_to_inits(GLOBAL_NAME(arg_node), varentry, dimension_count, 0, indices, initval);
+            prepend_to_initialiser(new_statements, arg_info);
+        }
     }
 
+    DBUG_PRINT("global_array", ("Done processing %s", GLOBAL_NAME(arg_node)));
     DBUG_RETURN(arg_node);
 }
 
 node* VSPglobal(node* arg_node, info* arg_info) {
     DBUG_ENTER("VSPglobal");
+    DBUG_PRINT("VSPglobal", ("Processing global %s", GLOBAL_NAME(arg_node)));
 
     switch(GLOBAL_TYPE(arg_node)) {
         case TP_bool:
