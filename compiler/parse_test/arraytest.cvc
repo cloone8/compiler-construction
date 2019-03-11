@@ -1,16 +1,13 @@
-#include "civic.h"
-
 int twos = 0;
 
 int[1] a = [1,2,3];
 
 int two() {
+    int b = 6;
     twos = twos + 1;
     return 2;
 }
 
 void foo () {
     int [2 , two()] a = two ();
-    printInt(twos);
-    printInt(a [1 , 1]);
 }

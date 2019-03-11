@@ -772,11 +772,29 @@ node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTarrayvardeclaration");
     PRINT_INDENTS(arg_info);
 
-    printf("%s[", ARRAYVARDECLARATION_VARNAME(arg_node));
+    char* type = "";
+
+    switch(ARRAYVARDECLARATION_TYPE(arg_node)) {
+        case TP_bool:
+        case TP_bool_array:
+            type = "bool";
+            break;
+        case TP_float:
+        case TP_float_array:
+            type = "float";
+            break;
+        case TP_int_array:
+            type = "int";
+            break;
+        default:
+            type = "INVALID_ARRAYVARDEC_TYPE";
+    }
+
+    printf("%s [", type);
 
     ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
 
-    putchar(']');
+    printf("] %s", ARRAYVARDECLARATION_VARNAME(arg_node));
 
 
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
@@ -1270,7 +1288,7 @@ node* PRTprogram(node * arg_node, info * arg_info) {
     if (PROGRAM_VARSYMBOLTABLE(arg_node) != NULL) {
         print_symbol_table(PROGRAM_VARSYMBOLTABLE(arg_node));
     }
-    
+
     PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);
