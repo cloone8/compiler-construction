@@ -121,4 +121,4 @@ semantics = symbol_table.o build_symbol_table.o fun_symbol_table.o build_functio
 
 util = util.o
 
-declsplitting = basic_varsplit.o array_varsplit.o
+declsplitting = varsplit.o

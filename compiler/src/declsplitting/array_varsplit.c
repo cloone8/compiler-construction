@@ -121,6 +121,7 @@ node* ASPprogram(node* arg_node, info* arg_info) {
 
     node* init_declaration = TBmakeDeclaration(init_function, old_first);
 
+    PROGRAM_INITFUN(arg_node) = init_function;
     INITBODY(arg_info) = init_body;
 
     PROGRAM_FIRST(arg_node) = init_declaration;
@@ -150,7 +151,7 @@ node* ASPglobal(node* arg_node, info* arg_info) {
     DBUG_ASSERT((GLOBAL_DIMENSIONS(arg_node) != NULL), "DIMS is NULL");
 
 
-    // Only split if the global is both a definition AND has an initialiser value
+    // Split the dimensions first
     if(GLOBAL_DEFINITION(arg_node) != NULL) {
         node* dims = GLOBAL_DIMENSIONS(arg_node);
         node* def = GLOBAL_DEFINITION(arg_node);

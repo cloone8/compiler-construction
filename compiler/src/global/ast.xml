@@ -81,7 +81,7 @@
                 </travuser>
             </traversal>
 
-            <traversal id="BSP" name="Var inits to regular assignments" default="sons" include="basic_varsplit.h">
+            <traversal id="VSP" name="Var inits to regular assignments" default="sons" include="varsplit.h">
                 <travuser>
                     <node name="Program" />
                     <node name="Global" />
@@ -91,7 +91,7 @@
                 </travuser>
             </traversal>
 
-            <traversal id="ASP" name="ArrayVar inits to regular assignments" default="sons" include="array_varsplit.h">
+            <!-- <traversal id="ASP" name="ArrayVar inits to regular assignments" default="sons" include="array_varsplit.h">
                 <travuser>
                     <node name="Program" />
                     <node name="Global" />
@@ -100,7 +100,7 @@
                     <node name="FunctionBody" />
                     <node name="Declaration" />
                 </travuser>
-            </traversal>
+            </traversal> -->
 
 
         </general>
@@ -212,6 +212,17 @@
                 </attribute>
                 <attribute name="FunSymbolTable">
                     <type name="FunSymbolTable">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="InitFun">
+                    <type name="Link">
                         <targets>
                             <target mandatory="no">
                                 <phases>
