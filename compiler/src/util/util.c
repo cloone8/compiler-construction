@@ -72,6 +72,24 @@ void append_declaration_to_tail(node *block_to_append_to, node *new_final_declar
     DBUG_VOID_RETURN;
 }
 
+void append_functionvardeclaration_to_tail(node *block_to_append_to, node *new_final_declaration) {
+    DBUG_ENTER("append_functionvardeclaration_to_tail");
+
+    DBUG_ASSERT((block_to_append_to != NULL), "append_functionvardeclaration_to_tail called with NULL block_to_append_to");
+    DBUG_ASSERT((new_final_declaration != NULL), "append_functionvardeclaration_to_tail called with NULL new_final_declaration");
+    DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_functionvardeclaration), "append_functionvardeclaration_to_tail called with block_to_append_to not being a functionvardeclaration type node");
+    DBUG_ASSERT((NODE_TYPE(new_final_declaration) == N_functionvardeclaration), "append_functionvardeclaration_to_tail called with new_final_declaration not being a functionvardeclaration type node");
+
+    node* current_final_declaration = block_to_append_to;
+    while (FUNCTIONVARDECLARATION_NEXT(current_final_declaration) != NULL) {
+        current_final_declaration = FUNCTIONVARDECLARATION_NEXT(current_final_declaration);
+    }
+    // End found, link the new node to the end
+    FUNCTIONVARDECLARATION_NEXT(current_final_declaration) = new_final_declaration;
+
+    DBUG_VOID_RETURN;
+}
+
 fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find) {
     DBUG_ENTER("fun_is_in_scope");
     fun_symbol_table* current_table = deepest_table;

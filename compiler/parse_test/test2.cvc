@@ -1,4 +1,19 @@
-a = (42 + 
-(13
-                * tutu));
+int twos = 0;
 
+int[1] a = [1,2,3];
+
+int two() {
+    int b = 6;
+    twos = twos + 1;
+    return 2;
+}
+
+void foo () {
+    int testint = 2;
+    int [2 , two()] a = two ();
+    int testint2 = 3;
+
+    testint = testint + 4;
+    a[0, 0] = 1;
+    testint2 = 6;
+}
