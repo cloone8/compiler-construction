@@ -88,8 +88,6 @@ static node* convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
             append_declaration_to_tail(decls, new_decls);
         }
 
-
-
         node* new_varread = TBmakeVarread(new_global_name);
         VARREAD_VARPOINTER(new_varread) = symbol_table_add(symtable, new_global_name, TP_int);
         EXPRARRAY_CURRENT(current_dim) = new_varread;

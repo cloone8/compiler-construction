@@ -66,6 +66,7 @@ node *STBglobal(node *arg_node, info *arg_info) {
 
     if (GLOBAL_DIMENSIONS(arg_node) != NULL) {
         type globaltype = type_to_array_type(GLOBAL_TYPE(arg_node));
+        GLOBAL_TYPE(arg_node) = globaltype;
         entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), globaltype);
 
         GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
@@ -137,6 +138,7 @@ node *STBarrayparameter(node *arg_node, info *arg_info) {
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
     type atype = type_to_array_type(ARRAYPARAMETER_TYPE(arg_node));
+    ARRAYPARAMETER_TYPE(arg_node) = atype;
 
     symbol_table_add(current, ARRAYPARAMETER_NAME(arg_node), atype);
 
@@ -232,6 +234,8 @@ node *STBarrayvardeclaration(node *arg_node, info *arg_info) {
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
     type atype = type_to_array_type(ARRAYVARDECLARATION_TYPE(arg_node));
+    ARRAYVARDECLARATION_TYPE(arg_node) = atype;
+
     symbol_table_add(current, ARRAYVARDECLARATION_VARNAME(arg_node), atype);
 
     ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
