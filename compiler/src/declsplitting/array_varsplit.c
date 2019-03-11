@@ -19,6 +19,7 @@ struct INFO {
     node* currentfunbody;
     symbol_table* currentsymtable;
     node* newassignblock;
+    node* dimvarsblock;
 };
 
 /*
@@ -29,6 +30,7 @@ struct INFO {
 #define FUNBODY(__arg_info_struct__) ((__arg_info_struct__)->currentfunbody)
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->currentsymtable)
 #define ASSIGNS(__arg_info_struct__) ((__arg_info_struct__)->newassignblock)
+#define DIMS(__arg_info_struct__) ((__arg_info_struct__)->dimvarsblock)
 /*
  * INFO functions
  */
@@ -45,6 +47,7 @@ static info *ASPmakeInfo(void) {
     result->currentfunbody = NULL;
     result->currentsymtable = NULL;
     result->newassignblock = NULL;
+    result->dimvarsblock = NULL;
 
     DBUG_RETURN(result);
 }
@@ -96,29 +99,18 @@ node* ASPglobal(node* arg_node, info* arg_info) {
             break;
     }
 
+    DBUG_ASSERT((GLOBAL_DIMENSIONS(arg_node) != NULL), "DIMS is NULL");
+    
+
+
     // Only split if the global is both a definition AND has an initialiser value
     if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
+        node* dims = GLOBAL_DIMENSIONS(arg_node);
         node* def = GLOBAL_DEFINITION(arg_node);
-        symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
+        
+        DIMS(arg_info) = NULL;
 
-        node* initval = EXPRARRAY_CURRENT(GLOBALDEFINITION_VALUES(def));
-
-        GLOBALDEFINITION_VALUES(def) = NULL;
-
-        // Create a new variable assignment statement
-        node* new_assign = TBmakeVarassign(varentry->name, initval);
-        VARASSIGN_VARPOINTER(new_assign) = varentry;
-        node* new_statement = TBmakeStatements(new_assign, NULL);
-
-
-        node* current_final_statement = FUNCTIONBODY_STATEMENTS(INITBODY(arg_info));
-
-        // If the initialiser function currently has no statements, make this the statement.
-        if(current_final_statement == NULL) {
-            FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
-        } else {
-            append_statement_to_tail(current_final_statement, new_statement);
-        }
+        dims = TRAVdo(dims, arg_info);
     }
 
     DBUG_RETURN(arg_node);
