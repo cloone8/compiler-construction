@@ -211,6 +211,12 @@ static node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
     DBUG_RETURN(toreturn);
 }
 
+static node* single_init_statements() {
+    DBUG_ENTER("single_init_statements");
+    node* toreturn = NULL;
+    DBUG_RETURN(toreturn);
+}
+
 node* VSPprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("VSPprogram");
 
@@ -271,7 +277,7 @@ static node* global_array(node* arg_node, info* arg_info) {
     DBUG_ASSERT((GLOBAL_DIMENSIONS(arg_node) != NULL), "DIMS is NULL");
 
     // Now split the initial value
-    if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
+    if(GLOBAL_DEFINITION(arg_node) != NULL) {
         // Split the dimensions first
         node* dims = GLOBAL_DIMENSIONS(arg_node);
 
@@ -280,32 +286,37 @@ static node* global_array(node* arg_node, info* arg_info) {
         node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
 
         node* old_first = PROGRAM_FIRST(PROGRAM_NODE(arg_info));
+
+
+        if(GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
+            node* def = GLOBAL_DEFINITION(arg_node);
+            symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
+
+            node* initval = GLOBALDEFINITION_VALUES(def);
+
+            GLOBALDEFINITION_VALUES(def) = NULL;
+
+
+            if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL)) {
+                node* new_statements = single_init_statements();
+            } else {
+                size_t indices[dimension_count];
+
+                for(size_t i = 0; i < dimension_count; i++) {
+                    indices[i] = 0;
+                }
+
+                node* new_statements = exprarray_to_inits(GLOBAL_NAME(arg_node), varentry, dimension_count, 0, indices, initval);
+                if(new_statements != NULL) {
+                    prepend_to_initialiser(new_statements, arg_info);
+                }
+            }
+        }
+
+        dims_decls = TRAVdo(dims_decls, arg_info);
         append_declaration_to_tail(dims_decls, old_first);
 
         PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = dims_decls;
-
-        node* def = GLOBAL_DEFINITION(arg_node);
-        symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
-
-        node* initval = GLOBALDEFINITION_VALUES(def);
-
-        GLOBALDEFINITION_VALUES(def) = NULL;
-
-
-        if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL)) {
-            // Singular value given
-        } else {
-            size_t indices[dimension_count];
-
-            for(size_t i = 0; i < dimension_count; i++) {
-                indices[i] = 0;
-            }
-
-            node* new_statements = exprarray_to_inits(GLOBAL_NAME(arg_node), varentry, dimension_count, 0, indices, initval);
-            if(new_statements != NULL) {
-                prepend_to_initialiser(new_statements, arg_info);
-            }
-        }
     }
 
     DBUG_PRINT("global_array", ("Done processing %s", GLOBAL_NAME(arg_node)));
