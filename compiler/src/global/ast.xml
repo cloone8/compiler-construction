@@ -90,11 +90,16 @@
                     <node name="FunctionBody" />
                 </travuser>
             </traversal>
-<!--
+
             <traversal id="ASP" name="ArrayVar inits to regular assignments" default="sons" include="array_varsplit.h">
                 <travuser>
+                    <node name="Program" />
+                    <node name="Global" />
+                    <node name="ArrayVarDeclaration" />
+                    <node name="FunctionDefinition" />
+                    <node name="FunctionBody" />
                 </travuser>
-            </traversal> -->
+            </traversal>
 
 
         </general>
