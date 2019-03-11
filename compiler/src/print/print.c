@@ -621,6 +621,14 @@ node* PRTarraydimensionvars (node * arg_node, info * arg_info) {
 node* PRTfunctiondefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunctiondefinition");
 
+    if (FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node) != NULL) {
+        print_fun_symbol_table(FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node));
+    }
+
+    if (FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node) != NULL) {
+        print_symbol_table(FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node));
+    }
+
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);
@@ -1255,6 +1263,14 @@ node* PRTprogram(node * arg_node, info * arg_info) {
 
     printf("Printing program:\n");
 
+    if (PROGRAM_FUNSYMBOLTABLE(arg_node) != NULL) {
+        print_fun_symbol_table(PROGRAM_FUNSYMBOLTABLE(arg_node));
+    }
+
+    if (PROGRAM_VARSYMBOLTABLE(arg_node) != NULL) {
+        print_symbol_table(PROGRAM_VARSYMBOLTABLE(arg_node));
+    }
+    
     PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
 
     DBUG_RETURN (arg_node);

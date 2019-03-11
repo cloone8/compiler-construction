@@ -152,3 +152,51 @@ size_t fun_symbol_table_get_param_amount(fun_symbol_table *table, char *fun_name
 
     DBUG_RETURN(result->paramamount);
 }
+
+void print_fun_symbol_table(fun_symbol_table *table) {
+    DBUG_ENTER("**** print_symbol_table ****");
+
+    for (size_t i = 0; i < table->table_depth; i++) {
+        printf("    ");
+    }
+
+    printf("**** Fun symbol table with depth: %zu ****\n", table->table_depth);
+    fun_symbol_table_entry *current;
+    for (size_t i = 0; i < table->current_entries; i++) {
+        current = table->entries[i];
+        char *type;
+
+        switch (current->returntype) {
+        case TP_void:
+            type = "VOID";
+            break;
+        case TP_bool:
+            type = "BOOL";
+            break;
+        case TP_bool_array:
+            type = "BOOL_ARRAY";
+            break;
+        case TP_int:
+            type = "INT";
+            break;
+        case TP_int_array:
+            type = "INT_ARRAY";
+            break;
+        case TP_float:
+            type = "FLOAT";
+            break;
+        case TP_float_array:
+            type = "FLOAT_ARRAY";
+            break;
+        default:
+            type = "UNKNOWN TYPE";
+        }
+
+        for (size_t i = 0; i < table->table_depth; i++) {
+            printf("    ");
+        }
+        printf("**** ID: %zu name: %s returntype: %s parameters: %zu ****\n", current->idx, current->name, type, current->paramamount);
+    }
+
+    DBUG_VOID_RETURN;
+}

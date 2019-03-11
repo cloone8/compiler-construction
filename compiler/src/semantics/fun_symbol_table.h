@@ -34,5 +34,6 @@ int fun_symbol_table_update(fun_symbol_table* table, size_t idx_to_update, char*
 fun_symbol_table* fun_symbol_table_move_up(fun_symbol_table* table, size_t scopes);
 type *fun_symbol_table_get_param_types(fun_symbol_table *table, char *fun_name);
 size_t fun_symbol_table_get_param_amount(fun_symbol_table * table, char *fun_name);
+void print_fun_symbol_table(fun_symbol_table *table);
 
 #endif

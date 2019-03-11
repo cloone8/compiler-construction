@@ -30,5 +30,6 @@ symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name);
 symbol_table_entry* symbol_table_get_idx(symbol_table* table, size_t idx);
 int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_name);
 symbol_table* symbol_table_move_up(symbol_table* table, size_t scopes);
+void print_symbol_table(symbol_table *table);
 
 #endif

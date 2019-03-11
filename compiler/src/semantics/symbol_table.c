@@ -141,9 +141,14 @@ int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_nam
 }
 
 void print_symbol_table(symbol_table* table) {
-    DBUG_ENTER("print_symbol_table");
+    DBUG_ENTER("**** print_symbol_table ****");
 
+    for (size_t i = 0; i < table->table_depth; i++) {
+        printf("    ");
+    }
+    printf("**** Symbol table with depth: %zu ****\n", table->table_depth);
     symbol_table_entry *current;
+    
     for (size_t i = 0; i < table->current_entries; i++) {
         current = table->entries[i];
         char* type;
@@ -151,21 +156,30 @@ void print_symbol_table(symbol_table* table) {
         switch (current->vartype) {
             case TP_bool:
                 type = "BOOL";
+                break;
             case TP_bool_array:
                 type = "BOOL_ARRAY";
+                break;
             case TP_int:
                 type = "INT";
+                break;
             case TP_int_array:
                 type = "INT_ARRAY";
+                break;
             case TP_float:
                 type = "FLOAT";
+                break;
             case TP_float_array:
                 type = "FLOAT_ARRAY";
+                break;
             default:
                 type = "UNKNOWN TYPE";
-                break;
         }
-        printf("ID: %zu name: %s type: %s", current->idx, current->name, type);
+
+        for (size_t i = 0; i < table->table_depth; i++) {
+            printf("    ");
+        }
+        printf("**** ID: %zu name: %s type: %s ****\n", current->idx, current->name, type);
     }
 
     DBUG_VOID_RETURN;
