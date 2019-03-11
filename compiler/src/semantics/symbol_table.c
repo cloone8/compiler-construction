@@ -139,3 +139,34 @@ int symbol_table_update(symbol_table* table, size_t idx_to_update, char* new_nam
 
     DBUG_RETURN(EXIT_SUCCESS);
 }
+
+void print_symbol_table(symbol_table* table) {
+    DBUG_ENTER("print_symbol_table");
+
+    symbol_table_entry *current;
+    for (size_t i = 0; i < table->current_entries; i++) {
+        current = table->entries[i];
+        char* type;
+
+        switch (current->vartype) {
+            case TP_bool:
+                type = "BOOL";
+            case TP_bool_array:
+                type = "BOOL_ARRAY";
+            case TP_int:
+                type = "INT";
+            case TP_int_array:
+                type = "INT_ARRAY";
+            case TP_float:
+                type = "FLOAT";
+            case TP_float_array:
+                type = "FLOAT_ARRAY";
+            default:
+                type = "UNKNOWN TYPE";
+                break;
+        }
+        printf("ID: %zu name: %s type: %s", current->idx, current->name, type);
+    }
+
+    DBUG_VOID_RETURN;
+}
