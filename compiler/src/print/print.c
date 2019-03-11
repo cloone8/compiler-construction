@@ -544,18 +544,21 @@ node* PRTbasicparameter (node * arg_node, info * arg_info) {
  ***************************************************************************/
 
 node* PRTarrayparameter (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTbasicparameter");
+    DBUG_ENTER ("PRTarrayparameter");
 
     char* type = "";
 
     switch(ARRAYPARAMETER_TYPE(arg_node)) {
         case TP_bool:
+        case TP_bool_array:
             type = "bool";
             break;
         case TP_float:
+        case TP_float_array:
             type = "float";
             break;
         case TP_int:
+        case TP_int_array:
             type = "int";
             break;
         default:
@@ -935,12 +938,15 @@ node* PRTglobal(node * arg_node, info * arg_info) {
 
     switch (GLOBAL_TYPE(arg_node)) {
         case TP_int:
+        case TP_int_array:
             type = "int";
             break;
         case TP_float:
+        case TP_float_array:
             type = "float";
             break;
         case TP_bool:
+        case TP_bool_array:
             type = "bool";
             break;
         default:
