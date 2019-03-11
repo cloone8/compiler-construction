@@ -260,20 +260,20 @@ static node* global_array(node* arg_node, info* arg_info) {
 
     DBUG_ASSERT((GLOBAL_DIMENSIONS(arg_node) != NULL), "DIMS is NULL");
 
-    // Split the dimensions first
-    node* dims = GLOBAL_DIMENSIONS(arg_node);
-
-    size_t dimension_count = count_dims(dims);
-
-    node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
-
-    node* old_first = PROGRAM_FIRST(PROGRAM_NODE(arg_info));
-    append_declaration_to_tail(dims_decls, old_first);
-
-    PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = dims_decls;
-
     // Now split the initial value
     if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
+        // Split the dimensions first
+        node* dims = GLOBAL_DIMENSIONS(arg_node);
+
+        size_t dimension_count = count_dims(dims);
+
+        node* dims_decls = convert_dims_to_vars(GLOBAL_NAME(arg_node), CURRENT_SYMBOL_TABLE(arg_info), dims);
+
+        node* old_first = PROGRAM_FIRST(PROGRAM_NODE(arg_info));
+        append_declaration_to_tail(dims_decls, old_first);
+
+        PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = dims_decls;
+
         node* def = GLOBAL_DEFINITION(arg_node);
         symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
 
