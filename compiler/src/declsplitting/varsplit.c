@@ -66,17 +66,6 @@ static info *VSPfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-static void append_to_initialiser(node* new_statement, info* arg_info) {
-    node* current_final_statement = FUNCTIONBODY_STATEMENTS(INITBODY(arg_info));
-
-    // If the initialiser function currently has no statements, make this the statement.
-    if(current_final_statement == NULL) {
-        FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
-    } else {
-        append_statement_to_tail(current_final_statement, new_statement);
-    }
-}
-
 static void prepend_to_initialiser(node* new_statement, info* arg_info) {
     node* current_final_statement = FUNCTIONBODY_STATEMENTS(INITBODY(arg_info));
 
