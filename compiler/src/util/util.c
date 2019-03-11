@@ -36,6 +36,23 @@ void append_statement_to_tail(node* current_final_statement, node* new_final_sta
     DBUG_VOID_RETURN;
 }
 
+void append_declaration_to_tail(node *current_final_declaration, node *new_final_declaration) {
+    DBUG_ENTER("append_declaration_to_tail");
+
+    DBUG_ASSERT((current_final_declaration != NULL), "append_declaration_to_tail called with NULL current final declaration");
+    DBUG_ASSERT((NODE_TYPE(current_final_declaration) == N_declaration), "append_declaration_to_tail called with current_final_declaration not being a declaration type node");
+    DBUG_ASSERT((NODE_TYPE(new_final_declaration) == N_declaration), "append_declaration_to_tail called with new_final_declaration not being a declaration type node");
+
+    while (DECLARATION_NEXT(current_final_declaration) != NULL)
+    {
+        current_final_declaration = DECLARATION_NEXT(current_final_declaration);
+    }
+    // End found, link the new node to the end
+    DECLARATION_NEXT(current_final_declaration) = new_final_declaration;
+
+    DBUG_VOID_RETURN;
+}
+
 fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find) {
     DBUG_ENTER("fun_is_in_scope");
     fun_symbol_table* current_table = deepest_table;
