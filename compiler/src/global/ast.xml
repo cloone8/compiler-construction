@@ -221,6 +221,17 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="InitFun">
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
 
         </node>
