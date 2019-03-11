@@ -77,7 +77,8 @@ static node* convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
         node* new_definition = TBmakeGlobaldefinition(FALSE, TBmakeExprarray(NULL, dim_value));
 
         char name_buffer[BUF_SIZE];
-        char* new_global_name = STRcatn(4, "tmp-", snprintf(name_buffer, BUF_SIZE, "%zu", dimcount++), "-", global_name);
+        snprintf(name_buffer, BUF_SIZE, "%zu", dimcount++);
+        char *new_global_name = STRcatn(4, "tmp-", name_buffer, "-", global_name);
 
         node* new_global = TBmakeGlobal(new_global_name, TP_int, new_definition, NULL);
         node* new_decls = TBmakeDeclaration(new_global, NULL);
@@ -150,7 +151,7 @@ node* ASPglobal(node* arg_node, info* arg_info) {
 
 
     // Only split if the global is both a definition AND has an initialiser value
-    if(GLOBAL_DEFINITION(arg_node) != NULL && GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
+    if(GLOBAL_DEFINITION(arg_node) != NULL) {
         node* dims = GLOBAL_DIMENSIONS(arg_node);
         node* def = GLOBAL_DEFINITION(arg_node);
 
