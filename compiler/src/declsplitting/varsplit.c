@@ -281,7 +281,6 @@ static node* global_array(node* arg_node, info* arg_info) {
 
         node* old_first = PROGRAM_FIRST(PROGRAM_NODE(arg_info));
 
-
         if(GLOBALDEFINITION_VALUES(GLOBAL_DEFINITION(arg_node)) != NULL) {
             node* def = GLOBAL_DEFINITION(arg_node);
             symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
@@ -301,6 +300,24 @@ static node* global_array(node* arg_node, info* arg_info) {
                 if(new_statements != NULL) {
                     prepend_to_initialiser(new_statements, arg_info);
                 }
+            } else {
+                // Single value given
+                GLOBALDEFINITION_VALUES(def) = NULL;
+                char* init_name = STRcat("tmp-init-", GLOBAL_NAME(arg_node));
+                type init_type = array_type_to_type(GLOBAL_TYPE(arg_node));
+
+                symbol_table* global_sym_table = PROGRAM_VARSYMBOLTABLE(PROGRAM_NODE(arg_info));
+                symbol_table_entry* init_entry = symbol_table_add(global_sym_table, init_name, init_type);
+
+                node* new_def = TBmakeGlobaldefinition(FALSE, initval);
+                GLOBALDEFINITION_VARPOINTER(new_def) = init_entry;
+
+                node* new_init_global = TBmakeGlobal(STRcpy(init_name), init_type, new_def, NULL);
+                node* new_dec = TBmakeDeclaration(new_init_global, PROGRAM_FIRST(PROGRAM_NODE(arg_info)));
+                PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = new_dec;
+                old_first = new_dec;
+
+                MEMfree(init_name);
             }
         }
 
@@ -434,10 +451,10 @@ node* VSPdeclaration(node* arg_node, info* arg_info) {
     DBUG_ENTER("VSPdeclaration");
 
     if(DECLARATION_NEXT(arg_node) != NULL) {
-        DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
+        TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
     }
 
-    DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
+    TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -453,7 +470,7 @@ node* VSPfor(node* arg_node, info* arg_info) {
         FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
     }
 
-    // Purposefully skip for counter
+    // Purposefully skip forloop counter
 
     DBUG_RETURN(arg_node);
 }
