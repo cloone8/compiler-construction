@@ -200,3 +200,12 @@ void print_fun_symbol_table(fun_symbol_table *table) {
 
     DBUG_VOID_RETURN;
 }
+
+void print_fun_symbol_table_chain(fun_symbol_table* table) {
+    DBUG_ENTER("print_fun_symbol_table_chain");
+    print_fun_symbol_table(table);
+    if(table->upper != NULL)
+        print_fun_symbol_table_chain(table->upper);
+
+    DBUG_VOID_RETURN
+}

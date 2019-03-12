@@ -160,6 +160,9 @@ static node* global_array(node* arg_node, info* arg_info) {
                 // Create a new global declaration from the previous definition
                 node* new_init_global = TBmakeGlobal(STRcpy(init_name), init_type, new_def, NULL);
 
+                // Now add the initialiser forloops statements to the __init() function
+                node* initloops = create_array_init_loops(GLOBAL_NAME(arg_node), dims, init_entry, arg_info);
+                prepend_to_initialiser(initloops, arg_info);
                 // Traverse on this new global, to split it up again and add it to the __init() function
                 TRAVdo(new_init_global, arg_info);
 
@@ -286,6 +289,15 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
 
             // Create a new functionvardeclaration from the new basicvardec
             node* new_fundec = TBmakeFunctionvardeclaration(new_dec, NULL);
+
+            // Now add the initialiser forloops statements to the function statements block
+            node* initloops = create_array_init_loops(GLOBAL_NAME(arg_node), dims, init_entry, arg_info);
+
+            if(ASSIGNS(arg_info) != NULL) {
+                append_statement_to_tail(initloops, ASSIGNS(arg_info));
+            }
+
+            ASSIGNS(arg_info) = initloops;
 
             // Traverse on this new declaration, to split it up again
             TRAVdo(new_fundec, arg_info);

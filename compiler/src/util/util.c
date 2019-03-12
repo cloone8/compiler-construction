@@ -90,6 +90,24 @@ void append_functionvardeclaration_to_tail(node *block_to_append_to, node *new_f
     DBUG_VOID_RETURN;
 }
 
+void append_exprarray_to_tail(node *block_to_append_to, node *new_final_exprarray) {
+    DBUG_ENTER("append_exprarray_to_tail");
+
+    DBUG_ASSERT((block_to_append_to != NULL), "append_exprarray_to_tail called with NULL block_to_append_to");
+    DBUG_ASSERT((new_final_exprarray != NULL), "append_exprarray_to_tail called with NULL new_final_exprarray");
+    DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_exprarray), "append_exprarray_to_tail called with block_to_append_to not being a exprarray type node");
+    DBUG_ASSERT((NODE_TYPE(new_final_exprarray) == N_exprarray), "append_exprarray_to_tail called with new_final_exprarray not being a exprarray type node");
+
+    node* current_final_exprarray = block_to_append_to;
+    while (EXPRARRAY_NEXT(current_final_exprarray) != NULL) {
+        current_final_exprarray = EXPRARRAY_NEXT(current_final_exprarray);
+    }
+    // End found, link the new node to the end
+    EXPRARRAY_NEXT(current_final_exprarray) = new_final_exprarray;
+
+    DBUG_VOID_RETURN;
+}
+
 fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find) {
     DBUG_ENTER("fun_is_in_scope");
     fun_symbol_table* current_table = deepest_table;

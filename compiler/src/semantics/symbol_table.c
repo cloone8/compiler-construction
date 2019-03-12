@@ -182,3 +182,12 @@ void print_symbol_table(symbol_table* table) {
 
     DBUG_VOID_RETURN;
 }
+
+void print_symbol_table_chain(symbol_table* table) {
+    DBUG_ENTER("print_symbol_table_chain");
+    print_symbol_table(table);
+    if(table->upper != NULL)
+        print_symbol_table_chain(table->upper);
+
+    DBUG_VOID_RETURN
+}
