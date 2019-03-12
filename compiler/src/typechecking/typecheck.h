@@ -3,7 +3,7 @@
 #include "types.h"
 
 
-extern node* TCbinop(node* arg_node, info* arg_info);
+extern node* TCfuncall(node* arg_node, info* arg_info);
 
 extern node *TCdo(node *syntaxtree);
 #endif
