@@ -255,6 +255,8 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
             if(new_statements != NULL) {
                 append_statement_to_tail(ASSIGNS(arg_info), new_statements);
             }
+
+            ARRAYVARDECLARATION_INITVAL(arg_node) = NULL;
         } else {
             // Single value given
         }
