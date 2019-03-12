@@ -160,7 +160,7 @@ void print_fun_symbol_table(fun_symbol_table *table) {
         printf("    ");
     }
 
-    printf("**** Fun symbol table with depth: %zu ****\n", table->table_depth);
+    printf("**** Function symbol table with depth: %zu ****\n", table->table_depth);
     fun_symbol_table_entry *current;
     for (size_t i = 0; i < table->current_entries; i++) {
         current = table->entries[i];

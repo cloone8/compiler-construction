@@ -89,12 +89,12 @@
                             }
 
 [0-9]+                      {
-                                yylval.cint=atoi(yytext);
-                                 FILTER(NUM);
+                                yylval.cint = getIntFromText(yytext, global.line, global.col);
+                                FILTER(NUM);
                             }
 
 [0-9]*\.[0-9]+              {
-                                yylval.cflt=atof(yytext);
+                                yylval.cflt = getFloatFromText(yytext, global.line, global.col);
                                 FILTER(FLOAT);
                             }
 

@@ -20,6 +20,22 @@ type type_to_array_type(type current) {
     }
 }
 
+type array_type_to_type(type current) {
+    DBUG_ENTER("array_type_to_type");
+    DBUG_ASSERT((current != TP_void && current != TP_unknown), "Invalid type given");
+
+    switch(current) {
+        case TP_bool_array:
+            DBUG_RETURN(TP_bool);
+        case TP_int_array:
+            DBUG_RETURN(TP_int);
+        case TP_float_array:
+            DBUG_RETURN(TP_float);
+        default:
+            DBUG_RETURN(current);
+    }
+}
+
 void append_statement_to_tail(node* block_to_append_to, node* new_final_statement) {
     DBUG_ENTER("append_statement_to_tail");
 
@@ -52,6 +68,24 @@ void append_declaration_to_tail(node *block_to_append_to, node *new_final_declar
     }
     // End found, link the new node to the end
     DECLARATION_NEXT(current_final_declaration) = new_final_declaration;
+
+    DBUG_VOID_RETURN;
+}
+
+void append_functionvardeclaration_to_tail(node *block_to_append_to, node *new_final_declaration) {
+    DBUG_ENTER("append_functionvardeclaration_to_tail");
+
+    DBUG_ASSERT((block_to_append_to != NULL), "append_functionvardeclaration_to_tail called with NULL block_to_append_to");
+    DBUG_ASSERT((new_final_declaration != NULL), "append_functionvardeclaration_to_tail called with NULL new_final_declaration");
+    DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_functionvardeclaration), "append_functionvardeclaration_to_tail called with block_to_append_to not being a functionvardeclaration type node");
+    DBUG_ASSERT((NODE_TYPE(new_final_declaration) == N_functionvardeclaration), "append_functionvardeclaration_to_tail called with new_final_declaration not being a functionvardeclaration type node");
+
+    node* current_final_declaration = block_to_append_to;
+    while (FUNCTIONVARDECLARATION_NEXT(current_final_declaration) != NULL) {
+        current_final_declaration = FUNCTIONVARDECLARATION_NEXT(current_final_declaration);
+    }
+    // End found, link the new node to the end
+    FUNCTIONVARDECLARATION_NEXT(current_final_declaration) = new_final_declaration;
 
     DBUG_VOID_RETURN;
 }
@@ -96,4 +130,61 @@ symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find) 
 
     DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope", to_find));
     DBUG_RETURN(NULL);
+}
+
+static void print_exprarray_rec(node* exprs, size_t level) {
+    DBUG_ENTER("print_exprarray_red");
+    DBUG_ASSERT((NODE_TYPE(exprs) == N_exprarray), "Wrong node type given!");
+    DBUG_PRINT("print_exprarray_rec", ("Entering exprarray (level %zu)\n", level));
+
+    if(NODE_TYPE(EXPRARRAY_CURRENT(exprs)) == N_exprarray) {
+        print_exprarray_rec(EXPRARRAY_CURRENT(exprs), level + 1);
+    }
+
+    DBUG_PRINT("print_exprarray_rec", ("Leaving exprarray (level %zu)\n", level));
+
+    if(EXPRARRAY_NEXT(exprs) != NULL) {
+        print_exprarray_rec(EXPRARRAY_NEXT(exprs), level);
+    }
+
+    DBUG_VOID_RETURN;
+}
+
+void print_exprarray(node* exprs) {
+    DBUG_ENTER("print_exprarray");
+    DBUG_ASSERT((NODE_TYPE(exprs) == N_exprarray), "Wrong node type given!");
+    print_exprarray_rec(exprs, 0);
+    DBUG_VOID_RETURN;
+}
+
+char* print_type(type to_print) {
+    DBUG_ENTER("print_type");
+
+    char* result;
+
+    switch (to_print) {
+        case TP_bool:
+            result = "BOOL";
+            break;
+        case TP_bool_array:
+            result = "BOOL_ARRAY";
+            break;
+        case TP_int:
+            result = "INT";
+            break;
+        case TP_int_array:
+            result = "INT_ARRAY";
+            break;
+        case TP_float:
+            result = "FLOAT";
+            break;
+        case TP_float_array:
+            result = "FLOAT_ARRAY";
+            break;
+        default:
+            result = "UNKNOWN";
+            break;
+    }
+
+    DBUG_RETURN(result);
 }

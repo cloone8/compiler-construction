@@ -20,4 +20,6 @@ node* paramsGetNextNode(node* current);
 void paramsSetNextNode(node* current, node* newNext);
 node* funcallExprsToParams(node *exprarray);
 
+int getIntFromText(char* text, int line, int col);
+float getFloatFromText(char* text, int line, int col);
 #endif

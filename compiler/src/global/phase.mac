@@ -41,10 +41,6 @@ SUBPHASE( stb,
           ALWAYS,
           sa)
 
-#ifndef DBUG_OFF
-SUBPHASE(prt_sa_ast, "Printing symbol tables", PRTdoPrint, ALWAYS, sa)
-#endif
-
 SUBPHASE( ftb,
           "Finding functions",
           FTBdo,
@@ -56,6 +52,10 @@ SUBPHASE( cfs,
           CFSdo,
           ALWAYS,
           sa)
+
+#ifndef DBUG_OFF
+SUBPHASE(prt_sa_ast, "Printing symbol tables", PRTdoPrint, ALWAYS, sa)
+#endif
 
 ENDPHASE(sa)
 

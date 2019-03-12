@@ -73,7 +73,6 @@ node* TCfuncall(node* arg_node, info* arg_info) {
 
             switch (NODE_TYPE(type_c)) {
                 case N_intconst:
-                    printf("bool");
                     given[i] = TP_int;
                     break;
                 case N_boolconst:
@@ -85,6 +84,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
                 default:
                     break;
             }
+            params = FUNCALLPARAMETER_NEXT(params);
         }
     }
 
@@ -92,7 +92,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
 
     for (size_t i = 0; i < paramamount; i++) {
         if (given[i] != paramtypes[i]) {
-            CTIerror("wrong types");
+            CTIerror("Wrong types for function %s, argument %d expected type %s, but got type %s", name, i, print_type(paramtypes[i]), print_type(given[i]));
         }
     }
 

@@ -1,8 +1,7 @@
-#include "civic.h"
-
 int twos = 0;
 
-int[1] a = [1,2,3];
+int[3] a = [1,2,3];
+int[2, 2] f = 3;
 
 int two() {
     twos = twos + 1;
@@ -10,7 +9,5 @@ int two() {
 }
 
 void foo () {
-    int [2 , two()] a = two ();
-    printInt(twos);
-    printInt(a [1 , 1]);
+    int [2 , two()] a = two();
 }

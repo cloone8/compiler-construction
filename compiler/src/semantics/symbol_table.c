@@ -146,9 +146,9 @@ void print_symbol_table(symbol_table* table) {
     for (size_t i = 0; i < table->table_depth; i++) {
         printf("    ");
     }
-    printf("**** Symbol table with depth: %zu ****\n", table->table_depth);
+    printf("**** Variable symbol table with depth: %zu ****\n", table->table_depth);
     symbol_table_entry *current;
-    
+
     for (size_t i = 0; i < table->current_entries; i++) {
         current = table->entries[i];
         char* type;
