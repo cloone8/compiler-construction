@@ -14,31 +14,9 @@
 
 #include "util.h"
 
-/*
- * INFO structure
- */
-struct INFO {
-    node* initbody;
-    node* currentfunbody;
-    symbol_table* currentsymtable;
-    node* newassignblock;
-    node* newdeclblock;
-    node* programnode;
-};
+#include "declsplitting_lib.h"
 
-/*
- * INFO macros
- */
-
-#define INITBODY(__arg_info_struct__) ((__arg_info_struct__)->initbody)
-#define FUNBODY(__arg_info_struct__) ((__arg_info_struct__)->currentfunbody)
-#define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->currentsymtable)
-#define ASSIGNS(__arg_info_struct__) ((__arg_info_struct__)->newassignblock)
-#define DECLS(__arg_info_struct__) ((__arg_info_struct__)->newdeclblock)
-#define PROGRAM_NODE(__arg_info_struct__) ((__arg_info_struct__)->programnode)
-/*
- * INFO functions
- */
+#include "varsplit_info.h"
 
 /**
  * Creates a new info struct and sets the initial values
@@ -69,200 +47,6 @@ static info *VSPfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-static void prepend_to_initialiser(node* new_statement, info* arg_info) {
-    node* current_final_statement = FUNCTIONBODY_STATEMENTS(INITBODY(arg_info));
-
-    // If the initialiser function currently has no statements, make this the statement.
-    if(current_final_statement == NULL) {
-        FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
-    } else {
-        append_statement_to_tail(new_statement, current_final_statement);
-        FUNCTIONBODY_STATEMENTS(INITBODY(arg_info)) = new_statement;
-    }
-}
-
-static size_t count_dims(node* dimensions) {
-    DBUG_ENTER("count_dims");
-    DBUG_ASSERT((NODE_TYPE(dimensions) == N_exprarray), "count_dims called without exprarray as argument!");
-    DBUG_ASSERT((dimensions != NULL), "count_dims called with NULL as argument!");
-    size_t count = 0;
-
-    node* current_dim = dimensions;
-
-    while(current_dim != NULL) {
-        count++;
-        current_dim = EXPRARRAY_NEXT(current_dim);
-    }
-
-    DBUG_RETURN(count);
-}
-
-static node* indices_to_positions(size_t index_amount, size_t *indices) {
-    DBUG_ENTER("indices_to_positions");
-    DBUG_PRINT("indices_to_positions", ("Converting %zu indices to nodes", index_amount));
-    node* head = NULL;
-
-    for(size_t i = index_amount; i > 0; i--) {
-        head = TBmakeExprarray(head, TBmakeExpr(TBmakeConstant(TBmakeIntconst(indices[i - 1]))));
-    }
-
-    DBUG_RETURN(head);
-}
-
-static node* global_convert_dims_to_vars(char* global_name, symbol_table* symtable, node* dimensions) {
-    DBUG_ENTER("global_convert_dims_to_vars");
-    DBUG_ASSERT((NODE_TYPE(dimensions) == N_exprarray), "global_convert_dims_to_vars called without exprarray as argument!");
-    DBUG_ASSERT((dimensions != NULL), "global_convert_dims_to_vars called with NULL as argument!");
-
-    node* decls = NULL;
-    node* current_dim = dimensions;
-    size_t dimcount = 0;
-
-    while(current_dim != NULL) {
-        node* dim_value = EXPRARRAY_CURRENT(current_dim);
-        node* new_definition = TBmakeGlobaldefinition(FALSE, TBmakeExprarray(NULL, dim_value));
-        char name_buffer[STR_BUF_SIZE];
-        snprintf(name_buffer, STR_BUF_SIZE, "%zu", dimcount++);
-        char *new_global_name = STRcatn(4, "tmp-", name_buffer, "-", global_name);
-
-        symbol_table_entry* var_entry = symbol_table_add(symtable, new_global_name, TP_int);
-        GLOBALDEFINITION_VARPOINTER(new_definition) = var_entry;
-
-        node* new_global = TBmakeGlobal(new_global_name, TP_int, new_definition, NULL);
-        node* new_decls = TBmakeDeclaration(new_global, NULL);
-
-        if(decls == NULL) {
-            decls = new_decls;
-        } else {
-            append_declaration_to_tail(decls, new_decls);
-        }
-
-        node* new_varread = TBmakeVarread(STRcpy(new_global_name));
-        VARREAD_VARPOINTER(new_varread) = var_entry;
-        EXPRARRAY_CURRENT(current_dim) = new_varread;
-
-        current_dim = EXPRARRAY_NEXT(current_dim);
-    }
-
-    DBUG_RETURN(decls);
-}
-
-static void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
-    DBUG_ENTER("fun_convert_dims_to_vars");
-    DBUG_ASSERT((NODE_TYPE(dims) == N_exprarray), "fun_convert_dims_to_vars called without exprarray as argument!");
-    DBUG_ASSERT((dims != NULL), "fun_convert_dims_to_vars called with NULL as argument!");
-
-    symbol_table* cur_table = CURRENT_SYMBOL_TABLE(arg_info);
-
-    node* current_dim = dims;
-    size_t dimcount = 0;
-
-    while(current_dim != NULL) {
-        node* dim_value = EXPRARRAY_CURRENT(current_dim);
-        char name_buffer[STR_BUF_SIZE];
-        snprintf(name_buffer, STR_BUF_SIZE, "%zu", dimcount++);
-        char *new_var_name = STRcatn(4, "tmp-", name_buffer, "-", var_name);
-
-        // Create the declaration
-        node* new_decl = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration(STRcpy(new_var_name), TP_int, NULL), NULL);
-
-        symbol_table_entry* new_entry = symbol_table_add(cur_table, new_var_name, TP_int);
-
-        if(DECLS(arg_info) == NULL) {
-            DECLS(arg_info) = new_decl;
-        } else {
-            append_functionvardeclaration_to_tail(DECLS(arg_info), new_decl);
-        }
-
-        // Create the assignment
-        node* new_varassign = TBmakeVarassign(STRcpy(new_var_name), dim_value);
-        VARASSIGN_VARPOINTER(new_varassign) = new_entry;
-        node* new_statement = TBmakeStatements(new_varassign, NULL);
-
-        if(ASSIGNS(arg_info) == NULL) {
-            ASSIGNS(arg_info) = new_statement;
-        } else {
-            append_statement_to_tail(ASSIGNS(arg_info), new_statement);
-        }
-
-        node* new_varread = TBmakeVarread(STRcpy(new_var_name));
-        VARREAD_VARPOINTER(new_varread) = new_entry;
-        EXPRARRAY_CURRENT(current_dim) = new_varread;
-
-        current_dim = EXPRARRAY_NEXT(current_dim);
-        MEMfree(new_var_name);
-    }
-
-    DBUG_VOID_RETURN;
-}
-
-static node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
-                                size_t init_nesting_level, size_t current_nesting_level,
-                                size_t* indices, node* exprs) {
-    DBUG_ENTER("exprarray_to_inits");
-    DBUG_PRINT("exprarray_to_inits", ("Arrived at nesting level %zu of %zu", current_nesting_level + 1, init_nesting_level));
-    node* toreturn = NULL;
-
-    node* current_expr = exprs;
-    size_t current_index = 0;
-
-    while(current_expr != NULL) {
-        // Reset the indices
-        for(size_t i = current_nesting_level - 1; i < init_nesting_level; i++) {
-            indices[i] = current_index;
-        }
-
-        if(current_nesting_level == init_nesting_level) {
-            DBUG_PRINT("exprarray_to_inits", ("Max nesting level of %zu reached, filling", current_nesting_level + 1));
-            // We have arrived at the deepest nesting level. Time to actually create the statement.
-            if(NODE_TYPE(current_expr) != N_exprarray) {
-                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level - 1);
-                DBUG_RETURN(NULL);
-            }
-
-            node* value = EXPRARRAY_CURRENT(current_expr);
-
-            if(NODE_TYPE(value) == N_exprarray) {
-                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level + 1);
-                DBUG_RETURN(NULL);
-            }
-
-            EXPRARRAY_CURRENT(current_expr) = NULL;
-            node* new_varassign = TBmakeArrayvarassign(STRcpy(varname), indices_to_positions(init_nesting_level, indices), value);
-            ARRAYVARASSIGN_VARPOINTER(new_varassign) = varentry;
-            node* statement = TBmakeStatements(new_varassign, NULL);
-
-            if(toreturn == NULL) {
-                toreturn = statement;
-            } else {
-                append_statement_to_tail(toreturn, statement);
-            }
-        } else {
-            DBUG_PRINT("exprarray_to_inits", ("Now at nesting level of %zu", current_nesting_level + 1));
-            // If the nesting level is not 1, this means that we have to traverse deeper into the expression array
-            node* new_inits = exprarray_to_inits(varname, varentry, init_nesting_level, current_nesting_level + 1, indices, EXPRARRAY_CURRENT(current_expr));
-            if(new_inits == NULL) {
-                DBUG_RETURN(NULL);
-            }
-
-            if(toreturn == NULL) {
-                toreturn = new_inits;
-            } else {
-                append_statement_to_tail(toreturn, new_inits);
-            }
-        }
-
-        current_index++;
-        node* tmp = current_expr;
-        current_expr = EXPRARRAY_NEXT(current_expr);
-        EXPRARRAY_NEXT(tmp) = NULL;
-        EXPRARRAY_CURRENT(tmp) = NULL;
-        FREEexprarray(tmp, NULL);
-    }
-
-    DBUG_RETURN(toreturn);
-}
-
 node* VSPprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("VSPprogram");
 
@@ -270,6 +54,8 @@ node* VSPprogram(node* arg_node, info* arg_info) {
     PROGRAM_NODE(arg_info) = arg_node;
     CURRENT_SYMBOL_TABLE(arg_info) = PROGRAM_VARSYMBOLTABLE(arg_node);
 
+    // Creates a new function called __init() to initialise global variables and
+    // makes it the first declaration
     node* init_body = TBmakeFunctionbody(NULL, NULL, NULL);
     node* init_definition = TBmakeFunctiondefinition(FALSE, init_body);
     FUNCTIONDEFINITION_FUNSYMBOLTABLE(init_definition) = fun_symbol_table_make(PROGRAM_FUNSYMBOLTABLE(arg_node), 1);
@@ -349,7 +135,7 @@ static node* global_array(node* arg_node, info* arg_info) {
                     indices[i] = 0;
                 }
 
-                node* new_statements = exprarray_to_inits(GLOBAL_NAME(arg_node), varentry, dimension_count, 0, indices, initval);
+                node* new_statements = exprarray_to_inits(GLOBAL_NAME(arg_node), varentry, dimension_count, indices, initval);
                 if(new_statements != NULL) {
                     prepend_to_initialiser(new_statements, arg_info);
                 }
@@ -392,14 +178,17 @@ node* VSPglobal(node* arg_node, info* arg_info) {
         case TP_bool:
         case TP_float:
         case TP_int:
+            // Basic traversal for basic global types
             DBUG_PRINT("VSPglobal", ("Global has non-array type, doing basic traversal"));
             DBUG_RETURN(global_basic(arg_node, arg_info));
         case TP_bool_array:
         case TP_float_array:
         case TP_int_array:
+            // Array traversal for array global types
             DBUG_PRINT("VSPglobal", ("Global has array type, doing array traversal"));
             DBUG_RETURN(global_array(arg_node, arg_info));
         default:
+            // Invalid type and thus a programming error
             DBUG_ASSERT(FALSE, "Invalid global type encountered!");
     }
 }
@@ -408,6 +197,8 @@ node* VSPbasicvardeclaration(node* arg_node, info* arg_info) {
     DBUG_ENTER("VSPbasicvardeclaration");
     DBUG_ASSERT((FUNBODY(arg_info) != NULL), "FUNBODY is NULL, something went really wrong");
 
+    // If the basic variable has an initial value, split it into a seperate
+    // declaration and assignment
     if(BASICVARDECLARATION_INITVAL(arg_node) != NULL) {
         node* initval = BASICVARDECLARATION_INITVAL(arg_node);
         symbol_table_entry* varentry = symbol_table_get_name(CURRENT_SYMBOL_TABLE(arg_info),
@@ -421,6 +212,8 @@ node* VSPbasicvardeclaration(node* arg_node, info* arg_info) {
         VARASSIGN_VARPOINTER(new_varassign) = varentry;
         node* new_statement = TBmakeStatements(new_varassign, NULL);
 
+        // Add the assignent to the ASSIGNS(arg_info) block, to be used later
+        // by the VSPfunctionbody traversal
         if(ASSIGNS(arg_info) == NULL) {
             ASSIGNS(arg_info) = new_statement;
         } else {
@@ -457,7 +250,7 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
                 indices[i] = 0;
             }
 
-            node* new_statements = exprarray_to_inits(ARRAYVARDECLARATION_VARNAME(arg_node), varentry, dimension_count, 0, indices, initval);
+            node* new_statements = exprarray_to_inits(ARRAYVARDECLARATION_VARNAME(arg_node), varentry, dimension_count, indices, initval);
 
             if(new_statements != NULL) {
                 append_statement_to_tail(ASSIGNS(arg_info), new_statements);
@@ -476,6 +269,7 @@ node* VSPfunctiondefinition(node* arg_node, info* arg_info) {
     symbol_table* old_table = CURRENT_SYMBOL_TABLE(arg_info);
     DBUG_ASSERT((FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node) != NULL), "varsymboltable was NULL!");
 
+    // Changes the current symbol table
     CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node);
 
     if(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) != NULL) {
@@ -492,58 +286,56 @@ node* VSPfunctionbody(node* arg_node, info* arg_info) {
 
     FUNBODY(arg_info) = arg_node;
 
-    node* new_vardecs_head;
+    node* new_body = arg_node;
+
     // Construct the new assignment anb declarations block
     if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
         FUNCTIONBODY_VARDECLARATIONS(arg_node) = TRAVdo(FUNCTIONBODY_VARDECLARATIONS(arg_node), arg_info);
 
+        node* new_vardecs_head = FUNCTIONBODY_VARDECLARATIONS(arg_node);
+        node* new_statements_head = FUNCTIONBODY_STATEMENTS(arg_node);
+
         if(DECLS(arg_info) != NULL) {
+            // Append the current vardeclarations block to the new declarations block,
+            // and make the new declarations the first declarations of this function
+            append_functionvardeclaration_to_tail(DECLS(arg_info), FUNCTIONBODY_VARDECLARATIONS(arg_node));
             new_vardecs_head = DECLS(arg_info);
             DECLS(arg_info) = NULL;
-
-            node* current_head = FUNCTIONBODY_VARDECLARATIONS(arg_node);
-
-            node* new_vardecs_tail = new_vardecs_head;
-
-            append_functionvardeclaration_to_tail(new_vardecs_tail, current_head);
         }
+
+        if(ASSIGNS(arg_info) != NULL) {
+            // Append the current statements block to the new statements block,
+            // and make the new statements the first statements of this function
+            append_statement_to_tail(ASSIGNS(arg_info), FUNCTIONBODY_STATEMENTS(arg_node));
+            new_statements_head = ASSIGNS(arg_info);
+            ASSIGNS(arg_info) = NULL;
+        }
+
+        new_body = TBmakeFunctionbody(new_vardecs_head,
+                                     FUNCTIONBODY_LOCALFUNCTIONS(arg_node),
+                                     new_statements_head);
     }
 
-    // Append the new assignments to the start of the statements tree
-    node* new_statements_head = ASSIGNS(arg_info);
-    ASSIGNS(arg_info) = NULL;
-
-    if(new_statements_head == NULL) {
-        DBUG_RETURN(arg_node);
+    if(FUNCTIONBODY_LOCALFUNCTIONS(new_body) != NULL) {
+        FUNCTIONBODY_LOCALFUNCTIONS(new_body) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(new_body), arg_info);
     }
 
-    if(FUNCTIONBODY_STATEMENTS(arg_node) != NULL) {
-        node* current_head = FUNCTIONBODY_STATEMENTS(arg_node);
+    if(new_body != arg_node) {
+        FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = NULL;
+        FUNCTIONBODY_STATEMENTS(arg_node) = NULL;
+        FUNCTIONBODY_VARDECLARATIONS(arg_node) = NULL;
 
-        node* new_assigns_tail = new_statements_head;
-
-        append_statement_to_tail(new_assigns_tail, current_head);
+        FREEfunctionbody(arg_node, NULL);
     }
-
-    node* new_body = TBmakeFunctionbody(new_vardecs_head,
-                                        FUNCTIONBODY_LOCALFUNCTIONS(arg_node),
-                                        new_statements_head);
-
-    if(FUNCTIONBODY_LOCALFUNCTIONS(arg_node) != NULL) {
-        FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(arg_node), arg_info);
-    }
-
-    FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = NULL;
-    FUNCTIONBODY_STATEMENTS(arg_node) = NULL;
-    FUNCTIONBODY_VARDECLARATIONS(arg_node) = NULL;
-
-    FREEfunctionbody(arg_node, NULL);
 
     DBUG_RETURN(new_body);
 }
 
 node* VSPdeclaration(node* arg_node, info* arg_info) {
     DBUG_ENTER("VSPdeclaration");
+
+    // Traverse the declarations in reverse order to keep the order of
+    // assignments okay
 
     if(DECLARATION_NEXT(arg_node) != NULL) {
         TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
