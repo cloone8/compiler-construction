@@ -366,7 +366,7 @@ static node* dims_to_positions(char* var_name, node* dims, info* arg_info) {
         symbol_table_entry* dim_entry = var_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), dimname);
         DBUG_ASSERT((dim_entry != NULL), "Couldn't fine dimension symbol table entry!");
 
-        node* varread = TBmakeVarread(dim_entry->name);
+        node* varread = TBmakeVarread(STRcpy(dim_entry->name));
         VARREAD_VARPOINTER(varread) = dim_entry;
         node* new_pos = TBmakeExprarray(NULL, TBmakeExpr(varread));
 
@@ -410,7 +410,7 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         node* value = TBmakeVarread(STRcpy(var_entry->name));
         VARREAD_VARPOINTER(value) = var_entry;
 
-        node* assign = TBmakeArrayvarassign(var_name, position, TBmakeExpr(value));
+        node* assign = TBmakeArrayvarassign(STRcpy(var_name), position, TBmakeExpr(value));
         toreturn = TBmakeStatements(assign, NULL);
     } else {
         DBUG_PRINT("array_init_loop_iter", ("Creating forloop"));
