@@ -160,6 +160,9 @@ static node* global_array(node* arg_node, info* arg_info) {
                 // Create a new global declaration from the previous definition
                 node* new_init_global = TBmakeGlobal(STRcpy(init_name), init_type, new_def, NULL);
 
+                // Now add the initialiser forloops statements to the __init() function
+                node* initloops = create_array_init_loops(GLOBAL_NAME(arg_node), dims, init_entry, arg_info);
+                prepend_to_initialiser(initloops, arg_info);
                 // Traverse on this new global, to split it up again and add it to the __init() function
                 TRAVdo(new_init_global, arg_info);
 

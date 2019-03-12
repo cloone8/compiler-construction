@@ -341,3 +341,126 @@ void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
 
     DBUG_VOID_RETURN;
 }
+
+static char* dim_to_name(char* var_name, size_t dim_num) {
+    char name_buffer[STR_BUF_SIZE];
+    snprintf(name_buffer, STR_BUF_SIZE, "%zu", dim_num);
+    return STRcatn(4, "tmp-", name_buffer, "-", var_name);
+}
+
+static char* counter_to_name(char* var_name, size_t counter_num) {
+    char name_buffer[STR_BUF_SIZE];
+    snprintf(name_buffer, STR_BUF_SIZE, "%zu", counter_num);
+    return STRcatn(4, "tmp-counter-", name_buffer, "-", var_name);
+}
+
+static node* dims_to_positions(char* var_name, node* dims, info* arg_info) {
+    DBUG_ENTER("dims_to_positions");
+    node* toreturn = NULL;
+
+    node* current_dim = dims;
+    size_t dimnum = 0;
+
+    while(current_dim != NULL) {
+        char* dimname = dim_to_name(var_name, dimnum++);
+        symbol_table_entry* dim_entry = var_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), dimname);
+        DBUG_ASSERT((dim_entry != NULL), "Couldn't fine dimension symbol table entry!");
+
+        node* varread = TBmakeVarread(dim_entry->name);
+        VARREAD_VARPOINTER(varread) = dim_entry;
+        node* new_pos = TBmakeExprarray(NULL, TBmakeExpr(varread));
+
+        if(toreturn == NULL) {
+            toreturn = new_pos;
+        } else {
+            append_exprarray_to_tail(toreturn, new_pos);
+        }
+
+        current_dim = EXPRARRAY_NEXT(current_dim);
+    }
+
+    DBUG_RETURN(toreturn);
+}
+
+static node* get_current_dim(node* dims, size_t iters_left) {
+    DBUG_ENTER("get_current_dim");
+    node* toreturn = dims;
+    size_t dimcount = count_dims(dims);
+
+    for(size_t i = dimcount; i > iters_left; i--) {
+        DBUG_ASSERT((toreturn != NULL), "toreturn is NULL! Too many iters for the amount of dimensions!");
+
+        toreturn = EXPRARRAY_NEXT(toreturn);
+    }
+
+    DBUG_ASSERT((toreturn != NULL), "toreturn is NULL! Too many iters for the amount of dimensions!");
+    DBUG_RETURN(toreturn);
+}
+
+static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry* var_entry, size_t iters_left, info* arg_info) {
+    DBUG_ENTER("array_init_loop_iter");
+    node* toreturn = NULL;
+
+    if(iters_left == 0) {
+        DBUG_PRINT("array_init_loop_iter", ("Creating varassign statement"));
+        // No more for loops to create, simply add the assignment statement.
+        // Get the position
+        node* position = dims_to_positions(var_name, dims, arg_info);
+        // The value will be the variable read from var_entry
+        node* value = TBmakeVarread(STRcpy(var_entry->name));
+        VARREAD_VARPOINTER(value) = var_entry;
+
+        node* assign = TBmakeArrayvarassign(var_name, position, TBmakeExpr(value));
+        toreturn = TBmakeStatements(assign, NULL);
+    } else {
+        DBUG_PRINT("array_init_loop_iter", ("Creating forloop"));
+        // Create the new counter
+        size_t dimcount = count_dims(dims);
+        char* new_counter_name = counter_to_name(var_name, dimcount - iters_left);
+        node* counterdec = TBmakeBasicvardeclaration(STRcpy(new_counter_name), TP_int, TBmakeExpr(TBmakeConstant(TBmakeIntconst(0))));
+
+        // Create new symbol table for the forloop and add the new counter to it
+        symbol_table* new_forloop_table = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), CURRENT_SYMBOL_TABLE(arg_info)->table_depth + 1);
+        symbol_table_entry* new_counter_entry = symbol_table_add(new_forloop_table, new_counter_name, TP_int);
+        node* new_counter_varread = TBmakeVarread(STRcpy(new_counter_name));
+        VARREAD_VARPOINTER(new_counter_varread) = new_counter_entry;
+
+        // Get the current dimension varread
+        node* current_dim = get_current_dim(dims, iters_left);
+        print_exprarray(current_dim);
+
+        node* current_dim_varread = EXPRARRAY_CURRENT(current_dim);
+        node* dim_varread = TBmakeVarread(STRcpy(VARREAD_VARNAME(current_dim_varread)));
+        VARREAD_VARPOINTER(dim_varread) = VARREAD_VARPOINTER(current_dim_varread);
+
+        // We traverse the entire array dimension, so the condition is counter < dim
+        node* condition = TBmakeBinop(BO_lt, TBmakeExpr(new_counter_varread), TBmakeExpr(dim_varread));
+
+        // Get the inner statements. We change the symbol table so that the recursive function can change create
+        // their own symbol table properly.
+
+        symbol_table* old_table = CURRENT_SYMBOL_TABLE(arg_info);
+        CURRENT_SYMBOL_TABLE(arg_info) = new_forloop_table;
+        node* inner_statements = array_init_loop_iter(var_name, dims, var_entry, iters_left - 1, arg_info);
+        CURRENT_SYMBOL_TABLE(arg_info) = old_table;
+
+        // Create the for loop
+        node* forloop = TBmakeFor(counterdec, TBmakeExpr(condition), NULL, inner_statements);
+
+        // Create the statement
+        toreturn = TBmakeStatements(forloop, NULL);
+    }
+
+    DBUG_RETURN(toreturn);
+}
+
+node* create_array_init_loops(char* var_name, node* dims, symbol_table_entry* var_entry, info* arg_info) {
+    DBUG_ENTER("create_array_init_loops");
+    node* toreturn = NULL;
+
+    size_t dimcount = count_dims(dims);
+
+    toreturn = array_init_loop_iter(var_name, dims, var_entry, dimcount, arg_info);
+
+    DBUG_RETURN(toreturn);
+}
