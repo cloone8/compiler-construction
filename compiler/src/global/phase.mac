@@ -81,6 +81,20 @@ ENDPHASE(i2a)
 /******************************************************************************/
 
 
+PHASE(sac,
+       "Continuing semantic analysis",
+       ALWAYS)
+
+SUBPHASE ( tc,
+           "Type checking",
+           TCdo,
+           ALWAYS,
+           sac)
+
+ENDPHASE(tc)
+
+/******************************************************************************/
+
 PHASE(cg,
        "Generating Code",
        ALWAYS)
