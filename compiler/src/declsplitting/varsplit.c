@@ -126,7 +126,7 @@ static node* global_array(node* arg_node, info* arg_info) {
 
             node* initval = GLOBALDEFINITION_VALUES(def);
 
-            if(!(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL))) {
+            if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) != N_expr) {
                 // List of values given
                 GLOBALDEFINITION_VALUES(def) = NULL;
                 size_t indices[dimension_count];
@@ -241,7 +241,7 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
         node* initval = ARRAYVARDECLARATION_INITVAL(arg_node);
 
-        if(!(NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_expr || (NODE_TYPE(EXPRARRAY_CURRENT(initval)) == N_exprarray && EXPRARRAY_NEXT(EXPRARRAY_CURRENT(initval)) == NULL))) {
+        if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) != N_expr) {
             // List of values given
 
             size_t indices[dimension_count];
@@ -258,7 +258,7 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
 
             ARRAYVARDECLARATION_INITVAL(arg_node) = NULL;
         } else {
-            // Single value given
+            // Single value given.
         }
     }
 
@@ -308,7 +308,9 @@ node* VSPfunctionbody(node* arg_node, info* arg_info) {
         if(ASSIGNS(arg_info) != NULL) {
             // Append the current statements block to the new statements block,
             // and make the new statements the first statements of this function
-            append_statement_to_tail(ASSIGNS(arg_info), FUNCTIONBODY_STATEMENTS(arg_node));
+            if(FUNCTIONBODY_STATEMENTS(arg_node) != NULL) {
+                append_statement_to_tail(ASSIGNS(arg_info), FUNCTIONBODY_STATEMENTS(arg_node));
+            }
             new_statements_head = ASSIGNS(arg_info);
             ASSIGNS(arg_info) = NULL;
         }

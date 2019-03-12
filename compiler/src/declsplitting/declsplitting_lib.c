@@ -46,14 +46,12 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
     DBUG_ENTER("exprarray_to_inits_rec");
     DBUG_PRINT("exprarray_to_inits_rec", ("Arrived at nesting level %zu of %zu", current_nesting_level + 1, init_nesting_level));
 
-    printf("Nesting level %zu of %zu\n", current_nesting_level, init_nesting_level);
     node* toreturn = NULL;
 
     node* current_expr = exprs;
     size_t current_index = 0;
 
     while(current_expr != NULL) {
-        printf("Current index: %zu\n", current_index);
         // Reset the index of the current nesting level
         // We only do this for > 0 because the first iteration of
         // this algorithm is always the main exprarray containing the actual
@@ -69,7 +67,7 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
 
             // We have already gone in too deep, this means that there were too few nested levels
             if(NODE_TYPE(current_expr) != N_exprarray) {
-                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level);
+                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level - 1);
                 DBUG_RETURN(NULL);
             }
 
@@ -148,7 +146,7 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
 node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
                          size_t init_nesting_level, size_t* indices, node* exprs) {
     DBUG_ENTER("exprarray_to_inits");
-    printf("Var: %s\n", varname);
+    DBUG_PRINT("exprarray_to_inits", ("Processing variable %s", varname));
     print_exprarray(exprs);
     node* result = exprarray_to_inits_rec(varname, varentry, init_nesting_level, 0, indices, exprs);
     DBUG_RETURN(result);
