@@ -174,3 +174,35 @@ void print_exprarray(node* exprs) {
     print_exprarray_rec(exprs, 0);
     DBUG_VOID_RETURN;
 }
+
+char* print_type(type to_print) {
+    DBUG_ENTER("print_type");
+
+    char* result;
+
+    switch (to_print) {
+        case TP_bool:
+            result = "BOOL";
+            break;
+        case TP_bool_array:
+            result = "BOOL_ARRAY";
+            break;
+        case TP_int:
+            result = "INT";
+            break;
+        case TP_int_array:
+            result = "INT_ARRAY";
+            break;
+        case TP_float:
+            result = "FLOAT";
+            break;
+        case TP_float_array:
+            result = "FLOAT_ARRAY";
+            break;
+        default:
+            result = "UNKNOWN";
+            break;
+    }
+
+    DBUG_RETURN(result);
+}

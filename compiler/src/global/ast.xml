@@ -93,6 +93,13 @@
                     <node name="For" />
                 </travuser>
             </traversal>
+
+            <traversal id="TC" name="Check for conflicting types" default="sons" include="typecheck.h">
+                <travuser>
+                    <node name="FunCall" />
+                </travuser>
+            </traversal>
+
         </general>
     </phases>
 

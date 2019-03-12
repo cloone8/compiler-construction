@@ -14,4 +14,6 @@ void append_exprarray_to_tail(node *block_to_append_to, node *new_final_exprarra
 fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find);
 symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find);
 void print_exprarray(node* exprs);
+char *print_type(type to_print);
+
 #endif

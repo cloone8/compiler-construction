@@ -1,0 +1,5 @@
+int foo(int a, int b, bool c) {
+    return 1;
+}
+
+int a = foo(true, 2, 4);
