@@ -93,6 +93,12 @@
                 </travuser>
             </traversal>
 
+            <traversal id="TC" name="Check for conflicting types" default="sons" include="typecheck.h">
+                <travuser>
+                    <node name="BinOp" />
+                </travuser>
+            </traversal>
+
             <!-- <traversal id="ASP" name="ArrayVar inits to regular assignments" default="sons" include="array_varsplit.h">
                 <travuser>
                     <node name="Program" />
