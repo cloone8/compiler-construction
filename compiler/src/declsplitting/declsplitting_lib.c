@@ -362,12 +362,12 @@ static node* dims_to_positions(char* var_name, node* dims, info* arg_info) {
     size_t dimnum = 0;
 
     while(current_dim != NULL) {
-        char* dimname = dim_to_name(var_name, dimnum++);
-        symbol_table_entry* dim_entry = var_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), dimname);
-        DBUG_ASSERT((dim_entry != NULL), "Couldn't fine dimension symbol table entry!");
+        char* countername = counter_to_name(var_name, dimnum++);
+        symbol_table_entry* counter_entry = var_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), countername);
+        DBUG_ASSERT((counter_entry != NULL), "Couldn't find counter symbol table entry!");
 
-        node* varread = TBmakeVarread(STRcpy(dim_entry->name));
-        VARREAD_VARPOINTER(varread) = dim_entry;
+        node* varread = TBmakeVarread(STRcpy(counter_entry->name));
+        VARREAD_VARPOINTER(varread) = counter_entry;
         node* new_pos = TBmakeExprarray(NULL, TBmakeExpr(varread));
 
         if(toreturn == NULL) {
