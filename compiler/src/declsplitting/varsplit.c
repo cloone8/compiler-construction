@@ -124,10 +124,10 @@ static node* global_array(node* arg_node, info* arg_info) {
             node* def = GLOBAL_DEFINITION(arg_node);
             symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
 
-            node* initval = GLOBALDEFINITION_VALUES(def);
-
-            if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) != N_expr) {
+            if(NODE_TYPE(EXPRARRAY_CURRENT(GLOBALDEFINITION_VALUES(def))) != N_expr) {
                 // List of values given
+                // Clear the value from the global
+                node* initval = GLOBALDEFINITION_VALUES(def);
                 GLOBALDEFINITION_VALUES(def) = NULL;
                 size_t indices[dimension_count];
 
@@ -141,17 +141,29 @@ static node* global_array(node* arg_node, info* arg_info) {
                 }
             } else {
                 // Single value given
+                // Clear the value from the global
+                node* initval = GLOBALDEFINITION_VALUES(def);
                 GLOBALDEFINITION_VALUES(def) = NULL;
+
+                // Prepare a new basic variable holding the value
                 char* init_name = STRcat("tmp-init-", GLOBAL_NAME(arg_node));
                 type init_type = array_type_to_type(GLOBAL_TYPE(arg_node));
 
+                // Add this variable to the symbol table
                 symbol_table* global_sym_table = PROGRAM_VARSYMBOLTABLE(PROGRAM_NODE(arg_info));
                 symbol_table_entry* init_entry = symbol_table_add(global_sym_table, init_name, init_type);
 
+                // Create a new global definition holding the value
                 node* new_def = TBmakeGlobaldefinition(FALSE, initval);
                 GLOBALDEFINITION_VARPOINTER(new_def) = init_entry;
 
+                // Create a new global declaration from the previous definition
                 node* new_init_global = TBmakeGlobal(STRcpy(init_name), init_type, new_def, NULL);
+
+                // Traverse on this new global, to split it up again and add it to the __init() function
+                TRAVdo(new_init_global, arg_info);
+
+                // Put this global into a new declaration, and add it as the first.
                 node* new_dec = TBmakeDeclaration(new_init_global, PROGRAM_FIRST(PROGRAM_NODE(arg_info)));
                 PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = new_dec;
                 old_first = new_dec;
@@ -240,10 +252,10 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
     // Now the the initial value
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
         node* initval = ARRAYVARDECLARATION_INITVAL(arg_node);
+        ARRAYVARDECLARATION_INITVAL(arg_node) = NULL;
 
         if(NODE_TYPE(EXPRARRAY_CURRENT(initval)) != N_expr) {
             // List of values given
-
             size_t indices[dimension_count];
 
             for(size_t i = 0; i < dimension_count; i++) {
@@ -256,9 +268,32 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
                 append_statement_to_tail(ASSIGNS(arg_info), new_statements);
             }
 
-            ARRAYVARDECLARATION_INITVAL(arg_node) = NULL;
+
         } else {
             // Single value given.
+
+            // Prepare a new basic variable holding the value
+            char* init_name = STRcat("tmp-init-", ARRAYVARDECLARATION_VARNAME(arg_node));
+            type init_type = array_type_to_type(ARRAYVARDECLARATION_TYPE(arg_node));
+
+            // Add this variable to the symbol table
+            symbol_table* sym_table = CURRENT_SYMBOL_TABLE(arg_info);
+            symbol_table_entry* init_entry = symbol_table_add(sym_table, init_name, init_type);
+            IS_UNUSED(init_entry);
+
+            // Create a new basicvardeclaration holding the value
+            node* new_dec = TBmakeBasicvardeclaration(STRcpy(init_name), init_type, EXPRARRAY_CURRENT(initval));
+
+            // Create a new functionvardeclaration from the new basicvardec
+            node* new_fundec = TBmakeFunctionvardeclaration(new_dec, NULL);
+
+            // Traverse on this new declaration, to split it up again
+            TRAVdo(new_fundec, arg_info);
+
+            // Add the new declaration to the function
+            append_functionvardeclaration_to_tail(DECLS(arg_info), new_fundec);
+
+            MEMfree(init_name);
         }
     }
 
