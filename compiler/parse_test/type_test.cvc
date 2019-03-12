@@ -1,5 +1,6 @@
-int foo(int a, int b, bool c) {
-    return 1;
-}
+// int foo() {
+//     return 1;
+// }
 
-int a = foo(true, 2, 4);
+// int a = foo();
+bool c = 3.0;
