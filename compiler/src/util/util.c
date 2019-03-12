@@ -131,3 +131,28 @@ symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find) 
     DBUG_PRINT("is_in_scope", ("Variable %s is NOT in scope", to_find));
     DBUG_RETURN(NULL);
 }
+
+static void print_exprarray_rec(node* exprs, size_t level) {
+    DBUG_ENTER("print_exprarray_red");
+    DBUG_ASSERT((NODE_TYPE(exprs) == N_exprarray), "Wrong node type given!");
+    printf("Entering exprarray (level %zu)\n", level);
+
+    if(NODE_TYPE(EXPRARRAY_CURRENT(exprs)) == N_exprarray) {
+        print_exprarray_rec(EXPRARRAY_CURRENT(exprs), level + 1);
+    }
+
+    printf("Leaving exprarray (level %zu)\n", level);
+
+    if(EXPRARRAY_NEXT(exprs) != NULL) {
+        print_exprarray_rec(EXPRARRAY_NEXT(exprs), level);
+    }
+
+    DBUG_VOID_RETURN;
+}
+
+void print_exprarray(node* exprs) {
+    DBUG_ENTER("print_exprarray");
+    DBUG_ASSERT((NODE_TYPE(exprs) == N_exprarray), "Wrong node type given!");
+    print_exprarray_rec(exprs, 0);
+    DBUG_VOID_RETURN;
+}
