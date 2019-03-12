@@ -438,6 +438,7 @@ node *CHKdoTreeCheck(node *syntax_tree)
     <xsl:apply-templates select="./*" mode="correctson" />
     <xsl:value-of select="'))'" />
     <xsl:value-of select="'{'" />
+    <xsl:value-of select="printf(&quot;%d\n&quot;, NODE_TYPE(arg_node))" />
     <xsl:value-of select="'CHKcorrectTypeInsertError('"/>
     <xsl:value-of select="'arg_node,'"/>
     <xsl:call-template name="check_correct_output">
