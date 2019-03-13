@@ -859,12 +859,17 @@ node* PRTfor (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfor");
 
     PRINT_INDENTS(arg_info);
-    printf("for(int %s = ", BASICVARDECLARATION_VARNAME(FOR_COUNTER(arg_node)));
+    if(FOR_COUNTER(arg_node) != NULL) {
+        printf("for(int %s = ", BASICVARDECLARATION_VARNAME(FOR_COUNTER(arg_node)));
+        BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)) =
+            TRAVdo(BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)), arg_info);
 
-    BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)) =
-        TRAVdo(BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)), arg_info);
+        printf(", ");
+    } else {
+        printf("for(");
+    }
 
-    printf(", ");
+
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
 
     if (FOR_STEP(arg_node) != NULL) {

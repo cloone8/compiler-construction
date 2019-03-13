@@ -66,9 +66,15 @@ PHASE(i2a,
       "Splitting variable declarations and assignments",
       ALWAYS)
 
-SUBPHASE( asp,
+SUBPHASE( vsp,
           "Splitting variables",
           VSPdo,
+          ALWAYS,
+          i2a)
+
+SUBPHASE( fsp,
+          "Lifting and splitting for loop counters",
+          FSPdo,
           ALWAYS,
           i2a)
 

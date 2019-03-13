@@ -160,7 +160,9 @@ node *STBfor(node *arg_node, info *arg_info) {
     symbol_table* old_scope = CURRENT_SYMBOL_TABLE(arg_info);
     CURRENT_SYMBOL_TABLE(arg_info) = new_scope;
 
-
+    // Although the counter is not mandatory in our AST, it should be for the user.
+    // We lift the counter out of the FOR loop in a later stage.
+    DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR counter is NULL!");
     FOR_COUNTER(arg_node) = TRAVdo(FOR_COUNTER(arg_node), arg_info);
 
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
