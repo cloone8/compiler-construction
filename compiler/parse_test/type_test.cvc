@@ -1,6 +1,9 @@
-// int foo() {
-//     return 1;
-// }
+int foo() {
+    bool p = 1;
+    int a = 1 + 2 + 3;
+    bool c = true == 1;
+    return 1;
+}
 
-// int a = foo();
-bool c = 3.0;
+// float a = foo();
+// bool c = 3.0;

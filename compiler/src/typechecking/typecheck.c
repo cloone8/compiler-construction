@@ -16,6 +16,7 @@
 struct INFO {
     fun_symbol_table *current_fun_symbol_table;
     symbol_table *current_symbol_table;
+    type final_type;
 };
 
 
@@ -25,6 +26,7 @@ struct INFO {
 
 #define CURRENT_FUN_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_fun_symbol_table)
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_symbol_table)
+#define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
 
 /*
  * INFO functions
@@ -39,6 +41,7 @@ static info *TCmakeInfo(void) {
     info *result = (info *)MEMmalloc(sizeof(info));
     CURRENT_FUN_SYMBOL_TABLE(result) = NULL;
     CURRENT_SYMBOL_TABLE(result) = NULL;
+    
 
     DBUG_RETURN(result);
 }
@@ -54,89 +57,47 @@ static info *TCfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-node* TCvarassign(node* arg_node, info* arg_info) {
-    DBUG_ENTER("TCvarassign");
+node *TCbinop(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCBINOP");
 
-    symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
+    info* left_info = TCmakeInfo();
+    info *right_info = TCmakeInfo();
 
-    char* varname = VARASSIGN_VARNAME(arg_node);
-    symbol_table_entry* entry = symbol_table_get_name(current, varname);
+    TRAVdo(BINOP_LEFT(arg_node), left_info);
+    TRAVdo(BINOP_RIGHT(arg_node), right_info);
 
-    type needed = entry->vartype;
-    type given;
-
-    node* expr = VARASSIGN_VALUE(arg_node);
-    node* constnt = EXPR_CURRENT(expr);
-    node* type_tocheck = CONSTANT_CURRENT(constnt);
-
-    switch (NODE_TYPE(type_tocheck)) {
-        case N_intconst:
-            given = TP_int;
-            break;
-        case N_boolconst:
-            given = TP_bool;
-            break;
-        case N_floatconst:
-            given = TP_float;
-            break;
-        default:
-            given = TP_unknown;
-            break;
+    if (TYPE(left_info) == TYPE(right_info)) {
+        TYPE(arg_info) = TYPE(left_info);
+    } else {
+        CTIerror("Wrong types for binop");
     }
 
-    if (given != needed) {
-        CTIerror("Varassign has wrong types, %s needs type %s but got %s", varname, print_type(needed), print_type(given));
-    }
+    TCfreeInfo(left_info);
+    TCfreeInfo(right_info);
+
+    DBUG_RETURN(arg_node);    
+}
+
+node* TCintconst(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCintconst");
+
+    TYPE(arg_info) = TP_int;
 
     DBUG_RETURN(arg_node);
 }
 
-node* TCfuncall(node* arg_node, info* arg_info) {
-    DBUG_ENTER("TCbinop");
+node *TCfloatconst(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCfloatconst");
 
-    char* name = FUNCALL_FUNCTIONNAME(arg_node);
-    node* params = FUNCALL_PARAMS(arg_node);
+    TYPE(arg_info) = TP_float;
 
-    size_t paramamount = fun_symbol_table_get_param_amount(CURRENT_FUN_SYMBOL_TABLE(arg_info), name);
+    DBUG_RETURN(arg_node);
+}
 
-    type given[paramamount];
-    type* paramtypes = fun_symbol_table_get_param_types(CURRENT_FUN_SYMBOL_TABLE(arg_info), name);
+node *TCboolconst(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCintconst");
 
-    node* expr;
-    node* constnt;
-    node* type_tocheck;
-
-    /* We only need to check the types if we have parameters. */
-    if(paramamount != 0) {
-        /* Wrap nodes to types and set the given array types. */
-        for (size_t i = 0; i < paramamount; i++) {
-            expr = FUNCALLPARAMETER_VALUE(params);
-            constnt = EXPR_CURRENT(expr);
-            type_tocheck = CONSTANT_CURRENT(constnt);
-
-            switch (NODE_TYPE(type_tocheck)) {
-                case N_intconst:
-                    given[i] = TP_int;
-                    break;
-                case N_boolconst:
-                    given[i] = TP_bool;
-                    break;
-                case N_floatconst:
-                    given[i] = TP_float;
-                    break;
-                default:
-                    break;
-            }
-            params = FUNCALLPARAMETER_NEXT(params);
-        }
-    }
-
-    /*Give error message when type arrays mismatch.*/
-    for (size_t i = 0; i < paramamount; i++) {
-        if (given[i] != paramtypes[i]) {
-            CTIerror("Wrong types for function %s, argument %d expected type %s, but got type %s", name, i, print_type(paramtypes[i]), print_type(given[i]));
-        }
-    }
+    TYPE(arg_info) = TP_bool;
 
     DBUG_RETURN(arg_node);
 }
