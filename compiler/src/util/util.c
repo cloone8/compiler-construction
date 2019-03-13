@@ -3,6 +3,7 @@
 #include "tree_basic.h"
 #include "util.h"
 #include "fun_symbol_table.h"
+#include "str.h"
 
 type type_to_array_type(type current) {
     DBUG_ENTER("type_to_array_type");
@@ -205,4 +206,126 @@ char* print_type(type to_print) {
     }
 
     DBUG_RETURN(result);
+}
+
+char* print_nodetype(nodetype nt) {
+    DBUG_ENTER("print_nodetype");
+    char* toreturn = NULL;
+
+    switch(nt) {
+        case N_undefined:
+            toreturn = STRcpy("undefined");
+            break;
+        case N_program:
+            toreturn = STRcpy("program");
+            break;
+        case N_declaration:
+            toreturn = STRcpy("declaration");
+            break;
+        case N_function:
+            toreturn = STRcpy("function");
+            break;
+        case N_basicparameter:
+            toreturn = STRcpy("basicparameter");
+            break;
+        case N_arrayparameter:
+            toreturn = STRcpy("arrayparameter");
+            break;
+        case N_arraydimensionvars:
+            toreturn = STRcpy("arraydimensionvars");
+            break;
+        case N_functiondefinition:
+            toreturn = STRcpy("functiondefinition");
+            break;
+        case N_functionbody:
+            toreturn = STRcpy("functionbody");
+            break;
+        case N_functionvardeclaration:
+            toreturn = STRcpy("functionvardeclaration");
+            break;
+        case N_localfunction:
+            toreturn = STRcpy("localfunction");
+            break;
+        case N_statements:
+            toreturn = STRcpy("statements");
+            break;
+        case N_basicvardeclaration:
+            toreturn = STRcpy("basicvardeclaration");
+            break;
+        case N_arrayvardeclaration:
+            toreturn = STRcpy("arrayvardeclaration");
+            break;
+        case N_exprarray:
+            toreturn = STRcpy("exprarray");
+            break;
+        case N_globaldefinition:
+            toreturn = STRcpy("globaldefintion");
+            break;
+        case N_for:
+            toreturn = STRcpy("for");
+            break;
+        case N_while:
+            toreturn = STRcpy("while");
+            break;
+        case N_dowhile:
+            toreturn = STRcpy("dowhile");
+            break;
+        case N_global:
+            toreturn = STRcpy("global");
+            break;
+        case N_error:
+            toreturn = STRcpy("error");
+            break;
+        case N_funcall:
+            toreturn = STRcpy("funcall");
+            break;
+        case N_funcallparameter:
+            toreturn = STRcpy("funcallparameter");
+            break;
+        case N_return:
+            toreturn = STRcpy("return");
+            break;
+        case N_branch:
+            toreturn = STRcpy("branch");
+            break;
+        case N_expr:
+            toreturn = STRcpy("expr");
+            break;
+        case N_monop:
+            toreturn = STRcpy("monop");
+            break;
+        case N_constant:
+            toreturn = STRcpy("constant");
+            break;
+        case N_floatconst:
+            toreturn = STRcpy("floatconst");
+            break;
+        case N_intconst:
+            toreturn = STRcpy("intconst");
+            break;
+        case N_boolconst:
+            toreturn = STRcpy("boolconst");
+            break;
+        case N_cast:
+            toreturn = STRcpy("cast");
+            break;
+        case N_varread:
+            toreturn = STRcpy("varread");
+            break;
+        case N_varassign:
+            toreturn = STRcpy("varassign");
+            break;
+        case N_arrayvarread:
+            toreturn = STRcpy("arrayvarread");
+            break;
+        case N_arrayvarassign:
+            toreturn = STRcpy("arrayvarassign");
+            break;
+        case N_binop:
+            toreturn = STRcpy("binop");
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Invalid nodetype given!");
+    }
+    DBUG_RETURN(toreturn);
 }
