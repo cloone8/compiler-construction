@@ -179,7 +179,7 @@ void print_exprarray(node* exprs) {
 char* print_type(type to_print) {
     DBUG_ENTER("print_type");
 
-    char* result;
+    static char* result;
 
     switch (to_print) {
         case TP_bool:
@@ -210,119 +210,119 @@ char* print_type(type to_print) {
 
 char* get_nodetype_string(nodetype nt) {
     DBUG_ENTER("get_nodetype_string");
-    char* toreturn = NULL;
+    static char* toreturn = NULL;
 
     switch(nt) {
         case N_undefined:
-            toreturn = STRcpy("undefined");
+            toreturn = "undefined";
             break;
         case N_program:
-            toreturn = STRcpy("program");
+            toreturn = "program";
             break;
         case N_declaration:
-            toreturn = STRcpy("declaration");
+            toreturn = "declaration";
             break;
         case N_function:
-            toreturn = STRcpy("function");
+            toreturn = "function";
             break;
         case N_basicparameter:
-            toreturn = STRcpy("basicparameter");
+            toreturn = "basicparameter";
             break;
         case N_arrayparameter:
-            toreturn = STRcpy("arrayparameter");
+            toreturn = "arrayparameter";
             break;
         case N_arraydimensionvars:
-            toreturn = STRcpy("arraydimensionvars");
+            toreturn = "arraydimensionvars";
             break;
         case N_functiondefinition:
-            toreturn = STRcpy("functiondefinition");
+            toreturn = "functiondefinition";
             break;
         case N_functionbody:
-            toreturn = STRcpy("functionbody");
+            toreturn = "functionbody";
             break;
         case N_functionvardeclaration:
-            toreturn = STRcpy("functionvardeclaration");
+            toreturn = "functionvardeclaration";
             break;
         case N_localfunction:
-            toreturn = STRcpy("localfunction");
+            toreturn = "localfunction";
             break;
         case N_statements:
-            toreturn = STRcpy("statements");
+            toreturn = "statements";
             break;
         case N_basicvardeclaration:
-            toreturn = STRcpy("basicvardeclaration");
+            toreturn = "basicvardeclaration";
             break;
         case N_arrayvardeclaration:
-            toreturn = STRcpy("arrayvardeclaration");
+            toreturn = "arrayvardeclaration";
             break;
         case N_exprarray:
-            toreturn = STRcpy("exprarray");
+            toreturn = "exprarray";
             break;
         case N_globaldefinition:
-            toreturn = STRcpy("globaldefintion");
+            toreturn = "globaldefintion";
             break;
         case N_for:
-            toreturn = STRcpy("for");
+            toreturn = "for";
             break;
         case N_while:
-            toreturn = STRcpy("while");
+            toreturn = "while";
             break;
         case N_dowhile:
-            toreturn = STRcpy("dowhile");
+            toreturn = "dowhile";
             break;
         case N_global:
-            toreturn = STRcpy("global");
+            toreturn = "global";
             break;
         case N_error:
-            toreturn = STRcpy("error");
+            toreturn = "error";
             break;
         case N_funcall:
-            toreturn = STRcpy("funcall");
+            toreturn = "funcall";
             break;
         case N_funcallparameter:
-            toreturn = STRcpy("funcallparameter");
+            toreturn = "funcallparameter";
             break;
         case N_return:
-            toreturn = STRcpy("return");
+            toreturn = "return";
             break;
         case N_branch:
-            toreturn = STRcpy("branch");
+            toreturn = "branch";
             break;
         case N_expr:
-            toreturn = STRcpy("expr");
+            toreturn = "expr";
             break;
         case N_monop:
-            toreturn = STRcpy("monop");
+            toreturn = "monop";
             break;
         case N_constant:
-            toreturn = STRcpy("constant");
+            toreturn = "constant";
             break;
         case N_floatconst:
-            toreturn = STRcpy("floatconst");
+            toreturn = "floatconst";
             break;
         case N_intconst:
-            toreturn = STRcpy("intconst");
+            toreturn = "intconst";
             break;
         case N_boolconst:
-            toreturn = STRcpy("boolconst");
+            toreturn = "boolconst";
             break;
         case N_cast:
-            toreturn = STRcpy("cast");
+            toreturn = "cast";
             break;
         case N_varread:
-            toreturn = STRcpy("varread");
+            toreturn = "varread";
             break;
         case N_varassign:
-            toreturn = STRcpy("varassign");
+            toreturn = "varassign";
             break;
         case N_arrayvarread:
-            toreturn = STRcpy("arrayvarread");
+            toreturn = "arrayvarread";
             break;
         case N_arrayvarassign:
-            toreturn = STRcpy("arrayvarassign");
+            toreturn = "arrayvarassign";
             break;
         case N_binop:
-            toreturn = STRcpy("binop");
+            toreturn = "binop";
             break;
         default:
             DBUG_ASSERT((FALSE), "Invalid nodetype given!");
