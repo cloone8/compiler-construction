@@ -463,9 +463,6 @@ node *CHKdoTreeCheck(node *syntax_tree)
       </xsl:with-param>
     </xsl:call-template>
     <xsl:value-of select="');'"/>
-    <xsl:value-of select="'char* typestring = print_nodetype(NODE_TYPE(arg_node));'" />
-    <xsl:value-of select="'printf(&quot;It currently is: %s\n&quot;, typestring);'" />
-    <xsl:value-of select="'MEMfree(typestring);'" />
     <xsl:value-of select="'}'" />
     <xsl:value-of select="'}'" />
    </xsl:template>
