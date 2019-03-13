@@ -290,17 +290,17 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
             // Create a new functionvardeclaration from the new basicvardec
             node* new_fundec = TBmakeFunctionvardeclaration(new_dec, NULL);
 
-            // Now add the initialiser forloops statements to the function statements block
-            node* initloops = create_array_init_loops(GLOBAL_NAME(arg_node), dims, init_entry, arg_info);
-
-            if(ASSIGNS(arg_info) != NULL) {
-                append_statement_to_tail(initloops, ASSIGNS(arg_info));
-            }
-
-            ASSIGNS(arg_info) = initloops;
-
             // Traverse on this new declaration, to split it up again
             TRAVdo(new_fundec, arg_info);
+
+            // Now add the initialiser forloops statements to the function statements block
+            node* initloops = create_array_init_loops(ARRAYVARDECLARATION_VARNAME(arg_node), dims, init_entry, arg_info);
+
+            if(ASSIGNS(arg_info) != NULL) {
+                append_statement_to_tail(ASSIGNS(arg_info), initloops);
+            } else {
+                ASSIGNS(arg_info) = initloops;
+            }
 
             // Add the new declaration to the function
             append_functionvardeclaration_to_tail(DECLS(arg_info), new_fundec);

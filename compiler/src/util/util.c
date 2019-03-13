@@ -208,8 +208,8 @@ char* print_type(type to_print) {
     DBUG_RETURN(result);
 }
 
-char* print_nodetype(nodetype nt) {
-    DBUG_ENTER("print_nodetype");
+char* get_nodetype_string(nodetype nt) {
+    DBUG_ENTER("get_nodetype_string");
     char* toreturn = NULL;
 
     switch(nt) {

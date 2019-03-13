@@ -331,7 +331,7 @@ void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
         // e.g. "int[1, 2] a;" -> "int[tmp-0-a, tmp-1-a] a;""
         node* new_varread = TBmakeVarread(STRcpy(new_var_name));
         VARREAD_VARPOINTER(new_varread) = new_entry;
-        EXPRARRAY_CURRENT(current_dim) = new_varread;
+        EXPRARRAY_CURRENT(current_dim) = TBmakeExpr(new_varread);
 
         current_dim = EXPRARRAY_NEXT(current_dim);
 
@@ -422,7 +422,7 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         // Get the current dimension varread
         node* current_dim = get_current_dim(dims, iters_left);
         print_exprarray(current_dim);
-
+        printf("%s\n", get_nodetype_string(NODE_TYPE(EXPRARRAY_CURRENT(current_dim))));
         node* current_dim_varread = EXPR_CURRENT(EXPRARRAY_CURRENT(current_dim));
         node* dim_varread = TBmakeVarread(STRcpy(VARREAD_VARNAME(current_dim_varread)));
         VARREAD_VARPOINTER(dim_varread) = VARREAD_VARPOINTER(current_dim_varread);

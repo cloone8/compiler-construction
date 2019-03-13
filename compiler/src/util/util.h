@@ -15,6 +15,6 @@ fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* t
 symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find);
 void print_exprarray(node* exprs);
 char* print_type(type to_print);
-char* print_nodetype(nodetype nt);
+char* get_nodetype_string(nodetype nt);
 
 #endif
