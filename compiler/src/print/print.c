@@ -785,6 +785,7 @@ node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
         case TP_float_array:
             type = "float";
             break;
+        case TP_int:
         case TP_int_array:
             type = "int";
             break;
