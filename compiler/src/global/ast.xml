@@ -99,6 +99,22 @@
                     <node name="FunctionDefinition" />
                     <node name="FunctionBody" />
                     <node name="For" />
+                    <node name="Statements" />
+                </travuser>
+            </traversal>
+
+            <traversal id="VRN" name="Renaming operations with variables according to their symbol table entries" default="sons" include="varrename.h">
+                <travuser>
+                    <node name="BasicVarDeclaration" />
+                    <node name="ArrayVarDeclaration" />
+                    <node name="ArrayVarRead" />
+                    <node name="VarRead" />
+                    <node name="VarAssign" />
+                    <node name="ArrayVarAssign" />
+                    <node name="BasicParameter" />
+                    <node name="ArrayParameter" />
+                    <node name="ArrayDimensionVars" />
+                    <node name="Function" />
                 </travuser>
             </traversal>
 
@@ -372,6 +388,17 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -428,6 +455,17 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -456,6 +494,17 @@
                     <type name="String">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>
@@ -721,6 +770,17 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -770,6 +830,17 @@
                     <type name="Type">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                 <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>

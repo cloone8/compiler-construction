@@ -302,10 +302,12 @@ void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
         char *new_var_name = STRcatn(4, "tmp-", name_buffer, "-", var_name);
 
         // Create the declaration
-        node* new_decl = TBmakeFunctionvardeclaration(TBmakeBasicvardeclaration(STRcpy(new_var_name), TP_int, NULL), NULL);
+        node* new_var = TBmakeBasicvardeclaration(STRcpy(new_var_name), TP_int, NULL);
+        node* new_decl = TBmakeFunctionvardeclaration(new_var, NULL);
 
         // Add the new variable to the symbol table
         symbol_table_entry* new_entry = symbol_table_add(cur_table, new_var_name, TP_int);
+        BASICVARDECLARATION_VARPOINTER(new_var) = new_entry;
 
         // Append it to the current list of new declarations
         if(DECLS(arg_info) == NULL) {
@@ -391,7 +393,7 @@ static node* get_current_dim(node* dims, size_t iters_left) {
     DBUG_RETURN(toreturn);
 }
 
-static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry* var_entry, size_t iters_left, info* arg_info) {
+static node* array_init_loop_iter(char* var_name, symbol_table_entry* array_entry, node* dims, symbol_table_entry* var_entry, size_t iters_left, info* arg_info) {
     DBUG_ENTER("array_init_loop_iter");
     node* toreturn = NULL;
 
@@ -400,11 +402,15 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         // No more for loops to create, simply add the assignment statement.
         // Get the position
         node* position = dims_to_positions(var_name, dims, arg_info);
+
         // The value will be the variable read from var_entry
         node* value = TBmakeVarread(STRcpy(var_entry->name));
         VARREAD_VARPOINTER(value) = var_entry;
 
+        // Create the assignment
         node* assign = TBmakeArrayvarassign(STRcpy(var_name), position, TBmakeExpr(value));
+        ARRAYVARASSIGN_VARPOINTER(assign) = array_entry;
+
         toreturn = TBmakeStatements(assign, NULL);
     } else {
         DBUG_PRINT("array_init_loop_iter", ("Creating forloop"));
@@ -416,12 +422,11 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         // Create new symbol table for the forloop and add the new counter to it
         symbol_table* new_forloop_table = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), CURRENT_SYMBOL_TABLE(arg_info)->table_depth + 1);
         symbol_table_entry* new_counter_entry = symbol_table_add(new_forloop_table, new_counter_name, TP_int);
-        IS_UNUSED(new_counter_entry);
+        BASICVARDECLARATION_VARPOINTER(counterdec) = new_counter_entry;
 
         // Get the current dimension varread
         node* current_dim = get_current_dim(dims, iters_left);
         print_exprarray(current_dim);
-        printf("%s\n", get_nodetype_string(NODE_TYPE(EXPRARRAY_CURRENT(current_dim))));
         node* current_dim_varread = EXPR_CURRENT(EXPRARRAY_CURRENT(current_dim));
         node* dim_varread = TBmakeVarread(STRcpy(VARREAD_VARNAME(current_dim_varread)));
         VARREAD_VARPOINTER(dim_varread) = VARREAD_VARPOINTER(current_dim_varread);
@@ -431,11 +436,12 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
 
         symbol_table* old_table = CURRENT_SYMBOL_TABLE(arg_info);
         CURRENT_SYMBOL_TABLE(arg_info) = new_forloop_table;
-        node* inner_statements = array_init_loop_iter(var_name, dims, var_entry, iters_left - 1, arg_info);
+        node* inner_statements = array_init_loop_iter(var_name, array_entry, dims, var_entry, iters_left - 1, arg_info);
         CURRENT_SYMBOL_TABLE(arg_info) = old_table;
 
         // Create the for loop
         node* forloop = TBmakeFor(counterdec, TBmakeExpr(dim_varread), NULL, inner_statements);
+        FOR_VARSYMBOLTABLE(forloop) = new_forloop_table;
 
         // Create the statement
         toreturn = TBmakeStatements(forloop, NULL);
@@ -444,13 +450,13 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
     DBUG_RETURN(toreturn);
 }
 
-node* create_array_init_loops(char* var_name, node* dims, symbol_table_entry* var_entry, info* arg_info) {
+node* create_array_init_loops(char* var_name, symbol_table_entry* array_entry, node* dims, symbol_table_entry* var_entry, info* arg_info) {
     DBUG_ENTER("create_array_init_loops");
     node* toreturn = NULL;
 
     size_t dimcount = count_dims(dims);
 
-    toreturn = array_init_loop_iter(var_name, dims, var_entry, dimcount, arg_info);
+    toreturn = array_init_loop_iter(var_name, array_entry, dims, var_entry, dimcount, arg_info);
 
     DBUG_RETURN(toreturn);
 }

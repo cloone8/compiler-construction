@@ -17,6 +17,7 @@
  */
 struct INFO {
     symbol_table* current_table;
+    node* new_vardecs;
 };
 
 /*
@@ -24,7 +25,7 @@ struct INFO {
  */
 
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_table)
-
+#define NEW_VARDECS(__arg_info_struct__) ((__arg_info_struct__)->new_vardecs)
 /*
  * INFO functions
  */
@@ -37,6 +38,7 @@ static info *FSPmakeInfo(void) {
 
     info *result = (info *)MEMmalloc(sizeof(info));
     CURRENT_SYMBOL_TABLE(result) = NULL;
+    NEW_VARDECS(result) = NULL;
 
     DBUG_RETURN(result);
 }
@@ -55,17 +57,109 @@ static info *FSPfreeInfo(info *info) {
 node* FSPfunctiondefinition(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfunctiondefinition");
 
+    symbol_table* old_table = CURRENT_SYMBOL_TABLE(arg_info);
+    CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node);
+
+    FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
+
+    CURRENT_SYMBOL_TABLE(arg_info) = old_table;
+
     DBUG_RETURN(arg_node);
 }
 
 node* FSPfunctionbody(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfunctionbody");
 
+    node* old_decls = NEW_VARDECS(arg_info);
+    NEW_VARDECS(arg_info) = NULL;
+
+    if(FUNCTIONBODY_LOCALFUNCTIONS(arg_node) != NULL) {
+        FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(arg_node), arg_info);
+    }
+
+    if(FUNCTIONBODY_STATEMENTS(arg_node) != NULL) {
+        FUNCTIONBODY_STATEMENTS(arg_node) = TRAVdo(FUNCTIONBODY_STATEMENTS(arg_node), arg_info);
+
+        // For loops may have resulted in new variable declarations, append them
+        // to the current ones
+        if(NEW_VARDECS(arg_info) != NULL) {
+            if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
+                append_functionvardeclaration_to_tail(FUNCTIONBODY_VARDECLARATIONS(arg_node), NEW_VARDECS(arg_info));
+            } else {
+                FUNCTIONBODY_VARDECLARATIONS(arg_node) = NEW_VARDECS(arg_info);
+            }
+        }
+    }
+
+    NEW_VARDECS(arg_info) = old_decls;
+
     DBUG_RETURN(arg_node);
 }
 
 node* FSPfor(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfor");
+
+    DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR_COUNTER was NULL, while it shouldn't yet be!");
+
+    // Lift the counter out of the loop
+    node* counter_dec = FOR_COUNTER(arg_node);
+    FOR_COUNTER(arg_node) = NULL;
+    symbol_table_entry* entry = BASICVARDECLARATION_VARPOINTER(counter_dec);
+
+    // Change the name for clarity
+    char* new_name = STRcat("for-counter-", entry->name);
+    symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), entry->idx, new_name);
+
+
+    // Lift the initial value out of the declaration
+    node* initval = BASICVARDECLARATION_INITVAL(counter_dec);
+    BASICVARDECLARATION_INITVAL(counter_dec) = NULL;
+
+    // Add the declaration of the counter to the innermost function declarations
+    if(NEW_VARDECS(arg_info) == NULL) {
+        NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(counter_dec, NULL);
+    } else {
+        append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(counter_dec, NULL));
+    }
+
+    // Create a new var assignment, assigning the init value to the counter
+    node* init_assign = TBmakeVarassign(STRcpy(new_name), initval);
+    VARASSIGN_VARPOINTER(init_assign) = entry;
+
+    MEMfree(new_name);
+
+    FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
+
+    // Return the new assignment, so the FSPstatement traversal function can
+    // put it in the right place
+    DBUG_RETURN(init_assign);
+}
+
+node* FSPstatements(node* arg_node, info* arg_info) {
+    DBUG_ENTER("FSPstatements");
+
+    if(NODE_TYPE(STATEMENTS_CURRENT(arg_node)) == N_for) {
+        // The for traversal returns the new for loop initialiser
+        node* for_node = STATEMENTS_CURRENT(arg_node);
+        node* for_init = TRAVdo(for_node, arg_info);
+
+        // Insert the initial statement here
+        node* for_statement = TBmakeStatements(for_node, STATEMENTS_NEXT(arg_node));
+        STATEMENTS_CURRENT(arg_node) = for_init;
+        STATEMENTS_NEXT(arg_node) = for_statement;
+
+
+        // Continue traversing at the original next node
+        if(STATEMENTS_NEXT(for_statement) != NULL) {
+            STATEMENTS_NEXT(for_statement) = TRAVdo(STATEMENTS_NEXT(for_statement), arg_info);
+        }
+    } else {
+        STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
+
+        if(STATEMENTS_NEXT(arg_node) != NULL) {
+            STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);
+        }
+    }
 
     DBUG_RETURN(arg_node);
 }

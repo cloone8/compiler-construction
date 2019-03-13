@@ -70,7 +70,7 @@ char *
 FREEattribString (char *attr, node * parent)
 {
   DBUG_ENTER ("FREEattribString");
-  IS_UNUSED(parent);
+  UNUSED(parent);
 
   if (attr != NULL) {
     DBUG_PRINT ("FREE", ("Freeing string '%s' at " F_PTR, attr, attr));
@@ -97,8 +97,8 @@ node *
 FREEattribLink (node *attr, node * parent)
 {
   DBUG_ENTER ("FREEattribLink");
-  IS_UNUSED(attr);
-  IS_UNUSED(parent);
+  UNUSED(attr);
+  UNUSED(parent);
   DBUG_RETURN (NULL);
 }
 

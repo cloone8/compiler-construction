@@ -25,6 +25,7 @@ fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_d
 
 int fun_symbol_table_free(fun_symbol_table* tofree) {
     DBUG_ENTER("fun_symbol_table_free");
+    DBUG_ASSERT((tofree != NULL), "Table was NULL!");
 
     for(size_t i = 0; i < tofree->current_entries; i++) {
         fun_symbol_table_entry* current = tofree->entries[i];
@@ -60,6 +61,7 @@ static void increase_table_size(fun_symbol_table* toincrease) {
 
 int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, size_t param_amount, type* param_types) {
     DBUG_ENTER("fun_symbol_table_add");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     if (fun_symbol_table_get_name(table, name) != NULL) {
         CTIerror("Function %s already in scope", name);
@@ -81,12 +83,15 @@ int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, 
 
 
     table->entries[table->current_entries - 1] = new_entry;
+
+    DBUG_ASSERT((table->entries[table->current_entries - 1] != NULL), "Couldn't add new entry!");
     DBUG_PRINT("fun_symbol_table", ("Added %zu %s %d %zu\n", new_entry->idx, new_entry->name, new_entry->returntype, new_entry->paramamount));
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
 fun_symbol_table_entry* fun_symbol_table_get_name(fun_symbol_table* table, char* name) {
     DBUG_ENTER("fun_symbol_table_get_name");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     for(size_t i = 0; i < table->current_entries; i++) {
         fun_symbol_table_entry* current = table->entries[i];
@@ -102,6 +107,8 @@ fun_symbol_table_entry* fun_symbol_table_get_name(fun_symbol_table* table, char*
 
 fun_symbol_table_entry* fun_symbol_table_get_idx(fun_symbol_table* table, size_t idx) {
     DBUG_ENTER("fun_symbol_table_get_idx");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
+
     DBUG_PRINT("FUN_SYMBOL_TABLE_LOOKUP", ("FINDING IDX %d", idx));
 
     DBUG_RETURN(table->entries[idx]);
@@ -109,6 +116,8 @@ fun_symbol_table_entry* fun_symbol_table_get_idx(fun_symbol_table* table, size_t
 
 fun_symbol_table* fun_symbol_table_move_up(fun_symbol_table* table, size_t scopes) {
     DBUG_ENTER("fun_symbol_table_move_up");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
+
     DBUG_PRINT("fun_symbol_table_move_up", ("scopes to traverse: %d\n", scopes));
 
     if(scopes == 0) {
@@ -124,6 +133,7 @@ fun_symbol_table* fun_symbol_table_move_up(fun_symbol_table* table, size_t scope
 
 int fun_symbol_table_update(fun_symbol_table* table, size_t idx_to_update, char* new_name) {
     DBUG_ENTER("fun_symbol_table_update");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     fun_symbol_table_entry* tochange = fun_symbol_table_get_idx(table, idx_to_update);
 
@@ -139,6 +149,7 @@ int fun_symbol_table_update(fun_symbol_table* table, size_t idx_to_update, char*
 
 type* fun_symbol_table_get_param_types(fun_symbol_table* table, char* fun_name) {
     DBUG_ENTER("fun_symbol_table_get_param_types");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     fun_symbol_table_entry *result = fun_symbol_table_get_name(table, fun_name);
 
@@ -155,6 +166,7 @@ size_t fun_symbol_table_get_param_amount(fun_symbol_table *table, char *fun_name
 
 void print_fun_symbol_table(fun_symbol_table *table) {
     DBUG_ENTER("**** print_symbol_table ****");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     for (size_t i = 0; i < table->table_depth; i++) {
         printf("    ");
@@ -203,6 +215,7 @@ void print_fun_symbol_table(fun_symbol_table *table) {
 
 void print_fun_symbol_table_chain(fun_symbol_table* table) {
     DBUG_ENTER("print_fun_symbol_table_chain");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
     print_fun_symbol_table(table);
     if(table->upper != NULL)
         print_fun_symbol_table_chain(table->upper);

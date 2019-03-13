@@ -82,22 +82,32 @@ SUBPHASE( fsp,
 SUBPHASE(prt_sp_ast, "Printing split AST", PRTdoPrint, ALWAYS, i2a)
 #endif
 
+SUBPHASE( vrn,
+          "Updating renamed variable names",
+          VRNdo,
+          ALWAYS,
+          i2a)
+
+#ifndef DBUG_OFF
+SUBPHASE(prt_rn_ast, "Printing split AST", PRTdoPrint, ALWAYS, i2a)
+#endif
+
 ENDPHASE(i2a)
 
 /******************************************************************************/
 
 
-PHASE(sac,
-       "Continuing semantic analysis",
-       ALWAYS)
+// PHASE(sac,
+//        "Continuing semantic analysis",
+//        ALWAYS)
 
-SUBPHASE ( tc,
-           "Type checking",
-           TCdo,
-           ALWAYS,
-           sac)
+// SUBPHASE ( tc,
+//            "Type checking",
+//            TCdo,
+//            ALWAYS,
+//            sac)
 
-ENDPHASE(tc)
+// ENDPHASE(tc)
 
 /******************************************************************************/
 

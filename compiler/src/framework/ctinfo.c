@@ -358,7 +358,7 @@ static void AbortCompilation() {
  ******************************************************************************/
 
 static void InternalCompilerErrorBreak(int sig) {
-    IS_UNUSED(sig);
+    UNUSED(sig);
     fprintf(stderr,
                      "\n\n"
                      "OOOPS your program crashed the compiler 8-((\n\n");
@@ -388,7 +388,7 @@ static void InternalCompilerErrorBreak(int sig) {
 static
 void UserForcedBreak(int sig)
 {
-    IS_UNUSED(sig);
+    UNUSED(sig);
 
     CleanUp();
     exit(0);
@@ -851,7 +851,7 @@ void CTInote(const char *format, ...)
 
 void CTIterminateCompilation(node *syntax_tree) {
     DBUG_ENTER("CTIterminateCompilation");
-    IS_UNUSED(syntax_tree);
+    UNUSED(syntax_tree);
     /*
      *  At last, we display a success message.
      */
