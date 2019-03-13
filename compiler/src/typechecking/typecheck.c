@@ -57,9 +57,57 @@ static info *TCfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
+node* TCfunctiondefinition(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCfunctiondefinition");
+
+    fun_symbol_table *f_old = CURRENT_FUN_SYMBOL_TABLE(arg_info);
+    symbol_table *s_old = CURRENT_SYMBOL_TABLE(arg_info);
+
+    CURRENT_FUN_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node);
+    CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node);
+
+    if (FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) != NULL) {
+        FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
+    }
+
+    CURRENT_FUN_SYMBOL_TABLE(arg_info) = f_old;
+    CURRENT_SYMBOL_TABLE(arg_info) = s_old;
+
+    DBUG_RETURN(arg_node);
+}
 
 node* TCvarassign(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCvarassign");
+
+    fun_symbol_table* f_table = CURRENT_FUN_SYMBOL_TABLE(arg_info);
+    symbol_table* s_table = CURRENT_SYMBOL_TABLE(arg_info);
+
+    symbol_table_entry* entry = symbol_table_get_name(s_table, VARASSIGN_VARNAME(arg_node));
+    TYPE(arg_info) = entry->vartype;
+
+    info* val_info = TCmakeInfo();
+    CURRENT_FUN_SYMBOL_TABLE(val_info) = f_table;
+    CURRENT_SYMBOL_TABLE(val_info) = s_table;
+
+    if (VARASSIGN_VALUE(arg_node) != NULL) {
+        TRAVdo(VARASSIGN_VALUE(arg_node), val_info);
+    }
+
+    if (TYPE(val_info) != TYPE(arg_info)) {
+        CTIerror("Wrong type for %s, expected %s but got %s", entry->name, print_type(TYPE(arg_info)), print_type(TYPE(val_info)));
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* TCfuncall(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCfuncall");
+
+    fun_symbol_table *f_table = CURRENT_FUN_SYMBOL_TABLE(arg_info);
+    symbol_table *s_table = CURRENT_SYMBOL_TABLE(arg_info);
+
+    fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
+    TYPE(arg_info) = entry->returntype;
 
     DBUG_RETURN(arg_node);
 }

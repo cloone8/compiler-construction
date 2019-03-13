@@ -2,6 +2,8 @@
 #define __TYPECHECK_H__
 #include "types.h"
 
+extern node* TCfuncall(node* arg_node, info* arg_info);
+extern node* TCfunctiondefinition(node* arg_node, info* arg_info);
 extern node* TCvarassign(node* arg_node, info* arg_info);
 extern node* TCintconst(node* arg_node, info* arg_info);
 extern node *TCfloatconst(node *arg_node, info *arg_info);
