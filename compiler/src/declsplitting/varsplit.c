@@ -92,7 +92,7 @@ static node* global_basic(node* arg_node, info* arg_info) {
         GLOBALDEFINITION_VALUES(def) = NULL;
 
         // Create a new variable assignment statement
-        node* new_assign = TBmakeVarassign(varentry->name, initval);
+        node* new_assign = TBmakeVarassign(STRcpy(varentry->name), initval);
         VARASSIGN_VARPOINTER(new_assign) = varentry;
         node* new_statement = TBmakeStatements(new_assign, NULL);
 
