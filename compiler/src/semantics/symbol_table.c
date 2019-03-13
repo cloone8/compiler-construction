@@ -89,9 +89,7 @@ symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name) {
     DBUG_ENTER("symbol_table_get_name");
     DBUG_PRINT("symbol_table_get_name", ("Finding name %s", name));
 
-    for(size_t i = 0;
-        i < table->current_entries;
-        i++) {
+    for(size_t i = 0; i < table->current_entries; i++) {
         symbol_table_entry* current = table->entries[i];
         if(STReq(current->name, name)) {
             DBUG_PRINT("SYMBOL_TABLE_LOOKUP", ("Found name %s", name));
