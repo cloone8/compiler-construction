@@ -1,22 +1,14 @@
 int twos = 0;
 
-int[3] a = [1,2,3];
-
-int two() {
-    int b = 6;
-    twos = twos + 1;
-    return 2;
-}
+int[3] a = 4;
 
 void foo () {
-    int testint = 2;
-    // int [2 , two()] a = two ();
-    int[3] a2 = [1, 2, 3];
-    int [2 , 2] b = [[1,2],[3,4]];
-    int [2 , 2, 2] b2 = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]];
-    int testint2 = 3;
+    int z = 0;
+    int[3, 3] a2 = 5;
 
-    testint = testint + 4;
-    // a[0, 0] = 1;
-    testint2 = 6;
+    for(int i = 3, 10, 1) {
+        for(int j = 0, 5) {
+            z = z + 1;
+        }
+    }
 }

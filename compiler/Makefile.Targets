@@ -123,4 +123,4 @@ util = util.o
 
 
 typechecking = typecheck.o
-declsplitting = varsplit.o declsplitting_lib.o
+declsplitting = varsplit.o declsplitting_lib.o forsplit.o

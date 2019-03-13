@@ -94,6 +94,14 @@
                 </travuser>
             </traversal>
 
+            <traversal id="FSP" name="Splitting and lifting for loop counters" default="sons" include="forsplit.h">
+                <travuser>
+                    <node name="FunctionDefinition" />
+                    <node name="FunctionBody" />
+                    <node name="For" />
+                </travuser>
+            </traversal>
+
             <traversal id="TC" name="Check for conflicting types" default="sons" include="typecheck.h">
                 <travuser>
                     <node name="FunCall" />
@@ -861,7 +869,7 @@
             <sons>
                 <son name="counter">
                     <targets>
-                        <target mandatory="yes">
+                        <target mandatory="no">
                         <node name="BasicVarDeclaration" />
                             <phases>
                                 <all />
