@@ -57,6 +57,13 @@ static info *TCfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
+
+node* TCvarassign(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCvarassign");
+
+    DBUG_RETURN(arg_node);
+}
+
 node *TCbinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCBINOP");
 
@@ -95,7 +102,7 @@ node *TCfloatconst(node *arg_node, info *arg_info) {
 }
 
 node *TCboolconst(node *arg_node, info *arg_info) {
-    DBUG_ENTER("TCintconst");
+    DBUG_ENTER("TCboolconst");
 
     TYPE(arg_info) = TP_bool;
 

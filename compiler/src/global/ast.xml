@@ -98,6 +98,9 @@
                 <travuser>
                     <node name="BinOp" />
                     <node name= "IntConst" />
+                    <node name= "FloatConst" />
+                    <node name= "BoolConst" />
+                    <node name= "VarAssign" />
                 </travuser>
             </traversal>
 
