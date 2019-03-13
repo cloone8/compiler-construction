@@ -124,7 +124,8 @@ node *STBbasicparameter(node *arg_node, info *arg_info) {
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
-    symbol_table_add(current, BASICPARAMETER_NAME(arg_node), BASICPARAMETER_TYPE(arg_node));
+    symbol_table_entry* entry = symbol_table_add(current, BASICPARAMETER_NAME(arg_node), BASICPARAMETER_TYPE(arg_node));
+    BASICPARAMETER_VARPOINTER(arg_node) = entry;
 
     if (BASICPARAMETER_NEXT(arg_node) != NULL) {
         BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
@@ -140,7 +141,8 @@ node *STBarrayparameter(node *arg_node, info *arg_info) {
     type atype = type_to_array_type(ARRAYPARAMETER_TYPE(arg_node));
     ARRAYPARAMETER_TYPE(arg_node) = atype;
 
-    symbol_table_add(current, ARRAYPARAMETER_NAME(arg_node), atype);
+    symbol_table_entry* entry = symbol_table_add(current, ARRAYPARAMETER_NAME(arg_node), atype);
+    ARRAYPARAMETER_VARPOINTER(arg_node) = entry;
 
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
 
@@ -223,7 +225,8 @@ node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
-    symbol_table_add(current, BASICVARDECLARATION_VARNAME(arg_node), BASICVARDECLARATION_TYPE(arg_node));
+    symbol_table_entry* entry = symbol_table_add(current, BASICVARDECLARATION_VARNAME(arg_node), BASICVARDECLARATION_TYPE(arg_node));
+    BASICVARDECLARATION_VARPOINTER(arg_node) = entry;
 
     if (BASICVARDECLARATION_INITVAL(arg_node) != NULL)
         BASICVARDECLARATION_INITVAL(arg_node) = TRAVdo(BASICVARDECLARATION_INITVAL(arg_node), arg_info);
@@ -238,7 +241,8 @@ node *STBarrayvardeclaration(node *arg_node, info *arg_info) {
     type atype = type_to_array_type(ARRAYVARDECLARATION_TYPE(arg_node));
     ARRAYVARDECLARATION_TYPE(arg_node) = atype;
 
-    symbol_table_add(current, ARRAYVARDECLARATION_VARNAME(arg_node), atype);
+    symbol_table_entry* entry = symbol_table_add(current, ARRAYVARDECLARATION_VARNAME(arg_node), atype);
+    ARRAYVARDECLARATION_VARPOINTER(arg_node) = entry;
 
     ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
 
@@ -289,7 +293,9 @@ node *STBarraydimensionvars(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarraydimensionvars");
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
-    symbol_table_add(current, ARRAYDIMENSIONVARS_NAME(arg_node), TP_int);
+
+    symbol_table_entry* entry = symbol_table_add(current, ARRAYDIMENSIONVARS_NAME(arg_node), TP_int);
+    ARRAYDIMENSIONVARS_VARPOINTER(arg_node) = entry;
 
     if(ARRAYDIMENSIONVARS_NEXT(arg_node) != NULL)
         ARRAYDIMENSIONVARS_NEXT(arg_node) = TRAVdo(ARRAYDIMENSIONVARS_NEXT(arg_node), arg_info);

@@ -37,74 +37,74 @@ type array_type_to_type(type current) {
     }
 }
 
-void append_statement_to_tail(node* block_to_append_to, node* new_final_statement) {
+void append_statement_to_tail(node* block_to_append_to, node* statement_to_append) {
     DBUG_ENTER("append_statement_to_tail");
 
     DBUG_ASSERT((block_to_append_to != NULL), "append_statement_to_tail called with NULL block_to_append_to");
-    DBUG_ASSERT((new_final_statement != NULL), "append_statement_to_tail called with NULL new_final_statement");
+    DBUG_ASSERT((statement_to_append != NULL), "append_statement_to_tail called with NULL statement_to_append");
     DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_statements), "append_statement_to_tail called with block_to_append_to not being a statement type node");
-    DBUG_ASSERT((NODE_TYPE(new_final_statement) == N_statements), "append_statement_to_tail called with new_final_statement not being a statement type node");
+    DBUG_ASSERT((NODE_TYPE(statement_to_append) == N_statements), "append_statement_to_tail called with statement_to_append not being a statement type node");
 
     node* current_final_statement = block_to_append_to;
     while(STATEMENTS_NEXT(current_final_statement) != NULL) {
         current_final_statement = STATEMENTS_NEXT(current_final_statement);
     }
     // End found, link the new node to the end
-    STATEMENTS_NEXT(current_final_statement) = new_final_statement;
+    STATEMENTS_NEXT(current_final_statement) = statement_to_append;
 
     DBUG_VOID_RETURN;
 }
 
-void append_declaration_to_tail(node *block_to_append_to, node *new_final_declaration) {
+void append_declaration_to_tail(node *block_to_append_to, node *declaration_to_append) {
     DBUG_ENTER("append_declaration_to_tail");
 
     DBUG_ASSERT((block_to_append_to != NULL), "append_declaration_to_tail called with NULL block_to_append_to");
-    DBUG_ASSERT((new_final_declaration != NULL), "append_declaration_to_tail called with NULL new_final_declaration");
+    DBUG_ASSERT((declaration_to_append != NULL), "append_declaration_to_tail called with NULL declaration_to_append");
     DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_declaration), "append_declaration_to_tail called with block_to_append_to not being a declaration type node");
-    DBUG_ASSERT((NODE_TYPE(new_final_declaration) == N_declaration), "append_declaration_to_tail called with new_final_declaration not being a declaration type node");
+    DBUG_ASSERT((NODE_TYPE(declaration_to_append) == N_declaration), "append_declaration_to_tail called with declaration_to_append not being a declaration type node");
 
     node* current_final_declaration = block_to_append_to;
     while (DECLARATION_NEXT(current_final_declaration) != NULL) {
         current_final_declaration = DECLARATION_NEXT(current_final_declaration);
     }
     // End found, link the new node to the end
-    DECLARATION_NEXT(current_final_declaration) = new_final_declaration;
+    DECLARATION_NEXT(current_final_declaration) = declaration_to_append;
 
     DBUG_VOID_RETURN;
 }
 
-void append_functionvardeclaration_to_tail(node *block_to_append_to, node *new_final_declaration) {
+void append_functionvardeclaration_to_tail(node *block_to_append_to, node *declaration_to_append) {
     DBUG_ENTER("append_functionvardeclaration_to_tail");
 
     DBUG_ASSERT((block_to_append_to != NULL), "append_functionvardeclaration_to_tail called with NULL block_to_append_to");
-    DBUG_ASSERT((new_final_declaration != NULL), "append_functionvardeclaration_to_tail called with NULL new_final_declaration");
+    DBUG_ASSERT((declaration_to_append != NULL), "append_functionvardeclaration_to_tail called with NULL declaration_to_append");
     DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_functionvardeclaration), "append_functionvardeclaration_to_tail called with block_to_append_to not being a functionvardeclaration type node");
-    DBUG_ASSERT((NODE_TYPE(new_final_declaration) == N_functionvardeclaration), "append_functionvardeclaration_to_tail called with new_final_declaration not being a functionvardeclaration type node");
+    DBUG_ASSERT((NODE_TYPE(declaration_to_append) == N_functionvardeclaration), "append_functionvardeclaration_to_tail called with declaration_to_append not being a functionvardeclaration type node");
 
     node* current_final_declaration = block_to_append_to;
     while (FUNCTIONVARDECLARATION_NEXT(current_final_declaration) != NULL) {
         current_final_declaration = FUNCTIONVARDECLARATION_NEXT(current_final_declaration);
     }
     // End found, link the new node to the end
-    FUNCTIONVARDECLARATION_NEXT(current_final_declaration) = new_final_declaration;
+    FUNCTIONVARDECLARATION_NEXT(current_final_declaration) = declaration_to_append;
 
     DBUG_VOID_RETURN;
 }
 
-void append_exprarray_to_tail(node *block_to_append_to, node *new_final_exprarray) {
+void append_exprarray_to_tail(node *block_to_append_to, node *exprarray_to_append) {
     DBUG_ENTER("append_exprarray_to_tail");
 
     DBUG_ASSERT((block_to_append_to != NULL), "append_exprarray_to_tail called with NULL block_to_append_to");
-    DBUG_ASSERT((new_final_exprarray != NULL), "append_exprarray_to_tail called with NULL new_final_exprarray");
+    DBUG_ASSERT((exprarray_to_append != NULL), "append_exprarray_to_tail called with NULL exprarray_to_append");
     DBUG_ASSERT((NODE_TYPE(block_to_append_to) == N_exprarray), "append_exprarray_to_tail called with block_to_append_to not being a exprarray type node");
-    DBUG_ASSERT((NODE_TYPE(new_final_exprarray) == N_exprarray), "append_exprarray_to_tail called with new_final_exprarray not being a exprarray type node");
+    DBUG_ASSERT((NODE_TYPE(exprarray_to_append) == N_exprarray), "append_exprarray_to_tail called with exprarray_to_append not being a exprarray type node");
 
     node* current_final_exprarray = block_to_append_to;
     while (EXPRARRAY_NEXT(current_final_exprarray) != NULL) {
         current_final_exprarray = EXPRARRAY_NEXT(current_final_exprarray);
     }
     // End found, link the new node to the end
-    EXPRARRAY_NEXT(current_final_exprarray) = new_final_exprarray;
+    EXPRARRAY_NEXT(current_final_exprarray) = exprarray_to_append;
 
     DBUG_VOID_RETURN;
 }

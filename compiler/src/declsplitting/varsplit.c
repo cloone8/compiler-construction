@@ -161,7 +161,7 @@ static node* global_array(node* arg_node, info* arg_info) {
                 node* new_init_global = TBmakeGlobal(STRcpy(init_name), init_type, new_def, NULL);
 
                 // Now add the initialiser forloops statements to the __init() function
-                node* initloops = create_array_init_loops(GLOBAL_NAME(arg_node), dims, init_entry, arg_info);
+                node* initloops = create_array_init_loops(GLOBAL_NAME(arg_node), varentry, dims, init_entry, arg_info);
                 prepend_to_initialiser(initloops, arg_info);
                 // Traverse on this new global, to split it up again and add it to the __init() function
                 TRAVdo(new_init_global, arg_info);
@@ -282,10 +282,10 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
             // Add this variable to the symbol table
             symbol_table* sym_table = CURRENT_SYMBOL_TABLE(arg_info);
             symbol_table_entry* init_entry = symbol_table_add(sym_table, init_name, init_type);
-            IS_UNUSED(init_entry);
 
             // Create a new basicvardeclaration holding the value
             node* new_dec = TBmakeBasicvardeclaration(STRcpy(init_name), init_type, EXPRARRAY_CURRENT(initval));
+            BASICVARDECLARATION_VARPOINTER(new_dec) = init_entry;
 
             // Create a new functionvardeclaration from the new basicvardec
             node* new_fundec = TBmakeFunctionvardeclaration(new_dec, NULL);
@@ -294,7 +294,7 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
             TRAVdo(new_fundec, arg_info);
 
             // Now add the initialiser forloops statements to the function statements block
-            node* initloops = create_array_init_loops(ARRAYVARDECLARATION_VARNAME(arg_node), dims, init_entry, arg_info);
+            node* initloops = create_array_init_loops(ARRAYVARDECLARATION_VARNAME(arg_node), varentry, dims, init_entry, arg_info);
 
             if(ASSIGNS(arg_info) != NULL) {
                 append_statement_to_tail(ASSIGNS(arg_info), initloops);

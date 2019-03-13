@@ -75,6 +75,6 @@ node* global_convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
  */
 void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info);
 
-node* create_array_init_loops(char* var_name, node* dims, symbol_table_entry* var_entry, info* arg_info);
+node* create_array_init_loops(char* var_name, symbol_table_entry* array_entry, node* dims, symbol_table_entry* var_entry, info* arg_info);
 
 #endif
