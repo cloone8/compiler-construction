@@ -263,7 +263,7 @@ node* global_convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
         // new variable e.g. "int[1, 2] a" -> "int[tmp-0-a, tmp-1-a] a"
         node* new_varread = TBmakeVarread(STRcpy(new_global_name));
         VARREAD_VARPOINTER(new_varread) = var_entry;
-        EXPRARRAY_CURRENT(current_dim) = new_varread;
+        EXPRARRAY_CURRENT(current_dim) = TBmakeExpr(new_varread);
 
         current_dim = EXPRARRAY_NEXT(current_dim);
     }
@@ -340,12 +340,6 @@ void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
     }
 
     DBUG_VOID_RETURN;
-}
-
-static char* dim_to_name(char* var_name, size_t dim_num) {
-    char name_buffer[STR_BUF_SIZE];
-    snprintf(name_buffer, STR_BUF_SIZE, "%zu", dim_num);
-    return STRcatn(4, "tmp-", name_buffer, "-", var_name);
 }
 
 static char* counter_to_name(char* var_name, size_t counter_num) {
@@ -429,7 +423,7 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         node* current_dim = get_current_dim(dims, iters_left);
         print_exprarray(current_dim);
 
-        node* current_dim_varread = EXPRARRAY_CURRENT(current_dim);
+        node* current_dim_varread = EXPR_CURRENT(EXPRARRAY_CURRENT(current_dim));
         node* dim_varread = TBmakeVarread(STRcpy(VARREAD_VARNAME(current_dim_varread)));
         VARREAD_VARPOINTER(dim_varread) = VARREAD_VARPOINTER(current_dim_varread);
 
