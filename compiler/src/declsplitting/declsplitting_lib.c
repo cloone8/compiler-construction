@@ -416,8 +416,7 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         // Create new symbol table for the forloop and add the new counter to it
         symbol_table* new_forloop_table = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), CURRENT_SYMBOL_TABLE(arg_info)->table_depth + 1);
         symbol_table_entry* new_counter_entry = symbol_table_add(new_forloop_table, new_counter_name, TP_int);
-        node* new_counter_varread = TBmakeVarread(STRcpy(new_counter_name));
-        VARREAD_VARPOINTER(new_counter_varread) = new_counter_entry;
+        IS_UNUSED(new_counter_entry);
 
         // Get the current dimension varread
         node* current_dim = get_current_dim(dims, iters_left);
@@ -426,9 +425,6 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         node* current_dim_varread = EXPR_CURRENT(EXPRARRAY_CURRENT(current_dim));
         node* dim_varread = TBmakeVarread(STRcpy(VARREAD_VARNAME(current_dim_varread)));
         VARREAD_VARPOINTER(dim_varread) = VARREAD_VARPOINTER(current_dim_varread);
-
-        // We traverse the entire array dimension, so the condition is counter < dim
-        node* condition = TBmakeBinop(BO_lt, TBmakeExpr(new_counter_varread), TBmakeExpr(dim_varread));
 
         // Get the inner statements. We change the symbol table so that the recursive function can change create
         // their own symbol table properly.
@@ -439,7 +435,7 @@ static node* array_init_loop_iter(char* var_name, node* dims, symbol_table_entry
         CURRENT_SYMBOL_TABLE(arg_info) = old_table;
 
         // Create the for loop
-        node* forloop = TBmakeFor(counterdec, TBmakeExpr(condition), NULL, inner_statements);
+        node* forloop = TBmakeFor(counterdec, TBmakeExpr(dim_varread), NULL, inner_statements);
 
         // Create the statement
         toreturn = TBmakeStatements(forloop, NULL);
