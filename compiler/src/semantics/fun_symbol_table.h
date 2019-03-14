@@ -27,7 +27,7 @@ typedef struct __fun_symbol_table fun_symbol_table;
 
 fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_depth);
 int fun_symbol_table_free(fun_symbol_table* tofree);
-int fun_symbol_table_add(fun_symbol_table *table, char *name, type return_type, size_t param_amount, type* param_types);
+fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table *table, char *name, type return_type, size_t param_amount, type* param_types);
 fun_symbol_table_entry* fun_symbol_table_get_name(fun_symbol_table* table, char* name);
 fun_symbol_table_entry* fun_symbol_table_get_idx(fun_symbol_table* table, size_t idx);
 int fun_symbol_table_update(fun_symbol_table* table, size_t idx_to_update, char* new_name);

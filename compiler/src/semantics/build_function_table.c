@@ -75,8 +75,9 @@ node *FTBfunction(node *arg_node, info *arg_info) {
     PARAMS(arg_info) = NULL;
     PARAMCOUNT(arg_info) = 0;
 
-    fun_symbol_table_add(CURRENT_SYMBOL_TABLE(arg_info), FUNCTION_NAME(arg_node),
-                         FUNCTION_TYPE(arg_node), paramcount, parameters);
+    fun_symbol_table_entry* entry = fun_symbol_table_add(CURRENT_SYMBOL_TABLE(arg_info), FUNCTION_NAME(arg_node),
+                                                         FUNCTION_TYPE(arg_node), paramcount, parameters);
+    FUNCTION_FUNPOINTER(arg_node) = entry;
 
     if(FUNCTION_DEFINITION(arg_node) != NULL) {
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);

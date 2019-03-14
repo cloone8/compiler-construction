@@ -348,6 +348,17 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="funpointer">
+                    <type name="FunctionPointer">
+                        <targets>
+                            <target mandatory="no">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -566,17 +577,6 @@
                 </attribute>
                 <attribute name="FunSymbolTable">
                     <type name="FunSymbolTable">
-                        <targets>
-                            <target mandatory="no">
-                                <phases>
-                                    <all />
-                                </phases>
-                            </target>
-                        </targets>
-                    </type>
-                </attribute>
-                <attribute name="funpointer">
-                    <type name="FunctionPointer">
                         <targets>
                             <target mandatory="no">
                                 <phases>
