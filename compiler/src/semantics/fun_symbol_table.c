@@ -59,13 +59,13 @@ static void increase_table_size(fun_symbol_table* toincrease) {
     DBUG_VOID_RETURN;
 }
 
-int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, size_t param_amount, type* param_types) {
+fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, size_t param_amount, type* param_types) {
     DBUG_ENTER("fun_symbol_table_add");
     DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     if (fun_symbol_table_get_name(table, name) != NULL) {
         CTIerror("Function %s already in scope", name);
-        DBUG_RETURN(EXIT_FAILURE);
+        DBUG_RETURN(NULL);
     }
 
     fun_symbol_table_entry* new_entry = MEMmalloc(sizeof(fun_symbol_table_entry));
@@ -86,7 +86,7 @@ int fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, 
 
     DBUG_ASSERT((table->entries[table->current_entries - 1] != NULL), "Couldn't add new entry!");
     DBUG_PRINT("fun_symbol_table", ("Added %zu %s %d %zu\n", new_entry->idx, new_entry->name, new_entry->returntype, new_entry->paramamount));
-    DBUG_RETURN(EXIT_SUCCESS);
+    DBUG_RETURN(new_entry);
 }
 
 fun_symbol_table_entry* fun_symbol_table_get_name(fun_symbol_table* table, char* name) {
