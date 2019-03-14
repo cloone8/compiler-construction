@@ -196,24 +196,26 @@ node* TCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncall");
 
     if (FUNCALL_PARAMS(arg_node) != NULL) {
-
         fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
         type* needed = entry->paramtypes;
         size_t params = entry->paramamount;
-        type* given = MEMmalloc(params * sizeof(type));
-        GIVEN(arg_info) = given;
+        type given[params];
 
-        FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
+        info* new_info = TCmakeInfo();
+        GIVEN(new_info) = given;
+
+        FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), new_info);
 
         for (size_t i = 0; i < params; i++) {
-            if (needed[i] != GIVEN(arg_info)[i]) {
+            if (needed[i] != GIVEN(new_info)[i]) {
                 CTIerror("Wrong types given for function %s, argument %zu needs %s, but got, %s", FUNCALL_FUNCTIONNAME(arg_node),
                                                                                       i,
                                                                                       print_type(needed[i]),
-                                                                                      print_type(GIVEN(arg_info)[i]));
+                                                                                      print_type(GIVEN(new_info)[i]));
             }
         }
-        MEMfree(given);
+        GIVEN(new_info) = NULL;
+        TCfreeInfo(new_info);
     }
 
     fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
