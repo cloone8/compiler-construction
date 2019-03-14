@@ -1,7 +1,37 @@
-int foo(int m, int n, int[m,n] a) {
-    return 1;
+#include "test_wouter/array.cvc"
+
+export int main() {
+    int[4] testInt = [1, 2, 3, 4];
+    float[4] testFloat = [1.2, 2.3, 3.4, 4.5];
+    int[2, 2] testIntMat = [[1, 2], [3, 4]];
+    float[2, 2] testFloatMat = [[1.2, 2.3], [3.4, 4.5]];
+    int[3] testScanIntVec;
+    float[3] testScanFloatVec;
+    int[2,2] testScanIntMat;
+    float[2,2] testScanFloatMat;
+    float[2,2] multTest = [[2.0,2.0],[2.0,2.0]];
+    float[2,2] multResult;
+
+    printIntVec(testInt);
+    printFloatVec(testFloat);
+
+    printIntMat(testIntMat);
+    printFloatMat(testFloatMat);
+
+    scanIntVec(testScanIntVec);
+    scanFloatVec(testScanFloatVec);
+
+    printIntVec(testScanIntVec);
+    printFloatVec(testScanFloatVec);
+
+    scanIntMat(testScanIntMat);
+    scanFloatMat(testScanFloatMat);
+
+    printIntMat(testScanIntMat);
+    printFloatMat(testScanFloatMat);
+
+    matMul(multTest, testScanFloatMat, multResult);
+    printFloatMat(multResult);
+
+    return 0;
 }
-
-int[2,2] a = 2;
-
-int d = foo(2, 2, a);

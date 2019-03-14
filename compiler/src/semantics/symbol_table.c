@@ -74,6 +74,7 @@ symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_t
     new_entry->idx = table->next_id++;
     new_entry->name = STRcpy(name);
     new_entry->vartype = var_type;
+    new_entry->table = table;
 
     table->current_entries++;
 

@@ -97,18 +97,33 @@ PHASE(sac,
        "Continuing semantic analysis",
        ALWAYS)
 
-SUBPHASE ( tc,
+SUBPHASE( tc,
            "Type checking",
            TCdo,
            ALWAYS,
            sac)
-SUBPHASE(bc,
+
+SUBPHASE(bdc,
          "Boolean compiling",
-         BCdo,
+         BDCdo,
          ALWAYS,
          sac)
 
-ENDPHASE(tc)
+ENDPHASE(sac)
+
+/******************************************************************************/
+
+PHASE(ict,
+       "Doing internal code transformations",
+       ALWAYS)
+
+SUBPHASE(app,
+         "Expanding array function call parameters",
+         APPdo,
+         ALWAYS,
+         ict)
+
+ENDPHASE(ict)
 
 /******************************************************************************/
 

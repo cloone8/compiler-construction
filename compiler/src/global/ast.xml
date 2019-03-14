@@ -136,9 +136,19 @@
                 </travuser>
             </traversal>
 
-            <traversal id="BDC" name="Compiling boolean conjunction and disjunction" default="sons" include"boolcomp.h">
+            <traversal id="BDC" name="Compiling boolean conjunction and disjunction" default="sons" include="boolcomp.h">
                 <travuser>
                     <node name="BinOp" />
+                    <nide name="BoolConst" />
+                </travuser>
+            </traversal>
+
+            <traversal id="APP" name="Expanding array function parameters" default="sons" include="arrayparams.h">
+                <travuser>
+                    <node name="Function" />
+                    <node name="FunctionDefinition" />
+                    <node name="ArrayParameter" />
+                    <node name="FunCall" />
                 </travuser>
             </traversal>
 
