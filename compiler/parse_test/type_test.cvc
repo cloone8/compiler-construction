@@ -1,13 +1,17 @@
 int foo() {
-    // bool p = 1;
-    // int a = 1 + 2 + 3;
-    float r = bar(true, 3);
-    float bar(bool q, int a) {
+    bool p = false;
+    int a = 1 + 2 + 3;
+    float r = bar(true);
+    float bar(bool q) {
         bool z = true;
         return 1.0;
     }
     return 1;
 }
 
-// float a = foo();
-// bool y = 3.0;
+int b = foo();
+// int a = 2;
+float y = 3.0;
+int a = b + 1;
+
+int gg = 9;
