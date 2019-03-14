@@ -279,6 +279,20 @@ node *TCboolconst(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node *TCcast(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCcast");
+
+    info* new_info = TCmakeInfo();
+
+    CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), new_info);
+
+    TCfreeInfo(new_info);
+
+    TYPE(arg_info) = CAST_CASTTO(arg_node);
+
+    DBUG_RETURN(arg_node);
+}
+
 node *TCdo(node *syntaxtree) {
     DBUG_ENTER("TCdo");
 
