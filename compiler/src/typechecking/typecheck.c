@@ -215,6 +215,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
             }
         }
         GIVEN(new_info) = NULL;
+        TCfreeInfo(new_info);
     }
 
     fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
