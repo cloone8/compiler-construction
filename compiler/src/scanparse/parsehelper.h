@@ -22,4 +22,6 @@ node* funcallExprsToParams(node *exprarray);
 
 int getIntFromText(char* text, int line, int col);
 float getFloatFromText(char* text, int line, int col);
+
+void interpretCPPstring(char* input);
 #endif

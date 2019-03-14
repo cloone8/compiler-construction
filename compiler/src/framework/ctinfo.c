@@ -477,6 +477,39 @@ void CTIerrorLine(int line, const char *format, ...)
     DBUG_VOID_RETURN;
 }
 
+/** <!--********************************************************************-->
+ *
+ * @fn void CTIerrorLine(char* file, int line, const char *format, ...)
+ *
+ *   @brief  produces an error message preceded by file name and line number.
+ *
+ *
+ *   @param line  line number
+ *   @param format  format string like in printf
+ *
+ ******************************************************************************/
+
+void CTIerrorFile(char* file, int line, const char *format, ...)
+{
+    va_list arg_p;
+
+    DBUG_ENTER("CTIerrorFile");
+
+    va_start(arg_p, format);
+
+    fprintf(stderr, "\n");
+    fprintf(stderr, "%sline %d in file \"%s\"\n",
+                     error_message_header, line, file);
+    PrintMessage(error_message_header, format, arg_p);
+
+    va_end(arg_p);
+
+    errors++;
+
+    DBUG_VOID_RETURN;
+}
+
+
 
 /** <!--********************************************************************-->
  *
@@ -652,6 +685,41 @@ void CTIabortLine(int line, const char *format, ...)
     DBUG_VOID_RETURN;
 }
 
+/** <!--********************************************************************-->
+ *
+ * @fn void CTIabortFile(char* file, int line, const char *format, ...)
+ *
+ *   @brief   produces an error message preceded by file name and line number
+ *            and terminates the compilation process.
+ *
+ *   @param line  line number
+ *   @param file the file name
+ *   @param format  format string like in printf
+ *
+ ******************************************************************************/
+
+void CTIabortFile(char* file, int line, const char *format, ...)
+{
+    va_list arg_p;
+
+    DBUG_ENTER("CTIabortLine");
+
+    va_start(arg_p, format);
+
+    fprintf(stderr, "\n");
+    fprintf(stderr, "%sline %d in file \"%s\"\n",
+                     abort_message_header, line, file);
+    PrintMessage(abort_message_header, format, arg_p);
+
+    va_end(arg_p);
+
+    errors++;
+
+    AbortCompilation();
+
+    DBUG_VOID_RETURN;
+}
+
 
 /** <!--********************************************************************-->
  *
@@ -705,6 +773,38 @@ void CTIwarnLine(int line, const char *format, ...)
     DBUG_VOID_RETURN;
 }
 
+
+/** <!--********************************************************************-->
+ *
+ * @fn void CTIwarnFile(int line, const char *format, ...)
+ *
+ *   @brief   produces a warning message preceded by file name and line number.
+ *
+ *   @param file the filename
+ *   @param line  line number
+ *   @param format  format string like in printf
+ *
+ ******************************************************************************/
+
+void CTIwarnFile(char* file, int line, const char *format, ...)
+{
+    va_list arg_p;
+
+    DBUG_ENTER("CTIwarnLine");
+
+    if (global.verbosity >= 1) {
+        va_start(arg_p, format);
+
+        fprintf(stderr, "%sline %d in file \"%s\"\n", warn_message_header, line, file);
+        PrintMessage(warn_message_header, format, arg_p);
+
+        va_end(arg_p);
+
+        warnings++;
+    }
+
+    DBUG_VOID_RETURN;
+}
 
 
 /** <!--********************************************************************-->
@@ -903,5 +1003,3 @@ void CTIabortOutOfMemory(unsigned int request) {
 
     DBUG_VOID_RETURN;
 }
-
-

@@ -84,7 +84,7 @@ node* TCfunction(node* arg_node, info* arg_info) {
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), new_info);
 
         if(!HASRETURN(new_info) && FUNCTION_TYPE(arg_node) != TP_void) {
-            CTIerror("Non void function %s missing return statement!", FUNCTION_NAME(arg_node));
+            CTIerrorLine(NODE_LINE(arg_node), "Non void function %s missing return statement!", FUNCTION_NAME(arg_node));
         }
 
         TCfreeInfo(new_info);
@@ -158,7 +158,28 @@ node* TCvarassign(node* arg_node, info* arg_info) {
     }
 
     if (TYPE(val_info) != TYPE(arg_info)) {
-        CTIerror("Wrong type for %s, expected %s but got %s", entry->name, print_type(TYPE(arg_info)), print_type(TYPE(val_info)));
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, print_type(TYPE(arg_info)), print_type(TYPE(val_info)));
+    }
+
+    TCfreeInfo(val_info);
+
+    DBUG_RETURN(arg_node);
+}
+
+node* TCarrayvarassign(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCarrayvarassign");
+
+    symbol_table_entry* entry = ARRAYVARASSIGN_VARPOINTER(arg_node);
+    TYPE(arg_info) = array_type_to_type(entry->vartype);
+
+    info* val_info = TCmakeInfo();
+
+    if (ARRAYVARASSIGN_VALUES(arg_node) != NULL) {
+        TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), val_info);
+    }
+
+    if (TYPE(val_info) != TYPE(arg_info)) {
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, print_type(TYPE(arg_info)), print_type(TYPE(val_info)));
     }
 
     TCfreeInfo(val_info);
@@ -192,6 +213,15 @@ node *TCvarread(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node *TCarrayvarread(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCvarrayvarread");
+
+    symbol_table_entry* entry = ARRAYVARREAD_VARPOINTER(arg_node);
+    TYPE(arg_info) = array_type_to_type(entry->vartype);
+
+    DBUG_RETURN(arg_node);
+}
+
 node* TCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncall");
 
@@ -208,10 +238,12 @@ node* TCfuncall(node* arg_node, info* arg_info) {
 
         for (size_t i = 0; i < params; i++) {
             if (needed[i] != GIVEN(new_info)[i]) {
-                CTIerror("Wrong types given for function %s, argument %zu needs %s, but got, %s", FUNCALL_FUNCTIONNAME(arg_node),
-                                                                                      i + 1,
-                                                                                      print_type(needed[i]),
-                                                                                      print_type(GIVEN(new_info)[i]));
+                CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node),
+                             "Wrong types given for function %s, argument %zu needs %s, but got, %s",
+                             FUNCALL_FUNCTIONNAME(arg_node),
+                             i + 1,
+                             print_type(needed[i]),
+                             print_type(GIVEN(new_info)[i]));
             }
         }
         GIVEN(new_info) = NULL;

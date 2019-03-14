@@ -1,7 +1,7 @@
 #include "test_wouter/array.cvc"
 
 export int main() {
-    int[4] testInt = 4;
+    int[4] testInt = 4.0;
     float[4] testFloat = [1.2, 2.3, 3.4, 4.5];
     int[2, 2] testIntMat = [[1, 2], [3, 4]];
     float[2, 2] testFloatMat = [[1.2, 2.3], [3.4, 4.5]];
@@ -9,8 +9,10 @@ export int main() {
     float[3] testScanFloatVec;
     int[2,2] testScanIntMat;
     float[2,2] testScanFloatMat;
-    float[2,2] multTest = 2.0;
+    float[2,2] multTest;
     float[2,2] multResult;
+
+    testFloat[0] = 5;
 
     printIntVec(testInt);
     printFloatVec(testFloat);
