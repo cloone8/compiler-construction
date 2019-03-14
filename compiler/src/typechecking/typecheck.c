@@ -209,7 +209,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
         for (size_t i = 0; i < params; i++) {
             if (needed[i] != GIVEN(new_info)[i]) {
                 CTIerror("Wrong types given for function %s, argument %zu needs %s, but got, %s", FUNCALL_FUNCTIONNAME(arg_node),
-                                                                                      i,
+                                                                                      i + 1,
                                                                                       print_type(needed[i]),
                                                                                       print_type(GIVEN(new_info)[i]));
             }

@@ -4,24 +4,26 @@
 #include "types.h"
 #include <stdlib.h>
 
+struct __symbol_table_entry;
+typedef struct __symbol_table_entry symbol_table_entry;
+struct __symbol_table;
+typedef struct __symbol_table symbol_table;
+
 struct __symbol_table_entry {
     size_t idx;
     char* name;
     type vartype;
+    symbol_table* table;
 };
-
-typedef struct __symbol_table_entry symbol_table_entry;
 
 struct __symbol_table {
     size_t next_id;
     size_t table_depth;
     size_t current_entries;
     size_t __entry_array_size;
-    struct __symbol_table* upper;
+    symbol_table* upper;
     symbol_table_entry** entries;
 };
-
-typedef struct __symbol_table symbol_table;
 
 symbol_table* symbol_table_make(symbol_table* parent, size_t table_depth);
 int symbol_table_free(symbol_table* tofree);

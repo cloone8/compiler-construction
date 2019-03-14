@@ -74,6 +74,7 @@ fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table* table, char* name
     new_entry->returntype = return_type;
     new_entry->paramamount = param_amount;
     new_entry->paramtypes = param_types;
+    new_entry->table = table;
 
     table->current_entries++;
 
