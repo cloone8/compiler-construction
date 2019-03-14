@@ -1,0 +1,7 @@
+int foo(int m, int n, int[m,n] a) {
+    return 1;
+}
+
+int[2,2] a = 2;
+
+int d = foo(2, 2, a);

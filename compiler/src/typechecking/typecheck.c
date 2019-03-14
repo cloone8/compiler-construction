@@ -161,13 +161,13 @@ node* TCvarassign(node* arg_node, info* arg_info) {
         CTIerror("Wrong type for %s, expected %s but got %s", entry->name, print_type(TYPE(arg_info)), print_type(TYPE(val_info)));
     }
 
+    TCfreeInfo(val_info);
+
     DBUG_RETURN(arg_node);
 }
 
 node* TCfuncallparameter(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncallparameter");
-
-    type needed = TYPE(arg_info);
 
     DEPTH(arg_info)++;
     if (FUNCALLPARAMETER_NEXT(arg_node) != NULL) {
@@ -200,7 +200,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
         fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
         type* needed = entry->paramtypes;
         size_t params = entry->paramamount;
-        type* given[params];
+        type given[params];
         GIVEN(arg_info) = given;
 
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);

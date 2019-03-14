@@ -1,8 +1,8 @@
 int foo() {
     bool p = false;
     int a = 1 + 2 + 3;
-    float r = bar(true);
-    float bar(bool q) {
+    float r = bar(true, 4, 5);
+    float bar(bool q, int c , bool bla) {
         bool z = true;
         return 1.0;
     }
