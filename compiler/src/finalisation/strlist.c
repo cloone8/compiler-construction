@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 
-strlist_node* strlistMake(char* content) {
+strlist_node* strlistMake(void* content) {
     DBUG_ASSERT((content != NULL), "strlistMake called with NULL content string pointer");
     strlist_node* new_node = MEMmalloc(sizeof(strlist_node));
 
@@ -32,7 +32,7 @@ void strlistFree(strlist_node* head) {
     }
 }
 
-void  strlistAdd(strlist_node* head, char* content) {
+void  strlistAdd(strlist_node* head, void* content) {
     DBUG_ASSERT((head != NULL), "strlistAdd called with NULL head node");
     DBUG_ASSERT((content != NULL), "strlistAdd called with NULL content string pointer");
 

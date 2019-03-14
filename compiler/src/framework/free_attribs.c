@@ -51,6 +51,8 @@
 #include "free.h"
 #include "dbug.h"
 #include "str.h"
+#include "symbol_table.h"
+#include "fun_symbol_table.h"
 
 #include "util.h"
 
@@ -66,18 +68,16 @@
  * @return result of Free call, usually NULL
  *
  ***************************************************************************/
-char *
-FREEattribString (char *attr, node * parent)
-{
-  DBUG_ENTER ("FREEattribString");
-  UNUSED(parent);
+char* FREEattribString (char *attr, node * parent) {
+    DBUG_ENTER ("FREEattribString");
+    UNUSED(parent);
 
-  if (attr != NULL) {
-    DBUG_PRINT ("FREE", ("Freeing string '%s' at " F_PTR, attr, attr));
-    attr = MEMfree (attr);
-  }
+    if (attr != NULL) {
+        DBUG_PRINT ("FREE", ("Freeing string '%s' at " F_PTR, attr, attr));
+        attr = MEMfree (attr);
+    }
 
-  DBUG_RETURN (attr);
+    DBUG_RETURN (attr);
 }
 
 
@@ -93,12 +93,34 @@ FREEattribString (char *attr, node * parent)
  * @return result of Free call, usually NULL
  *
  ***************************************************************************/
-node *
-FREEattribLink (node *attr, node * parent)
-{
-  DBUG_ENTER ("FREEattribLink");
-  UNUSED(attr);
-  UNUSED(parent);
-  DBUG_RETURN (NULL);
+node* FREEattribLink (node *attr, node * parent) {
+    DBUG_ENTER ("FREEattribLink");
+    UNUSED(attr);
+    UNUSED(parent);
+    DBUG_RETURN (NULL);
 }
 
+
+symbol_table* FREEattribVarSymbolTable(symbol_table * attr, node * parent) {
+    DBUG_ENTER ("FREEattribVarSymbolTable");
+    UNUSED(parent);
+
+    if(attr != NULL) {
+        DBUG_PRINT ("FREE", ("Freeing varsymboltable at " F_PTR, attr));
+        symbol_table_free(attr);
+    }
+
+    DBUG_RETURN (NULL);
+}
+
+fun_symbol_table* FREEattribFunSymbolTable(fun_symbol_table * attr, node * parent) {
+    DBUG_ENTER ("FREEattribFunSymbolTable");
+    UNUSED(parent);
+
+    if(attr != NULL) {
+        DBUG_PRINT ("FREE", ("Freeing funsymboltable at " F_PTR, attr));
+        fun_symbol_table_free(attr);
+    }
+
+    DBUG_RETURN (NULL);
+}

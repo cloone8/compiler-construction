@@ -21,10 +21,10 @@
         <type name="Link" ctype="node*" init="NULL" copy="lookup" />
         <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
         <type name="Type" ctype="type" init="TP_void" copy="literal" />
-        <type name="VarSymbolTable" ctype="symbol_table*" init="NULL" copy="literal" />
+        <type name="VarSymbolTable" ctype="symbol_table*" init="NULL" copy="lookup" />
         <type name="SymbolPointer" ctype="symbol_table_entry*" init="NULL" copy="literal" />
         <type name="FunctionPointer" ctype="fun_symbol_table_entry*" init="NULL" copy="literal" />
-        <type name="FunSymbolTable" ctype="fun_symbol_table*" init="NULL" copy="literal" />
+        <type name="FunSymbolTable" ctype="fun_symbol_table*" init="NULL" copy="lookup" />
     </attributetypes>
 
 <!--

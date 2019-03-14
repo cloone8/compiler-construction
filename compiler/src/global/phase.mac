@@ -93,17 +93,17 @@ ENDPHASE(i2a)
 /******************************************************************************/
 
 
-PHASE(sac,
-       "Continuing semantic analysis",
-       ALWAYS)
+// PHASE(sac,
+//        "Continuing semantic analysis",
+//        ALWAYS)
 
-SUBPHASE ( tc,
-           "Type checking",
-           TCdo,
-           ALWAYS,
-           sac)
+// SUBPHASE ( tc,
+//            "Type checking",
+//            TCdo,
+//            ALWAYS,
+//            sac)
 
-ENDPHASE(tc)
+// ENDPHASE(tc)
 
 /******************************************************************************/
 
