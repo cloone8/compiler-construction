@@ -77,11 +77,11 @@ node* TCfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfunction");
     UNUSED(arg_info);
 
-    if (FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) != NULL) {
+    if (FUNCTION_DEFINITION(arg_node) != NULL) {
         info* new_info = TCmakeInfo();
         RETURNTYPE(new_info) = FUNCTION_TYPE(arg_node);
 
-        FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), new_info);
+        FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), new_info);
 
         if(!HASRETURN(new_info) && FUNCTION_TYPE(arg_node) != TP_void) {
             CTIerror("Non void function %s missing return statement!", FUNCTION_NAME(arg_node));
@@ -118,6 +118,10 @@ node* TCreturn(node *arg_node, info *arg_info) {
         }
 
         TCfreeInfo(new_info);
+    } else {
+        if(RETURN_VALUE(arg_node) != NULL) {
+            CTIerror("Return statement with value not permitted in void function!");
+        }
     }
 
     DBUG_RETURN(arg_node);
@@ -229,7 +233,18 @@ node *TCbinop(node* arg_node, info* arg_info) {
     TRAVdo(BINOP_RIGHT(arg_node), right_info);
 
     if (TYPE(left_info) == TYPE(right_info)) {
-        TYPE(arg_info) = TYPE(left_info);
+        switch(BINOP_BINOPERATORS(arg_node)) {
+            case BO_lt:
+            case BO_le:
+            case BO_eq:
+            case BO_ne:
+            case BO_ge:
+            case BO_gt:
+                TYPE(arg_info) = TP_bool;
+                break;
+            default:
+                TYPE(arg_info) = TYPE(left_info);
+        }
     } else {
         CTIerror("Unequal types for binop!");
     }
