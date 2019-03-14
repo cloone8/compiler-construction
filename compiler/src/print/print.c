@@ -1308,6 +1308,13 @@ node* PRTprogram(node * arg_node, info * arg_info) {
     DBUG_RETURN (arg_node);
 }
 
+node* PRTconditionalexpr(node* arg_node, info* arg_info) {
+    DBUG_ENTER("PRTconditionalexpr");
+
+
+    DBUG_RETURN(arg_node);
+}
+
 /** <!-- ****************************************************************** -->
  * @brief Prints the given syntaxtree
  *

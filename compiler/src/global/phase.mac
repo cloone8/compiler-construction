@@ -103,7 +103,13 @@ SUBPHASE( tc,
            ALWAYS,
            sac)
 
-ENDPHASE(tc)
+SUBPHASE(bdc,
+         "Boolean compiling",
+         BDCdo,
+         ALWAYS,
+         sac)
+
+ENDPHASE(sac)
 
 /******************************************************************************/
 

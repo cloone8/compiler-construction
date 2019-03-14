@@ -12,6 +12,7 @@
 #include "types.h"
 
 extern node *PRTbinop (node * arg_node, info * arg_info);
+extern node* PRTconditionalexpr(node* arg_node, info* arg_info);
 extern node *PRTerror (node * arg_node, info * arg_info);
 extern node *PRTdeclaration (node * arg_node, info * arg_info);
 extern node *PRTfunction (node * arg_node, info * arg_info);

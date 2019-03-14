@@ -136,6 +136,13 @@
                 </travuser>
             </traversal>
 
+            <traversal id="BDC" name="Compiling boolean conjunction and disjunction" default="sons" include="boolcomp.h">
+                <travuser>
+                    <node name="BinOp" />
+                    <nide name="BoolConst" />
+                </travuser>
+            </traversal>
+
             <traversal id="APP" name="Expanding array function parameters" default="sons" include="arrayparams.h">
                 <travuser>
                     <node name="Function" />
@@ -182,6 +189,7 @@
                 <node name="Constant" />
                 <node name="FunCall" />
                 <node name="ExprArray" />
+                <node name="ConditionalExpr" />
             </target>
         </nodeset>
         <nodeset name="ConstantTypes">
@@ -1727,6 +1735,44 @@
                     </type>
                 </attribute>
             </attributes>
+        </node>
+
+        <node name="ConditionalExpr">
+            <description>
+                Conditional expression for boolean evaluation.
+            </description>
+            <sons>
+                <son name="condition">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="ifBranch">
+                    <targets>
+                        <target mandatory="yes" >
+                        <node name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="elseBranch">
+                    <targets>
+                        <target mandatory="yes" >
+                        <node name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
         </node>
 
     </syntaxtree>
