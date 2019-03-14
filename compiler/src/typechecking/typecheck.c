@@ -17,6 +17,8 @@ struct INFO {
     type final_type;
     size_t paramdepth;
     type* given_params;
+    type expected_returntype;
+    bool has_return;
 };
 
 
@@ -27,6 +29,8 @@ struct INFO {
 #define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
 #define DEPTH(__arg_info_struct__) ((__arg_info_struct__)->paramdepth)
 #define GIVEN(__arg_info_struct__) ((__arg_info_struct__)->given_params)
+#define RETURNTYPE(__arg_info_struct__) ((__arg_info_struct__)->expected_returntype)
+#define HASRETURN(__arg_info_struct__) ((__arg_info_struct__)->has_return)
 
 /*
  * INFO functions
@@ -41,6 +45,9 @@ static info *TCmakeInfo(void) {
     info *result = (info *)MEMmalloc(sizeof(info));
     DEPTH(result) = 0;
     GIVEN(result) = NULL;
+    TYPE(result) = TP_unknown;
+    RETURNTYPE(result) = TP_unknown;
+    HASRETURN(result) = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -59,9 +66,76 @@ static info *TCfreeInfo(info *info) {
 node* TCfunctiondefinition(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfunctiondefinition");
 
-
     if (FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) != NULL) {
         FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* TCfunction(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCfunction");
+    UNUSED(arg_info);
+
+    if (FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) != NULL) {
+        info* new_info = TCmakeInfo();
+        RETURNTYPE(new_info) = FUNCTION_TYPE(arg_node);
+
+        FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), new_info);
+
+        if(!HASRETURN(new_info) && FUNCTION_TYPE(arg_node) != TP_void) {
+            CTIerror("Non void function %s missing return statement!", FUNCTION_NAME(arg_node));
+        }
+
+        TCfreeInfo(new_info);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* TCreturn(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCreturn");
+    type funtype = RETURNTYPE(arg_info);
+
+    DBUG_ASSERT((funtype != TP_unknown), "Unknown return type encountered!");
+    DBUG_ASSERT((funtype != TP_int_array), "Invalid return type encountered!");
+    DBUG_ASSERT((funtype != TP_float_array), "Invalid return type encountered!");
+    DBUG_ASSERT((funtype != TP_bool_array), "Invalid return type encountered!");
+
+    HASRETURN(arg_info) = TRUE;
+
+    if(funtype != TP_void) {
+        if(RETURN_VALUE(arg_node) == NULL) {
+            CTIerror("Return statement without value not permitted in non-void function!");
+        }
+
+        info* new_info = TCmakeInfo();
+
+        TRAVdo(RETURN_VALUE(arg_node), new_info);
+
+        if(TYPE(new_info) != funtype) {
+            CTIerror("Return statement with invalid type! Expected %s but got %s", print_type(funtype), print_type(TYPE(new_info)));
+        }
+
+        TCfreeInfo(new_info);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* TCfunctionbody(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCfunctionbody");
+
+    if(FUNCTIONBODY_STATEMENTS(arg_node) != NULL) {
+        FUNCTIONBODY_STATEMENTS(arg_node) = TRAVdo(FUNCTIONBODY_STATEMENTS(arg_node), arg_info);
+    }
+
+    if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
+        FUNCTIONBODY_VARDECLARATIONS(arg_node) = TRAVdo(FUNCTIONBODY_VARDECLARATIONS(arg_node), arg_info);
+    }
+
+    if(FUNCTIONBODY_LOCALFUNCTIONS(arg_node) != NULL) {
+        FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(arg_node), arg_info);
     }
 
     DBUG_RETURN(arg_node);
@@ -138,7 +212,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
 }
 
 node *TCbinop(node* arg_node, info* arg_info) {
-    DBUG_ENTER("TCBINOP");
+    DBUG_ENTER("TCbinop");
 
     info* left_info = TCmakeInfo();
     info *right_info = TCmakeInfo();
@@ -149,7 +223,7 @@ node *TCbinop(node* arg_node, info* arg_info) {
     if (TYPE(left_info) == TYPE(right_info)) {
         TYPE(arg_info) = TYPE(left_info);
     } else {
-        CTIerror("Wrong types for binop");
+        CTIerror("Unequal types for binop!");
     }
 
     TCfreeInfo(left_info);

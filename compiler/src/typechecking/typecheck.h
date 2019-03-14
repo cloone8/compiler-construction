@@ -10,6 +10,9 @@ extern node* TCintconst(node* arg_node, info* arg_info);
 extern node *TCfloatconst(node *arg_node, info *arg_info);
 extern node *TCboolconst(node *arg_node, info *arg_info);
 extern node *TCbinop(node *arg_node, info *arg_info);
+extern node *TCreturn(node *arg_node, info *arg_info);
+extern node *TCfunctionbody(node *arg_node, info *arg_info);
+extern node *TCfunction(node *arg_node, info *arg_info);
 
 extern node *TCdo(node * syntaxtree);
 
