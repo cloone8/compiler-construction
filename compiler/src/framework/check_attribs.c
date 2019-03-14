@@ -53,6 +53,47 @@
 #include "dbug.h"
 #include "util.h"
 
+
+/** <!--******************************************************************-->
+ *
+ * @fn CHKMattribVarSymbolTable
+ *
+ * @brief Touch VarSymbolTable attribute
+ *
+ * @param attr VarSymbolTable node to process
+ * @param arg_info arg_info structure
+ *
+ * @return the VarSymbolTable
+ *
+ ***************************************************************************/
+symbol_table* CHKMattribVarSymbolTable(symbol_table * attr, info * arg_info) {
+  DBUG_ENTER("CHKMattribVarSymtolTable");
+  UNUSED(arg_info);
+  /* do nothing */
+
+  DBUG_RETURN (attr);
+}
+
+/** <!--******************************************************************-->
+ *
+ * @fn CHKMattribFunSymbolTable
+ *
+ * @brief Touch FunSymbolTable attribute
+ *
+ * @param attr FunSymbolTable node to process
+ * @param arg_info arg_info structure
+ *
+ * @return the FunSymbolTable
+ *
+ ***************************************************************************/
+fun_symbol_table* CHKMattribFunSymbolTable(fun_symbol_table * attr, info * arg_info) {
+  DBUG_ENTER("CHKMattribFunSymtolTable");
+  UNUSED(arg_info);
+  /* do nothing */
+
+  DBUG_RETURN (attr);
+}
+
 /** <!--******************************************************************-->
  *
  * @fn CHKMattribString
@@ -65,9 +106,7 @@
  * @return the string
  *
  ***************************************************************************/
-char *
-CHKMattribString(char *attr, info * arg_info)
-{
+char* CHKMattribString(char *attr, info * arg_info) {
   DBUG_ENTER("CHKMattribString");
   UNUSED(arg_info);
   /* do nothing */
@@ -88,9 +127,7 @@ CHKMattribString(char *attr, info * arg_info)
  * @return NULL
  *
  ***************************************************************************/
-char *
-CHKMattribSharedString(char *attr, info * arg_info)
-{
+char* CHKMattribSharedString(char *attr, info * arg_info) {
   DBUG_ENTER("CHKMattribSharedString");
   UNUSED(arg_info);
   /* do nothing */
@@ -111,9 +148,7 @@ CHKMattribSharedString(char *attr, info * arg_info)
  * @return the attribute
  *
  ***************************************************************************/
-node *
-CHKMattribNode(node * attr, info * arg_info)
-{
+node* CHKMattribNode(node * attr, info * arg_info) {
   DBUG_ENTER("CHKMattribNode");
 
   if(attr != NULL) {
@@ -137,9 +172,7 @@ CHKMattribNode(node * attr, info * arg_info)
  * @return entire attribute
  *
  ***************************************************************************/
-node *
-CHKMattribLink(node * attr, info * arg_info)
-{
+node* CHKMattribLink(node * attr, info * arg_info) {
   DBUG_ENTER("CHKMattribLink");
   UNUSED(arg_info);
   /*
@@ -163,11 +196,8 @@ CHKMattribLink(node * attr, info * arg_info)
  * @return entire attribute
  *
  ***************************************************************************/
-node *
-CHKMattribExtLink(node * attr, info * arg_info)
-{
+node* CHKMattribExtLink(node * attr, info * arg_info) {
   DBUG_ENTER("CHKMattribExtLink");
   UNUSED(arg_info);
   DBUG_RETURN(attr);
 }
-

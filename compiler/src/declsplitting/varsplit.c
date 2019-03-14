@@ -223,7 +223,7 @@ node* VSPbasicvardeclaration(node* arg_node, info* arg_info) {
 
         BASICVARDECLARATION_INITVAL(arg_node) = NULL;
 
-        node* new_varassign = TBmakeVarassign(varentry->name, initval);
+        node* new_varassign = TBmakeVarassign(STRcpy(varentry->name), initval);
         VARASSIGN_VARPOINTER(new_varassign) = varentry;
         node* new_statement = TBmakeStatements(new_varassign, NULL);
 
