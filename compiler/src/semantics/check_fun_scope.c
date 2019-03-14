@@ -113,11 +113,7 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
         FUNCALL_FUNPOINTER(arg_node) = entry;
     }
 
-    printf("Scoping %s\n", FUNCALL_FUNCTIONNAME(arg_node));
-
     check_valid_parameter_count(entry, arg_node, arg_info);
-
-
 
     DBUG_RETURN(arg_node);
 }
