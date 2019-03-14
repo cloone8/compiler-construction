@@ -14,8 +14,6 @@
  * INFO structure
  */
 struct INFO {
-    fun_symbol_table *current_fun_symbol_table;
-    symbol_table *current_symbol_table;
     type final_type;
     size_t paramdepth;
     type* given_params;
@@ -26,8 +24,6 @@ struct INFO {
  * INFO macros
  */
 
-#define CURRENT_FUN_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_fun_symbol_table)
-#define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_symbol_table)
 #define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
 #define DEPTH(__arg_info_struct__) ((__arg_info_struct__)->paramdepth)
 #define GIVEN(__arg_info_struct__) ((__arg_info_struct__)->given_params)
@@ -43,11 +39,8 @@ static info *TCmakeInfo(void) {
     DBUG_ENTER("TCmakeInfo");
 
     info *result = (info *)MEMmalloc(sizeof(info));
-    CURRENT_FUN_SYMBOL_TABLE(result) = NULL;
-    CURRENT_SYMBOL_TABLE(result) = NULL;
     DEPTH(result) = 0;
     GIVEN(result) = NULL;
-    
 
     DBUG_RETURN(result);
 }
@@ -66,18 +59,10 @@ static info *TCfreeInfo(info *info) {
 node* TCfunctiondefinition(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfunctiondefinition");
 
-    fun_symbol_table *f_old = CURRENT_FUN_SYMBOL_TABLE(arg_info);
-    symbol_table *s_old = CURRENT_SYMBOL_TABLE(arg_info);
-
-    CURRENT_FUN_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node);
-    CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node);
 
     if (FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) != NULL) {
         FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
     }
-
-    CURRENT_FUN_SYMBOL_TABLE(arg_info) = f_old;
-    CURRENT_SYMBOL_TABLE(arg_info) = s_old;
 
     DBUG_RETURN(arg_node);
 }
@@ -85,15 +70,10 @@ node* TCfunctiondefinition(node* arg_node, info* arg_info) {
 node* TCvarassign(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCvarassign");
 
-    fun_symbol_table* f_table = CURRENT_FUN_SYMBOL_TABLE(arg_info);
-    symbol_table* s_table = CURRENT_SYMBOL_TABLE(arg_info);
-
-    symbol_table_entry* entry = symbol_table_get_name(s_table, VARASSIGN_VARNAME(arg_node));
+    symbol_table_entry* entry = VARASSIGN_VARPOINTER(arg_node);
     TYPE(arg_info) = entry->vartype;
 
     info* val_info = TCmakeInfo();
-    CURRENT_FUN_SYMBOL_TABLE(val_info) = f_table;
-    CURRENT_SYMBOL_TABLE(val_info) = s_table;
 
     if (VARASSIGN_VALUE(arg_node) != NULL) {
         TRAVdo(VARASSIGN_VALUE(arg_node), val_info);
@@ -108,9 +88,6 @@ node* TCvarassign(node* arg_node, info* arg_info) {
 
 node* TCfuncallparameter(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncallparameter");
-
-    fun_symbol_table *f_table = CURRENT_FUN_SYMBOL_TABLE(arg_info);
-    symbol_table *s_table = CURRENT_SYMBOL_TABLE(arg_info);
 
     type needed = TYPE(arg_info);
 
@@ -128,20 +105,17 @@ node* TCfuncallparameter(node* arg_node, info* arg_info) {
 node* TCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncall");
 
-    fun_symbol_table *f_table = CURRENT_FUN_SYMBOL_TABLE(arg_info);
-    symbol_table *s_table = CURRENT_SYMBOL_TABLE(arg_info);
-
     if (FUNCALL_PARAMS(arg_node) != NULL) {
         // DEPTH(arg_info)++;
 
-        fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
+        fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
         type* needed = entry->paramtypes;
         size_t params = entry->paramamount;
         type* given[params];
         GIVEN(arg_info) = given;
-        
+
         // TYPE(arg_info) = needed[params - DEPTH(arg_info)];
-        
+
         DEPTH(arg_info)++;
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
         DEPTH(arg_info)--;
@@ -181,7 +155,7 @@ node *TCbinop(node* arg_node, info* arg_info) {
     TCfreeInfo(left_info);
     TCfreeInfo(right_info);
 
-    DBUG_RETURN(arg_node);    
+    DBUG_RETURN(arg_node);
 }
 
 node* TCintconst(node* arg_node, info* arg_info) {
@@ -213,13 +187,6 @@ node *TCdo(node *syntaxtree) {
 
     TRAVpush(TR_tc);
     info *arg_info = TCmakeInfo();
-
-
-    symbol_table* global_symbol_table = PROGRAM_VARSYMBOLTABLE(syntaxtree);
-    CURRENT_SYMBOL_TABLE(arg_info) = global_symbol_table;
-
-    fun_symbol_table *global_fun_table = PROGRAM_FUNSYMBOLTABLE(syntaxtree);
-    CURRENT_FUN_SYMBOL_TABLE(arg_info) = global_fun_table;
 
     syntaxtree = TRAVdo(syntaxtree, arg_info);
 
