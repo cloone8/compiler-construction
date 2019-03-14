@@ -157,8 +157,8 @@ node* TCfuncall(node* arg_node, info* arg_info) {
         // }
     }
 
-    // fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
-    // TYPE(arg_info) = entry->returntype;
+    fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
+    TYPE(arg_info) = entry->returntype;
 
     DBUG_RETURN(arg_node);
 }
