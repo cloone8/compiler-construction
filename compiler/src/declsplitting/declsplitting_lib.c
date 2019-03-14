@@ -361,6 +361,7 @@ static node* dims_to_positions(char* var_name, node* dims, info* arg_info) {
         char* countername = counter_to_name(var_name, dimnum++);
         symbol_table_entry* counter_entry = var_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), countername);
         DBUG_ASSERT((counter_entry != NULL), "Couldn't find counter symbol table entry!");
+        MEMfree(countername);
 
         node* varread = TBmakeVarread(STRcpy(counter_entry->name));
         VARREAD_VARPOINTER(varread) = counter_entry;
@@ -423,6 +424,7 @@ static node* array_init_loop_iter(char* var_name, symbol_table_entry* array_entr
         symbol_table* new_forloop_table = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), CURRENT_SYMBOL_TABLE(arg_info)->table_depth + 1);
         symbol_table_entry* new_counter_entry = symbol_table_add(new_forloop_table, new_counter_name, TP_int);
         BASICVARDECLARATION_VARPOINTER(counterdec) = new_counter_entry;
+        MEMfree(new_counter_name);
 
         // Get the current dimension varread
         node* current_dim = get_current_dim(dims, iters_left);
