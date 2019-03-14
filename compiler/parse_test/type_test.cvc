@@ -1,9 +1,9 @@
 int foo() {
-    bool p = 1;
-    int a = 1 + 2 + 3;
+    // bool p = 1;
+    // int a = 1 + 2 + 3;
     float r = bar(true, 3);
     float bar(bool q, int a) {
-        bool z = 44;
+        bool z = true;
         return 1.0;
     }
     return 1;

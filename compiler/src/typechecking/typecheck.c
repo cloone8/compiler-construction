@@ -18,6 +18,7 @@ struct INFO {
     symbol_table *current_symbol_table;
     type final_type;
     size_t paramdepth;
+    type* given_params;
 };
 
 
@@ -29,6 +30,7 @@ struct INFO {
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_symbol_table)
 #define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
 #define DEPTH(__arg_info_struct__) ((__arg_info_struct__)->paramdepth)
+#define GIVEN(__arg_info_struct__) ((__arg_info_struct__)->given_params)
 
 /*
  * INFO functions
@@ -44,6 +46,7 @@ static info *TCmakeInfo(void) {
     CURRENT_FUN_SYMBOL_TABLE(result) = NULL;
     CURRENT_SYMBOL_TABLE(result) = NULL;
     DEPTH(result) = 0;
+    GIVEN(result) = NULL;
     
 
     DBUG_RETURN(result);
@@ -111,26 +114,13 @@ node* TCfuncallparameter(node* arg_node, info* arg_info) {
 
     type needed = TYPE(arg_info);
 
-    info* val = TCmakeInfo();
-
-    FUNCALLPARAMETER_VALUE(arg_node) = TRAVdo(FUNCALLPARAMETER_VALUE(arg_node), val);
-
-    DEPTH(arg_info)++;
     if (FUNCALLPARAMETER_NEXT(arg_node) != NULL) {
         FUNCALLPARAMETER_NEXT(arg_node) = TRAVdo(FUNCALLPARAMETER_NEXT(arg_node), arg_info);
     }
 
-    printf("DEPTH %zu \n", DEPTH(arg_info));
-    printf("type1 %s \n", print_type(TYPE(arg_info)));
-    printf("type2 %s \n", print_type(TYPE(val)));
-
-    if (needed != TYPE(val)) {
-        // printf("netjs %s %s %zu", print_type(TYPE(arg_info)), print_type(TYPE(arg_info)), DEPTH(arg_info));
-        CTIerror("Wrong type for funcall, expected %s but got %s", print_type(TYPE(arg_info)), print_type(TYPE(val)));
+    if (FUNCALLPARAMETER_VALUE(arg_node) != NULL) {
+        GIVEN(arg_info)[DEPTH(arg_info)] = TYPE(arg_info);
     }
-    TYPE(arg_info) = TYPE(val);
-    DEPTH(arg_info)--;
-
 
     DBUG_RETURN(arg_node);
 }
@@ -147,20 +137,28 @@ node* TCfuncall(node* arg_node, info* arg_info) {
         fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
         type* needed = entry->paramtypes;
         size_t params = entry->paramamount;
+        type* given[params];
+        GIVEN(arg_info) = given;
         
-        TYPE(arg_info) = needed[params - DEPTH(arg_info)];
+        // TYPE(arg_info) = needed[params - DEPTH(arg_info)];
+        
+        DEPTH(arg_info)++;
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
+        DEPTH(arg_info)--;
 
-        // DEPTH(arg_info)--;
-
+        for (size_t i = 0; i < params; i++) {
+            if (needed[i] != GIVEN(arg_info)[i]) {
+                printf("error");
+            }
+        }
 
         // if (needed[0] == TYPE(arg_info)) {
         //     printf("netjs");
         // }
     }
 
-    fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
-    TYPE(arg_info) = entry->returntype;
+    // fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
+    // TYPE(arg_info) = entry->returntype;
 
     DBUG_RETURN(arg_node);
 }
