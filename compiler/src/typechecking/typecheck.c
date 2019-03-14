@@ -165,13 +165,25 @@ node* TCfuncallparameter(node* arg_node, info* arg_info) {
 
     type needed = TYPE(arg_info);
 
+    DEPTH(arg_info)++;
     if (FUNCALLPARAMETER_NEXT(arg_node) != NULL) {
         FUNCALLPARAMETER_NEXT(arg_node) = TRAVdo(FUNCALLPARAMETER_NEXT(arg_node), arg_info);
     }
+    DEPTH(arg_info)--;
 
     if (FUNCALLPARAMETER_VALUE(arg_node) != NULL) {
+        FUNCALLPARAMETER_VALUE(arg_node) = TRAVdo(FUNCALLPARAMETER_VALUE(arg_node), arg_info);
         GIVEN(arg_info)[DEPTH(arg_info)] = TYPE(arg_info);
     }
+
+    DBUG_RETURN(arg_node);
+}
+
+node *TCvarread(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCvarread");
+
+    symbol_table_entry* entry = VARREAD_VARPOINTER(arg_node);
+    TYPE(arg_info) = entry->vartype;
 
     DBUG_RETURN(arg_node);
 }
@@ -180,7 +192,6 @@ node* TCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncall");
 
     if (FUNCALL_PARAMS(arg_node) != NULL) {
-        // DEPTH(arg_info)++;
 
         fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
         type* needed = entry->paramtypes;
@@ -188,24 +199,21 @@ node* TCfuncall(node* arg_node, info* arg_info) {
         type* given[params];
         GIVEN(arg_info) = given;
 
-        // TYPE(arg_info) = needed[params - DEPTH(arg_info)];
-
-        DEPTH(arg_info)++;
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
-        DEPTH(arg_info)--;
 
         for (size_t i = 0; i < params; i++) {
             if (needed[i] != GIVEN(arg_info)[i]) {
-                printf("error");
+                CTIerror("Wrong types given for function %s, argument %zu needs %s, but got, %s", FUNCALL_FUNCTIONNAME(arg_node),
+                                                                                      i,
+                                                                                      print_type(needed[i]),
+                                                                                      print_type(GIVEN(arg_info)[i]));
             }
         }
-
-        // if (needed[0] == TYPE(arg_info)) {
-        //     printf("netjs");
-        // }
     }
 
-    fun_symbol_table_entry* entry = fun_symbol_table_get_name(f_table, FUNCALL_FUNCTIONNAME(arg_node));
+    fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
+
+    printf("%s\n", FUNCALL_FUNCTIONNAME(arg_node));
     TYPE(arg_info) = entry->returntype;
 
     DBUG_RETURN(arg_node);

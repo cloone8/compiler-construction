@@ -3,6 +3,7 @@
 #include "types.h"
 
 extern node* TCfuncallparameter(node* arg_node, info* arg_info);
+extern node* TCvarread(node* arg_node, info* arg_info);
 extern node* TCfuncall(node* arg_node, info* arg_info);
 extern node* TCfunctiondefinition(node* arg_node, info* arg_info);
 extern node* TCvarassign(node* arg_node, info* arg_info);

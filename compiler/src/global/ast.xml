@@ -131,6 +131,7 @@
                     <node name="BoolConst" />
                     <node name="VarAssign" />
                     <node name="Return" />
+                    <node name= "VarRead" />
                 </travuser>
             </traversal>
 

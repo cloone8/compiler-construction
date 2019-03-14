@@ -31,7 +31,7 @@ void baz() {
     for (int i = 1, 10) {
         printInt(i);
         for (int i = 1, 10) {
-            //i = 0;
+            // i = 0;
             printInt(i);
         }
         printInt(i);
