@@ -216,8 +216,8 @@ node* TCfuncall(node* arg_node, info* arg_info) {
     }
 
     fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
-
     printf("%s\n", FUNCALL_FUNCTIONNAME(arg_node));
+    DBUG_ASSERT((entry != NULL), "Entry is null!");
     TYPE(arg_info) = entry->returntype;
 
     DBUG_RETURN(arg_node);

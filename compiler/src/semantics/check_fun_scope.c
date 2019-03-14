@@ -59,7 +59,7 @@ static info *CFSfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node) {
+static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node, info* arg_info) {
     DBUG_ENTER("check_parameter_count");
 
     DBUG_ASSERT((NODE_TYPE(funcall_node) == N_funcall), "valid_parameter_count called with an invalid node type!");
@@ -72,6 +72,8 @@ static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node*
 
     while(param != NULL) {
         count_actual++;
+        // Scope any funcalls here as well
+        TRAVdo(param, arg_info);
         param = FUNCALLPARAMETER_NEXT(param);
     }
 
@@ -111,7 +113,11 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
         FUNCALL_FUNPOINTER(arg_node) = entry;
     }
 
-    check_valid_parameter_count(entry, arg_node);
+    printf("Scoping %s\n", FUNCALL_FUNCTIONNAME(arg_node));
+
+    check_valid_parameter_count(entry, arg_node, arg_info);
+
+
 
     DBUG_RETURN(arg_node);
 }
