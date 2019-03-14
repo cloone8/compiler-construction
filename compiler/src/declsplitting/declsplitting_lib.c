@@ -60,7 +60,6 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
             indices[current_nesting_level - 1] = current_index;
         }
 
-
         if(current_nesting_level == init_nesting_level) {
             // We have arrived at the deepest nesting level. Time to actually create the statement.
             DBUG_PRINT("exprarray_to_inits_rec", ("Max nesting level of %zu reached, filling", current_nesting_level + 1));
@@ -82,7 +81,7 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
             EXPRARRAY_CURRENT(current_expr) = NULL;
 
             // Create a new arrayvarassign statement assigning this position to the newly
-            // retrieved valie
+            // retrieved value
             node* new_varassign = TBmakeArrayvarassign(STRcpy(varname), indices_to_positions(init_nesting_level, indices), value);
             ARRAYVARASSIGN_VARPOINTER(new_varassign) = varentry;
             node* statement = TBmakeStatements(new_varassign, NULL);
@@ -149,6 +148,7 @@ node* exprarray_to_inits(char* varname, symbol_table_entry* varentry,
     DBUG_PRINT("exprarray_to_inits", ("Processing variable %s", varname));
     print_exprarray(exprs);
     node* result = exprarray_to_inits_rec(varname, varentry, init_nesting_level, 0, indices, exprs);
+    // FREEexprarray(exprs, NULL);
     DBUG_RETURN(result);
 }
 
