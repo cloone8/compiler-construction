@@ -103,12 +103,6 @@ SUBPHASE( tc,
            ALWAYS,
            sac)
 
-SUBPHASE(bdc,
-         "Boolean compiling",
-         BDCdo,
-         ALWAYS,
-         sac)
-
 ENDPHASE(sac)
 
 /******************************************************************************/
@@ -120,6 +114,12 @@ PHASE(ict,
 SUBPHASE(app,
          "Expanding array function call parameters",
          APPdo,
+         ALWAYS,
+         ict)
+
+SUBPHASE(bdc,
+         "Boolean compiling",
+         BDCdo,
          ALWAYS,
          ict)
 
