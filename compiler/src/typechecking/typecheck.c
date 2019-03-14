@@ -200,7 +200,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
         fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
         type* needed = entry->paramtypes;
         size_t params = entry->paramamount;
-        type given[params];
+        type* given = MEMmalloc(params * sizeof(type));
         GIVEN(arg_info) = given;
 
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
@@ -213,6 +213,7 @@ node* TCfuncall(node* arg_node, info* arg_info) {
                                                                                       print_type(GIVEN(arg_info)[i]));
             }
         }
+        MEMfree(given);
     }
 
     fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
