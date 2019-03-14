@@ -11,6 +11,7 @@ void append_statement_to_tail(node* block_to_append_to, node* statement_to_appen
 void append_declaration_to_tail(node *block_to_append_to, node *declaration_to_append);
 void append_functionvardeclaration_to_tail(node *block_to_append_to, node *declaration_to_append);
 void append_exprarray_to_tail(node *block_to_append_to, node *exprarray_to_append);
+void append_functionparameter_to_tail(node *block_to_append_to, node *functionparam_to_append);
 fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find);
 symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find);
 void print_exprarray(node* exprs);

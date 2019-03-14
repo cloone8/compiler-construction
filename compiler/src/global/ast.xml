@@ -141,6 +141,7 @@
                     <node name="Function" />
                     <node name="FunctionDefinition" />
                     <node name="ArrayParameter" />
+                    <node name="ArrayDimensionVars" />
                     <node name="FunCall" />
                 </travuser>
             </traversal>

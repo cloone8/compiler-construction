@@ -117,6 +117,10 @@ SUBPHASE(app,
          ALWAYS,
          ict)
 
+#ifndef DBUG_OFF
+SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
+#endif
+
 ENDPHASE(ict)
 
 /******************************************************************************/
