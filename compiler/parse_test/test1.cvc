@@ -4,7 +4,7 @@ extern int fib(int n);
 
 int testglobal = 5;
 int testglobal2 = 89;
-float testglobal3 = (78 * 6 - 2 + 7) % 2;
+float testglobal3 = (float) ((78 * 6 - 2 + 7) % 2);
 bool testglobal4;
 
 export void fibs(int n) {
