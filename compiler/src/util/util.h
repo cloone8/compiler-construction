@@ -3,7 +3,7 @@
 #include "types.h"
 
 #define UNUSED(x) ((void) x)
-#define STR_BUF_SIZE (50)
+#define STR_BUF_SIZE (2048)
 
 type type_to_array_type(type current);
 type array_type_to_type(type current);
