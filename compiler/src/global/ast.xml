@@ -121,6 +121,7 @@
             <traversal id="TC" name="Check for conflicting types" default="sons" include="typecheck.h">
                 <travuser>
                     <node name= "FunctionDefinition" />
+                    <node name= "FunCallParameter" />
                     <node name= "FunCall" />
                     <node name="BinOp" />
                     <node name= "IntConst" />
