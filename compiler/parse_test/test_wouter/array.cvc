@@ -6,7 +6,7 @@ export void printIntVec(int[n] vec) {
         printSpaces(1);
     }
 
-    printNewlines(1);
+    printNewlines(1.5);
 }
 
 export void printFloatVec(float[n] vec) {
