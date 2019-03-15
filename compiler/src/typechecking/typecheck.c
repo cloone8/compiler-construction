@@ -275,6 +275,8 @@ node *TCbinop(node* arg_node, info* arg_info) {
             case BO_ne:
             case BO_ge:
             case BO_gt:
+            case BO_and:
+            case BO_or:
                 TYPE(arg_info) = TP_bool;
                 break;
             default:
