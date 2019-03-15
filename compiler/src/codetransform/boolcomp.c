@@ -56,6 +56,7 @@ static info *BDCfreeInfo(info *info) {
 
 node* BDCboolconst(node* arg_node, info* arg_info) {
     DBUG_ENTER("BDCboolconst");
+    /* We need to set the type of the node in the info struct. */
 
     CURR_BOOL(arg_info) = TP_bool;
 
@@ -63,6 +64,7 @@ node* BDCboolconst(node* arg_node, info* arg_info) {
 }
 
 node* BDCvarread(node* arg_node, info* arg_info) {
+    /* Check if varread is a bool type. */
     DBUG_ENTER("BDCvarread");
 
     symbol_table_entry* entry = VARREAD_VARPOINTER(arg_node);
@@ -71,6 +73,9 @@ node* BDCvarread(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/*
+ * We create a conditional expression if possible. This is possible if the binary operators '||' or '&&' are called.
+ * */
 node* BDCbinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("BDCbinop");
 
@@ -78,18 +83,21 @@ node* BDCbinop(node* arg_node, info* arg_info) {
 
     CURR_BINOP(arg_info) = BINOP_BINOPERATORS(arg_node);
 
+    /* Traverse to get the types of the left and right operands. */
     info* left = BDCmakeInfo();
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), left);
 
     info *right = BDCmakeInfo();
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), right);
 
+    /* Create the conditional expression node for the '&&' operator. */
     if (CURR_BINOP(arg_info) == BO_and) {
         if (CURR_BOOL(left) == TP_bool && CURR_BOOL(right) == TP_bool) {
             cond_expr = TBmakeConditionalexpr(BINOP_LEFT(arg_node), BINOP_RIGHT(arg_node), TBmakeExpr(TBmakeConstant((TBmakeBoolconst(FALSE)))));
         }
     }
 
+    /* Create the conditional expression node for the '||' operator. */
     if (CURR_BINOP(arg_info) == BO_or) {
         if (CURR_BOOL(left) == TP_bool && CURR_BOOL(right) == TP_bool) {
             cond_expr = TBmakeConditionalexpr(BINOP_LEFT(arg_node), TBmakeExpr(TBmakeConstant((TBmakeBoolconst(TRUE)))), BINOP_RIGHT(arg_node));
@@ -99,10 +107,12 @@ node* BDCbinop(node* arg_node, info* arg_info) {
     BDCfreeInfo(left);
     BDCfreeInfo(right);
 
+    /* If we set the cond_expr node, we return our new conditional expr node. */
     if (cond_expr != NULL) {
-        printf("made condexpr");
         DBUG_RETURN(cond_expr);
     }
+
+    /* If we did not set the cond_expr node, we return our previous binop node. */
     DBUG_RETURN(arg_node);
 }
 

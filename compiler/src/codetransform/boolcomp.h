@@ -3,10 +3,8 @@
 #include "types.h"
 
 
-// extern node* BDCbinop(node* arg_node, info* arg_info);
 extern node* BDCboolconst(node* arg_node, info* arg_info);
 extern node* BDCvarread(node* arg_node, info* arg_info);
-// extern node *BDCbranch(node *arg_node, info *arg_info);
 extern node *BDCbinop(node* arg_node, info* arg_info);
 
 extern node *BDCdo(node * syntaxtree);
