@@ -13,11 +13,12 @@
 #include "ctinfo.h"
 #include "free.h"
 #include "globals.h"
+#include "myglobals.h"
 #include "parsehelper.h"
 
 static node *parseresult = NULL;
 extern int yylex();
-static int yyerror(char *errname);
+static int yyerror(const char *errname);
 
 %}
 
@@ -708,9 +709,8 @@ boolconst: TRUEVAL
 
 %%
 
-static int yyerror(char *error) {
-    CTIerror("line %d, col %d\nError parsing source code: %s\n",
-            global.line + 1, global.col + 1, error);
+static int yyerror(const char *error) {
+    CTIerrorFile(myglobal.current_file, global.line, "Error parsing source code: %s\n", error);
 
     return(0);
 }

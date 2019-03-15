@@ -130,8 +130,10 @@
                     <node name="FloatConst" />
                     <node name="BoolConst" />
                     <node name="VarAssign" />
+                    <node name="ArrayVarAssign" />
                     <node name="Return" />
                     <node name="VarRead" />
+                    <node name="ArrayVarRead" />
                     <node name="Cast" />
                 </travuser>
             </traversal>

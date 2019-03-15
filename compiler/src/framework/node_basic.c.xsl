@@ -90,6 +90,8 @@ version="1.0">
 #include "memory.h"
 #include "dbug.h"
 #include "globals.h"
+#include "myglobals.h"
+#include "str.h"
 #include "ctinfo.h"
 
 static node *MakeEmptyNode()
@@ -102,6 +104,7 @@ static node *MakeEmptyNode()
 
   NODE_LINE(result) = global.line;
   NODE_COL(result) = global.col;
+  NODE_FILE(result) = myglobal.current_file;
 
   DBUG_RETURN(result);
 }

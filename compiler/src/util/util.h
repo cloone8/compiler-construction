@@ -17,5 +17,6 @@ symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find);
 void print_exprarray(node* exprs);
 char* print_type(type to_print);
 char* get_nodetype_string(nodetype nt);
+void copy_node_error_data(node* source, node* target);
 
 #endif

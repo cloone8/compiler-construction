@@ -78,10 +78,14 @@
 "if"                       { FILTER(IF); }
 "else"                     { FILTER(ELSE); }
 
-\(\s*int\s*\)              { FILTER(CAST_INT)}
-\(\s*bool\s*\)             { FILTER(CAST_BOOL)}
-\(\s*float\s*\)            { FILTER(CAST_FLOAT)}
+\(\s*int\s*\)              { FILTER(CAST_INT);}
+\(\s*bool\s*\)             { FILTER(CAST_BOOL);}
+\(\s*float\s*\)            { FILTER(CAST_FLOAT);}
 
+#\ [0-9]+\ \"[^\"\r\n]+\"(\ [1-4]+)*        {
+                                            // This line is included for C preprocessor parsing
+                                            interpretCPPstring(yytext);
+                                            }
 
 [A-Za-z][A-Za-z0-9_]*       {
                                 yylval.id = STRcpy(yytext);
@@ -123,7 +127,6 @@
                                         global.line += 1;
                                     }
 
-#[^\r\n]*(\r\n|\r|\n)            {}
 
 \/\*([^*]|\*+[^\/])*\*+\/  {
                                 global.col += yyleng;

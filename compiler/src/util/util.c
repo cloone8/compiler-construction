@@ -391,3 +391,14 @@ char* get_nodetype_string(nodetype nt) {
     }
     DBUG_RETURN(toreturn);
 }
+
+void copy_node_error_data(node* source, node* target) {
+    DBUG_ENTER("copy_node_error_data");
+    DBUG_ASSERT((source != NULL), "Source node was NULL!");
+    DBUG_ASSERT((target != NULL), "Target node was NULL!");
+    NODE_FILE(target) = NODE_FILE(source);
+    NODE_LINE(target) = NODE_LINE(source);
+    NODE_COL(target) = NODE_COL(source);
+
+    DBUG_VOID_RETURN;
+}
