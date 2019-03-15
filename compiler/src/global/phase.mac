@@ -123,9 +123,15 @@ SUBPHASE(bdc,
          ALWAYS,
          ict)
 
-#ifndef DBUG_OFF
-SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
-#endif
+SUBPHASE(cbc,
+         "Compiling boolean cast expressions",
+         CBCdo,
+         ALWAYS,
+         ict)
+
+// #ifndef DBUG_OFF
+// SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
+// #endif
 
 ENDPHASE(ict)
 

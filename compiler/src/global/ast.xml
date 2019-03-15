@@ -154,6 +154,16 @@
                 </travuser>
             </traversal>
 
+            <traversal id="CBC" name="Compiling boolean cast expressions" default="sons" include="boolcast.h">
+                <travuser>
+                    <node name="Cast" />
+                    <node name="IntConst" />
+                    <node name="FloatConst" />
+                    <node name="BoolConst" />
+                    <node name="VarRead" />
+                </travuser>
+            </traversal>
+
         </general>
     </phases>
 

@@ -1,0 +1,12 @@
+int foo() {
+    bool a = true;
+    int c = (int)true;
+    // int k = (int)false;
+    return 1;
+}
+
+export int main() {
+    int a = foo();
+
+    return 1;
+}
