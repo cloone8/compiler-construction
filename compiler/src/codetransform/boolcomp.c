@@ -105,8 +105,7 @@ node* BDCbinop(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *BDCdo(node *syntaxtree)
-{
+node *BDCdo(node *syntaxtree) {
     DBUG_ENTER("BDCdo");
 
     TRAVpush(TR_bdc);

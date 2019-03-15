@@ -2,11 +2,11 @@ int foo() {
     bool a = true;
     bool b = false;
 
-    if(a || b) {
+    if(b || a) {
         return 2;
     }
 
-    if(a&&b) {
+    if(b && a) {
         return 3;
     }
 
