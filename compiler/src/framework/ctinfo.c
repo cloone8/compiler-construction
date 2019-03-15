@@ -99,9 +99,9 @@ static char *message_buffer=NULL;
 static int message_buffer_size=0;
 static int message_line_length=76;
 
-static char *abort_message_header = "ABORT: ";
-static char *error_message_header = "ERROR: ";
-static char *warn_message_header = "WARNING: ";
+static char *abort_message_header = "\E[27;31m\033[1mfatal: \033[0m";
+static char *error_message_header = "\E[27;31m\033[1merror: \033[0m";
+static char *warn_message_header = "\E[27;33m\033[1mwarning: \033[0m";
 static char *state_message_header = "";
 static char *note_message_header = "  ";
 
