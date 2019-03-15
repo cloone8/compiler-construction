@@ -1311,6 +1311,12 @@ node* PRTprogram(node * arg_node, info * arg_info) {
 node* PRTconditionalexpr(node* arg_node, info* arg_info) {
     DBUG_ENTER("PRTconditionalexpr");
 
+    CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
+    printf(" ? ");
+    CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), arg_info);
+    printf(" : ");
+    CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), arg_info);
+
 
     DBUG_RETURN(arg_node);
 }

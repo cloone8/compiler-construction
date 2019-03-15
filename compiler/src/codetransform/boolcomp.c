@@ -15,13 +15,15 @@
  */
 struct INFO
 {
-    bool predicate;
+    binop to_evaluate;
+    type pred;
 };
 
 /*
  * INFO macros
  */
-#define PREDICATE(__arg_info_struct__) ((__arg_info_struct__)->predicate)
+#define CURR_BINOP(__arg_info_struct__) ((__arg_info_struct__)->to_evaluate)
+#define CURR_BOOL(__arg_info_struct__) ((__arg_info_struct__)->pred)
 
 /*
  * INFO functions
@@ -35,7 +37,8 @@ static info *BDCmakeInfo(void)
     DBUG_ENTER("BDCmakeInfo");
 
     info *result = (info *)MEMmalloc(sizeof(info));
-    PREDICATE(result) = FALSE;
+    CURR_BINOP(result) = BO_unknown;
+    CURR_BOOL(result) = TP_unknown;
 
     DBUG_RETURN(result);
 }
@@ -43,8 +46,7 @@ static info *BDCmakeInfo(void)
 /**
  * Frees the memory of an info struct
  */
-static info *BDCfreeInfo(info *info)
-{
+static info *BDCfreeInfo(info *info) {
     DBUG_ENTER("BDCfreeInfo");
 
     info = MEMfree(info);
@@ -55,33 +57,16 @@ static info *BDCfreeInfo(info *info)
 node* BDCboolconst(node* arg_node, info* arg_info) {
     DBUG_ENTER("BDCboolconst");
 
-    printf("booll");
-
-    PREDICATE(arg_info) = BOOLCONST_VALUE(arg_node);
+    CURR_BOOL(arg_info) = TP_bool;
 
     DBUG_RETURN(arg_node);
 }
 
-node* handleAnd(node* arg_node, info* arg_info) {
-    DBUG_ENTER("handleAnd");
+node* BDCvarread(node* arg_node, info* arg_info) {
+    DBUG_ENTER("BDCvarread");
 
-    info* val = BDCmakeInfo();
-
-    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), val);
-
-    if (PREDICATE(val)) {
-        printf("ture");
-    }
-
-    BDCfreeInfo(val);
-
-    DBUG_RETURN(arg_node);
-}
-
-node* handleOr(node* arg_node, info* arg_info) {
-    DBUG_ENTER("handleOr");
-
-    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
+    symbol_table_entry* entry = VARREAD_VARPOINTER(arg_node);
+    CURR_BOOL(arg_info) = entry->vartype;
 
     DBUG_RETURN(arg_node);
 }
@@ -89,19 +74,35 @@ node* handleOr(node* arg_node, info* arg_info) {
 node* BDCbinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("BDCbinop");
 
-    binop current = BINOP_BINOPERATORS(arg_node);
-    switch (current)
-    {
-        case BO_and:
-            arg_node = handleAnd(arg_node, arg_info);
-            break;
-        case BO_or:
-            arg_node = handleOr(arg_node, arg_info);
-            break;
-        default:
-            break;
+    node* cond_expr = NULL;
+
+    CURR_BINOP(arg_info) = BINOP_BINOPERATORS(arg_node);
+
+    info* left = BDCmakeInfo();
+    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), left);
+
+    info *right = BDCmakeInfo();
+    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), right);
+
+    if (CURR_BINOP(arg_info) == BO_and) {
+        if (CURR_BOOL(left) == TP_bool && CURR_BOOL(right) == TP_bool) {
+            cond_expr = TBmakeConditionalexpr(BINOP_LEFT(arg_node), BINOP_RIGHT(arg_node), TBmakeExpr(TBmakeConstant((TBmakeBoolconst(FALSE)))));
+        }
     }
 
+    if (CURR_BINOP(arg_info) == BO_or) {
+        if (CURR_BOOL(left) == TP_bool && CURR_BOOL(right) == TP_bool) {
+            cond_expr = TBmakeConditionalexpr(BINOP_LEFT(arg_node), TBmakeExpr(TBmakeConstant((TBmakeBoolconst(TRUE)))), BINOP_RIGHT(arg_node));
+        }
+    }
+
+    BDCfreeInfo(left);
+    BDCfreeInfo(right);
+
+    if (cond_expr != NULL) {
+        printf("made condexpr");
+        DBUG_RETURN(cond_expr);
+    }
     DBUG_RETURN(arg_node);
 }
 

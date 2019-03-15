@@ -130,10 +130,8 @@
                     <node name="FloatConst" />
                     <node name="BoolConst" />
                     <node name="VarAssign" />
-                    <node name="ArrayVarAssign" />
                     <node name="Return" />
                     <node name="VarRead" />
-                    <node name="ArrayVarRead" />
                     <node name="Cast" />
                 </travuser>
             </traversal>
@@ -142,6 +140,7 @@
                 <travuser>
                     <node name="BinOp" />
                     <node name="BoolConst" />
+                    <node name="VarRead" />
                 </travuser>
             </traversal>
 
