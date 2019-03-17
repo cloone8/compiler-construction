@@ -59,20 +59,18 @@
 #include "dbug.h"
 
 
-static
-node *SetupCompiler(int argc, char *argv[])
-{
-  node *syntax_tree = NULL;
+static node* SetupCompiler(int argc, char *argv[]) {
+    node *syntax_tree = NULL;
 
-  DBUG_ENTER("SetupCompiler");
+    DBUG_ENTER("SetupCompiler");
 
-  setlocale(LC_ALL, "en_US");
-  CTIinstallInterruptHandlers();
-  GLBinitializeGlobals(argc, argv);
-  MYGLBinitializeGlobals();
-  OPTcheckOptions(argc, argv);
+    setlocale(LC_ALL, "en_US");
+    CTIinstallInterruptHandlers();
+    GLBinitializeGlobals(argc, argv);
+    MYGLBinitializeGlobals();
+    OPTcheckOptions(argc, argv);
 
-  DBUG_RETURN(syntax_tree);
+    DBUG_RETURN(syntax_tree);
 }
 
 
@@ -80,17 +78,16 @@ node *SetupCompiler(int argc, char *argv[])
  *  And now, the main function which triggers the whole compilation.
  */
 
-int main(int argc, char *argv[])
-{
-  node *syntax_tree;
+int main(int argc, char *argv[]) {
+    node *syntax_tree;
 
-  DBUG_ENTER("main");
+    DBUG_ENTER("main");
 
-  syntax_tree = SetupCompiler(argc, argv);
+    syntax_tree = SetupCompiler(argc, argv);
 
-  syntax_tree = PHDdrive(syntax_tree);
+    syntax_tree = PHDdrive(syntax_tree);
 
-  CTIterminateCompilation(syntax_tree);
+    CTIterminateCompilation(syntax_tree);
 
-  DBUG_RETURN(0);
+    DBUG_RETURN(0);
 }

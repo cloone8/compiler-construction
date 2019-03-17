@@ -103,26 +103,26 @@ int getIntFromText(char* text, int line, int col) {
     if (val == 0) {
         // Conversion error
         if (errno == EINVAL) {
-            CTIerror("Integer parsing error at line %d col %d!",  line, col);
+            CTIerrorFile(myglobal.current_file, line, "Integer parsing error at col %d!", col);
             DBUG_RETURN(0);
         }
 
         // Out of range
         if (errno == ERANGE) {
-            CTIerror("Integer out of range at line %d col %d!",  line, col);
+            CTIerrorFile(myglobal.current_file, line, "Integer out of range at col %d!", col);
             DBUG_RETURN(0);
         }
     }
 
     if(val < INT_MIN || val > INT_MAX) {
-        CTIerror("Integer out of range at line %d col %d!",  line, col);
+        CTIerrorFile(myglobal.current_file, line, "Integer out of range at col %d!", col);
         DBUG_RETURN(0);
     }
 
     int toreturn = (int) val;
 
     if(toreturn < 0) {
-        CTIerror("Integer out of range at line %d col %d!",  line, col);
+        CTIerrorFile(myglobal.current_file, line, "Integer out of range at col %d!", col);
         DBUG_RETURN(0);
     }
 
@@ -136,18 +136,18 @@ float getFloatFromText(char* text, int line, int col) {
     if (val == 0.0 || fabsf(val) == HUGE_VALF) {
         // Conversion error
         if (errno == EINVAL) {
-            CTIerror("Float parsing error at line %d col %d!",  line, col);
+            CTIerrorFile(myglobal.current_file, line, "Float parsing error at col %d!", col);
             DBUG_RETURN(0.0f);
         }
 
         // Out of range
         if (errno == ERANGE) {
-            CTIerror("Float out of range at line %d col %d!",  line, col);
+            CTIerrorFile(myglobal.current_file, line, "Float out of range at col %d!", col);
             DBUG_RETURN(0.0f);
         }
     }
     if(val < 0) {
-        CTIerror("Float out of range at line %d col %d!",  line, col);
+        CTIerrorFile(myglobal.current_file, line, "Float out of range at col %d!", col);
         DBUG_RETURN(0.0f);
     }
 

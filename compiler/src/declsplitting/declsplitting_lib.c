@@ -66,7 +66,9 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
 
             // We have already gone in too deep, this means that there were too few nested levels
             if(NODE_TYPE(current_expr) != N_exprarray) {
-                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level - 1);
+                CTIerrorFile(NODE_FILE(current_expr), NODE_LINE(current_expr),
+                            "Invalid initialisation nesting level for variable %s: Expected %d but got %d",
+                             varname, init_nesting_level, current_nesting_level - 1);
                 DBUG_RETURN(NULL);
             }
 
@@ -74,7 +76,9 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
 
             // The value is still an N_exprarray, which means that there are still nesting levels to be traversed.
             if(NODE_TYPE(value) == N_exprarray) {
-                CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level + 1);
+                CTIerrorFile(NODE_FILE(value), NODE_LINE(value),
+                        "Invalid initialisation nesting level for variable %s: Expected %d but got %d",
+                         varname, init_nesting_level, current_nesting_level + 1);
                 DBUG_RETURN(NULL);
             }
             EXPRARRAY_CURRENT(current_expr) = NULL;
