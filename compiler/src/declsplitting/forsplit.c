@@ -126,9 +126,32 @@ node* FSPfor(node* arg_node, info* arg_info) {
     node* init_assign = TBmakeVarassign(STRcpy(new_name), initval);
     VARASSIGN_VARPOINTER(init_assign) = entry;
 
+    // Create a new var assignment, which increments the counter with the given stepsize.
+    node* counter_inc_varread = TBmakeVarread(STRcpy(new_name));
+    VARREAD_VARPOINTER(counter_inc_varread) = entry;
+
+    // Read the step value and create a varassign node which increments the
+    // For loop counter with the given step size.
+    node* counter_inc_step;
+    if(FOR_STEP(arg_node) != NULL) {
+        FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
+        counter_inc_step = FOR_STEP(arg_node);
+        FOR_STEP(arg_node) = NULL;
+    } else {
+        counter_inc_step = TBmakeExpr(TBmakeConstant(TBmakeIntconst(1)));
+    }
+
+    node* incr_binop = TBmakeBinop(BO_add, TBmakeExpr(counter_inc_varread), counter_inc_step);
+
+    node* counter_inc_varassign = TBmakeVarassign(STRcpy(new_name), TBmakeExpr(incr_binop));
+    VARASSIGN_VARPOINTER(counter_inc_varassign) = entry;
+
+    node* counter_increment = TBmakeStatements(counter_inc_varassign, NULL);
+
     MEMfree(new_name);
 
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
+    append_statement_to_tail(FOR_CODE(arg_node), counter_increment);
 
     // Return the new assignment, so the FSPstatement traversal function can
     // put it in the right place
