@@ -145,15 +145,15 @@ node* APParrayparameter(node* arg_node, info* arg_info) {
 node* APPbasicparameter(node* arg_node, info* arg_info) {
     DBUG_ENTER("APPbasicparameter");
 
-    PARAMCOUNT(arg_info)++;
+    size_t myindex = PARAMCOUNT(arg_info)++;
 
     if(BASICPARAMETER_NEXT(arg_node) != NULL) {
         BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
     } else {
         PARAMTYPES(arg_info) = MEMmalloc(PARAMCOUNT(arg_info) * sizeof(type));
     }
-    printf("Setting param %s index %zu\n to %s\n", BASICPARAMETER_NAME(arg_node), PARAMCOUNT(arg_info) - 1, print_type(BASICPARAMETER_TYPE(arg_node)));
-    PARAMTYPES(arg_info)[PARAMCOUNT(arg_info) - 1] = BASICPARAMETER_TYPE(arg_node);
+    printf("Setting param %s index %zu\n to %s\n", BASICPARAMETER_NAME(arg_node), myindex, print_type(BASICPARAMETER_TYPE(arg_node)));
+    PARAMTYPES(arg_info)[myindex] = BASICPARAMETER_TYPE(arg_node);
 
     DBUG_RETURN(arg_node);
 }
