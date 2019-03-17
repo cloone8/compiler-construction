@@ -68,6 +68,13 @@ node* APPfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("APPfunction");
 
     printf("%s\n", FUNCTION_NAME(arg_node));
+
+    size_t prev_paramcount = PARAMCOUNT(arg_info);
+    type* prev_types = PARAMTYPES(arg_info);
+
+    PARAMCOUNT(arg_info) = 0;
+    PARAMTYPES(arg_info) = NULL;
+
     // Go through parameters and make them update themselves
     if(FUNCTION_PARAMETERS(arg_node) != NULL) {
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
@@ -80,12 +87,12 @@ node* APPfunction(node* arg_node, info* arg_info) {
     entry->paramamount = PARAMCOUNT(arg_info);
     entry->paramtypes = PARAMTYPES(arg_info);
 
-    PARAMCOUNT(arg_info) = 0;
-    PARAMTYPES(arg_info) = NULL;
-
     if(FUNCTION_DEFINITION(arg_node) != NULL) {
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
     }
+
+    PARAMCOUNT(arg_info) = prev_paramcount;
+    PARAMTYPES(arg_info) = prev_types;
 
     DBUG_RETURN(arg_node);
 }
