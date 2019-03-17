@@ -290,6 +290,8 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
 
             // Create a new basicvardeclaration holding the value
             node* new_dec = TBmakeBasicvardeclaration(STRcpy(init_name), init_type, EXPRARRAY_CURRENT(initval));
+            EXPRARRAY_CURRENT(initval) = NULL;
+            FREEexprarray(initval, NULL);
             BASICVARDECLARATION_VARPOINTER(new_dec) = init_entry;
 
             // Create a new functionvardeclaration from the new basicvardec

@@ -77,7 +77,6 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
                 CTIerror("Invalid initialisation nesting level for variable %s: Expected %d but got %d", varname, init_nesting_level, current_nesting_level + 1);
                 DBUG_RETURN(NULL);
             }
-
             EXPRARRAY_CURRENT(current_expr) = NULL;
 
             // Create a new arrayvarassign statement assigning this position to the newly
@@ -113,7 +112,7 @@ static node* exprarray_to_inits_rec(char* varname, symbol_table_entry* varentry,
         // memory leaks
         current_index++;
         node* tmp = current_expr;
-        current_expr = EXPRARRAY_NEXT(current_expr);
+        current_expr = EXPRARRAY_NEXT(tmp);
         EXPRARRAY_NEXT(tmp) = NULL;
         EXPRARRAY_CURRENT(tmp) = NULL;
         FREEexprarray(tmp, NULL);
