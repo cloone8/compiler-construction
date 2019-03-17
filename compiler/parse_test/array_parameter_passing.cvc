@@ -47,7 +47,7 @@ export int main() {
         return 0;
     }
 
-    testFloat[0] = 5;
+    testFloat[0] = (float   ) 5;
     testfun(testInt[1], testInt[2]);
 
     printIntVec(testInt);
