@@ -78,9 +78,9 @@
 "if"                       { FILTER(IF); }
 "else"                     { FILTER(ELSE); }
 
-\(\s*int\s*\)              { FILTER(CAST_INT);}
-\(\s*bool\s*\)             { FILTER(CAST_BOOL);}
-\(\s*float\s*\)            { FILTER(CAST_FLOAT);}
+\([\r\n\t\f\v\ ]*int[\r\n\t\f\v\ ]*\)              { FILTER(CAST_INT);}
+\([\r\n\t\f\v\ ]*bool[\r\n\t\f\v\ ]*\)             { FILTER(CAST_BOOL);}
+\([\r\n\t\f\v\ ]*float[\r\n\t\f\v\ ]*\)            { FILTER(CAST_FLOAT);}
 
 #\ [0-9]+\ \"[^\"\r\n]+\"(\ [1-4]+)*        {
                                             // This line is included for C preprocessor parsing
