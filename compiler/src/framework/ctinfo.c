@@ -971,7 +971,14 @@ void CTIterminateCompilation(node *syntax_tree) {
      */
 
     CTIstate(" ");
+
+    #ifdef _WIN32
+    // Windows is bad and does not support colours
     CTIstate("*** Compilation successful ***");
+    #else
+    // Print with pretty colours
+    CTIstate("***\E[27;32m\033[1m Compilation successful \033[0m***");
+    #endif
 
     CTIstate("*** 0 error(s), %d warning(s)", warnings);
     CTIstate(" ");
