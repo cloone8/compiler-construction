@@ -1,14 +1,1 @@
-int twos = 0;
-
 int[3] a = 4;
-
-void foo () {
-    int z = 0;
-    int[3, 3] a2 = 5;
-
-    for(int i = 3, 10, 1) {
-        for(int j = 0, 5) {
-            z = z + 1;
-        }
-    }
-}
