@@ -130,7 +130,9 @@
                     <node name="FloatConst" />
                     <node name="BoolConst" />
                     <node name="VarAssign" />
+                    <node name="ArrayVarAssign" />
                     <node name="Return" />
+                    <node name="ArrayVarRead" />
                     <node name="VarRead" />
                     <node name="Cast" />
                 </travuser>
@@ -149,8 +151,12 @@
                     <node name="Function" />
                     <node name="FunctionDefinition" />
                     <node name="ArrayParameter" />
+                    <node name="BasicParameter" />
                     <node name="ArrayDimensionVars" />
+                    <node name="FunCallParameter" />
                     <node name="FunCall" />
+                    <node name="For" />
+                    <node name="VarRead" />
                 </travuser>
             </traversal>
 

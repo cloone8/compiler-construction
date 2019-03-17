@@ -214,7 +214,7 @@ node *TCvarread(node *arg_node, info *arg_info) {
 }
 
 node *TCarrayvarread(node *arg_node, info *arg_info) {
-    DBUG_ENTER("TCvarrayvarread");
+    DBUG_ENTER("TCarrayvarread");
 
     symbol_table_entry* entry = ARRAYVARREAD_VARPOINTER(arg_node);
     TYPE(arg_info) = array_type_to_type(entry->vartype);
@@ -224,7 +224,6 @@ node *TCarrayvarread(node *arg_node, info *arg_info) {
 
 node* TCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncall");
-
     if (FUNCALL_PARAMS(arg_node) != NULL) {
         fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
         type* needed = entry->paramtypes;
@@ -246,7 +245,6 @@ node* TCfuncall(node* arg_node, info* arg_info) {
                              print_type(GIVEN(new_info)[i]));
             }
         }
-        GIVEN(new_info) = NULL;
         TCfreeInfo(new_info);
     }
 

@@ -23,7 +23,7 @@ SUBPHASE(scp,
           SPdoScanParse,
           ALWAYS,
           ld)
-SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ALWAYS, ld)
+// SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ALWAYS, ld)
 
 ENDPHASE(ld)
 
@@ -117,6 +117,20 @@ SUBPHASE(app,
          ALWAYS,
          ict)
 
+#ifndef DBUG_OFF
+SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
+#endif
+
+SUBPHASE( tc,
+           "Checking expanded array types",
+           TCdo,
+           ALWAYS,
+           ict)
+
+#ifndef DBUG_OFF
+SUBPHASE(prt_apptc_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
+#endif
+
 SUBPHASE(bdc,
          "Boolean compiling",
          BDCdo,
@@ -128,10 +142,6 @@ SUBPHASE(cbc,
          CBCdo,
          ALWAYS,
          ict)
-
-// #ifndef DBUG_OFF
-// SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
-// #endif
 
 ENDPHASE(ict)
 

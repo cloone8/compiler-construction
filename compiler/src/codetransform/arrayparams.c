@@ -4,6 +4,7 @@
 #include "dbug.h"
 #include "memory.h"
 #include "fun_symbol_table.h"
+#include "symbol_table.h"
 #include "tree_basic.h"
 #include "traverse.h"
 #include "str.h"
@@ -16,10 +17,11 @@
  */
 struct INFO {
     fun_symbol_table* currentfuntable;
-    fun_symbol_table* currentsymtable;
+    symbol_table* currentsymtable;
     size_t paramcount;
     type* paramtypes;
     node* newparamnodes;
+    bool infuncall;
 };
 
 /*
@@ -31,6 +33,7 @@ struct INFO {
 #define PARAMCOUNT(__arg_info_struct__) ((__arg_info_struct__)->paramcount)
 #define PARAMTYPES(__arg_info_struct__) ((__arg_info_struct__)->paramtypes)
 #define NEWNODES(__arg_info_struct__) ((__arg_info_struct__)->newparamnodes)
+#define IN_FUNCALL(__arg_info_struct__) ((__arg_info_struct__)->infuncall)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -45,6 +48,7 @@ static info *APPmakeInfo(void) {
     result->paramcount = 0;
     result->paramtypes = NULL;
     result->newparamnodes = NULL;
+    result->infuncall = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -62,8 +66,6 @@ static info *APPfreeInfo(info *info) {
 
 node* APPfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("APPfunction");
-
-    printf("%s\n", FUNCTION_NAME(arg_node));
 
     // Go through parameters and make them update themselves
     if(FUNCTION_PARAMETERS(arg_node) != NULL) {
@@ -89,7 +91,6 @@ node* APPfunction(node* arg_node, info* arg_info) {
 
 node* APParrayparameter(node* arg_node, info* arg_info) {
     DBUG_ENTER("APParrayparameter");
-    printf("%s\n", ARRAYPARAMETER_NAME(arg_node));
     node* toreturn = arg_node;
 
     size_t myindex = PARAMCOUNT(arg_info)++;
@@ -122,13 +123,23 @@ node* APParrayparameter(node* arg_node, info* arg_info) {
 
     if(dimcount != 0) {
         for(size_t i = myindex - 1; i > (myindex - dimcount); i--) {
-            printf("%zu %zu\n", i, myindex-dimcount);
-            printf("Looping...\n");
             PARAMTYPES(arg_info)[myindex] = TP_int;
         }
     }
 
     DBUG_RETURN(toreturn);
+}
+
+node* APPbasicparameter(node* arg_node, info* arg_info) {
+    DBUG_ENTER("APPbasicparameter");
+
+    PARAMCOUNT(arg_info)++;
+
+    if(BASICPARAMETER_NEXT(arg_node) != NULL) {
+        BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
+    }
+
+    DBUG_RETURN(arg_node);
 }
 
 node* APParraydimensionvars(node* arg_node, info* arg_info) {
@@ -155,18 +166,140 @@ node* APParraydimensionvars(node* arg_node, info* arg_info) {
 node* APPfunctiondefinition(node* arg_node, info* arg_info) {
     DBUG_ENTER("APPfunctiondefinition");
 
-    fun_symbol_table* old_table = CURRENT_FUNCTION_TABLE(arg_info);
+    fun_symbol_table* old_fun_table = CURRENT_FUNCTION_TABLE(arg_info);
+    symbol_table* old_var_table = CURRENT_SYMBOL_TABLE(arg_info);
+
     CURRENT_FUNCTION_TABLE(arg_info) = FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node);
+    CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node);
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
-    CURRENT_FUNCTION_TABLE(arg_info) = old_table;
+    CURRENT_FUNCTION_TABLE(arg_info) = old_fun_table;
+    CURRENT_SYMBOL_TABLE(arg_info) = old_var_table;
 
     DBUG_RETURN(arg_node);
 }
 
+node* APPfor(node* arg_node, info* arg_info) {
+    DBUG_ENTER("APPfor");
+
+    symbol_table* old_var_table = CURRENT_SYMBOL_TABLE(arg_info);
+
+    CURRENT_SYMBOL_TABLE(arg_info) = FOR_VARSYMBOLTABLE(arg_node);
+
+    FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
+
+    if(FOR_STEP(arg_node) != NULL) {
+        FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
+    }
+
+    if(FOR_CODE(arg_node) != NULL) {
+        FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
+    }
+
+    CURRENT_SYMBOL_TABLE(arg_info) = old_var_table;
+
+    DBUG_RETURN(arg_node);
+}
+
+node* APPfuncallparameter(node* arg_node, info* arg_info) {
+    DBUG_ENTER("APPfuncallparameter");
+    node* toreturn = arg_node;
+
+    bool prev_infuncall_val = IN_FUNCALL(arg_info);
+    node* prev_newnodes = NEWNODES(arg_info);
+    PARAMCOUNT(arg_info)++;
+
+    IN_FUNCALL(arg_info) = TRUE;
+    NEWNODES(arg_info) = NULL;
+    if(FUNCALLPARAMETER_VALUE(arg_node) != NULL) {
+        FUNCALLPARAMETER_VALUE(arg_node) = TRAVdo(FUNCALLPARAMETER_VALUE(arg_node), arg_info);
+    }
+    IN_FUNCALL(arg_info) = prev_infuncall_val;
+
+    if(NEWNODES(arg_info) != NULL) {
+        toreturn = NEWNODES(arg_info);
+        append_funcallparam_to_tail(NEWNODES(arg_info), arg_node);
+    }
+
+    NEWNODES(arg_info) = prev_newnodes;
+
+    if(FUNCALLPARAMETER_NEXT(arg_node) != NULL) {
+        FUNCALLPARAMETER_NEXT(arg_node) = TRAVdo(FUNCALLPARAMETER_NEXT(arg_node), arg_info);
+    }
+
+    DBUG_RETURN(toreturn);
+}
+
 node* APPfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("APPfuncall");
+
+    size_t prev_paramcount = PARAMCOUNT(arg_info);
+    PARAMCOUNT(arg_info) = 0;
+
+    if(FUNCALL_PARAMS(arg_node) != NULL) {
+        FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
+    }
+
+    fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
+
+    if(PARAMCOUNT(arg_info) != entry->paramamount) {
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node),
+            "Invalid array dimensions in function call %s! Expected a total of %zu parameters, but got %zu parameters!",
+            FUNCALL_FUNCTIONNAME(arg_node), entry->paramamount, PARAMCOUNT(arg_info));
+    }
+
+    PARAMCOUNT(arg_info) = prev_paramcount;
+
+    DBUG_RETURN(arg_node);
+}
+
+node* APPvarread(node* arg_node, info* arg_info) {
+    DBUG_ENTER("APPvarread");
+
+    symbol_table_entry* entry = VARREAD_VARPOINTER(arg_node);
+
+    if(!IN_FUNCALL(arg_info)) {
+        DBUG_RETURN(arg_node);
+    }
+
+    switch(entry->vartype) {
+        case TP_bool_array:
+        case TP_float_array:
+        case TP_int_array:
+            break;
+        default:
+            DBUG_RETURN(arg_node);
+    }
+
+    size_t i = 0;
+
+    while(TRUE) {
+        char name_buffer[STR_BUF_SIZE];
+        snprintf(name_buffer, STR_BUF_SIZE, "%zu", i++);
+        char* dim_var_name = STRcatn(4, "tmp-", name_buffer, "-", entry->name);
+
+        // As we do not track the dimensions in the symbol table, find the dimensions manually
+        symbol_table_entry* dim_entry = var_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), dim_var_name);
+
+        if(dim_entry == NULL) {
+            MEMfree(dim_var_name);
+            break;
+            // No more dimensions
+        }
+
+        node* dim_varread = TBmakeVarread(STRcpy(dim_var_name));
+        VARREAD_VARPOINTER(dim_varread) = dim_entry;
+        node* new_funcallparam = TBmakeFuncallparameter(TBmakeExpr(dim_varread), NULL);
+
+        if(NEWNODES(arg_info) == NULL) {
+            NEWNODES(arg_info) = new_funcallparam;
+        } else {
+            append_funcallparam_to_tail(NEWNODES(arg_info), new_funcallparam);
+        }
+
+        MEMfree(dim_var_name);
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -176,6 +309,7 @@ node* APPdo(node* syntaxtree) {
 
     info* arg_info = APPmakeInfo();
     CURRENT_FUNCTION_TABLE(arg_info) = PROGRAM_FUNSYMBOLTABLE(syntaxtree);
+    CURRENT_SYMBOL_TABLE(arg_info) = PROGRAM_VARSYMBOLTABLE(syntaxtree);
 
     TRAVpush(TR_app);
 

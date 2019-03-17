@@ -119,7 +119,7 @@ finalisation = finalise.o strlist.o
 
 semantics = symbol_table.o build_symbol_table.o fun_symbol_table.o build_function_table.o check_fun_scope.o
 
-util = util.o
+util = util.o node_appends.o
 
 declsplitting = varsplit.o declsplitting_lib.o forsplit.o varrename.o
 

@@ -5,9 +5,13 @@
 
 extern node* APPfunction(node* arg_node, info* arg_info);
 extern node* APParrayparameter(node* arg_node, info* arg_info);
+extern node* APPbasicparameter(node* arg_node, info* arg_info);
 extern node* APParraydimensionvars(node* arg_node, info* arg_info);
 extern node* APPfunctiondefinition(node* arg_node, info* arg_info);
+extern node* APPfuncallparameter(node* arg_node, info* arg_info);
 extern node* APPfuncall(node* arg_node, info* arg_info);
+extern node* APPfor(node* arg_node, info* arg_info);
+extern node* APPvarread(node* arg_node, info* arg_info);
 extern node *APPdo(node* syntaxtree);
 
 #endif

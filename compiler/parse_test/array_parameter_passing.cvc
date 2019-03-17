@@ -1,7 +1,9 @@
 #include "test_wouter/array.cvc"
 
+int[2, 2] testglobal = [[1,2],[3,4]];
+
 export int main() {
-    int[4] testInt = 4.0;
+    int[4] testInt = 4;
     float[4] testFloat = [1.2, 2.3, 3.4, 4.5];
     int[2, 2] testIntMat = [[1, 2], [3, 4]];
     float[2, 2] testFloatMat = [[1.2, 2.3], [3.4, 4.5]];
