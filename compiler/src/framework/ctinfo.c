@@ -976,8 +976,6 @@ void CTIterminateCompilation(node *syntax_tree) {
     CTIstate("*** 0 error(s), %d warning(s)", warnings);
     CTIstate(" ");
 
-    exit(0);
-
     DBUG_VOID_RETURN;
 }
 
