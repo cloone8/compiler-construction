@@ -181,6 +181,9 @@ static node* global_array(node* arg_node, info* arg_info) {
         append_declaration_to_tail(dims_decls, old_first);
 
         PROGRAM_FIRST(PROGRAM_NODE(arg_info)) = dims_decls;
+    } else {
+        // No global definition given, simply rename the parameters
+        rename_extern_global_dims(GLOBAL_NAME(arg_node), GLOBAL_DIMENSIONS(arg_node));
     }
 
     DBUG_PRINT("global_array", ("Done processing %s", GLOBAL_NAME(arg_node)));

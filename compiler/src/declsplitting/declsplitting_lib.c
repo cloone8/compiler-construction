@@ -462,3 +462,27 @@ node* create_array_init_loops(char* var_name, symbol_table_entry* array_entry, n
 
     DBUG_RETURN(toreturn);
 }
+
+void rename_extern_global_dims(char* var_name, node* dims) {
+    DBUG_ENTER("rename_extern_global_dims");
+    DBUG_ASSERT((NODE_TYPE(dims) = N_arraydimensionvars), "Invalid array dimension type for global!");
+    DBUG_ASSERT((dims != NULL), "Dims was NULL!");
+
+    size_t dimcount = 0;
+
+    node* current_dim = dims;
+
+    while(current_dim != NULL) {
+
+        symbol_table_entry* entry = ARRAYDIMENSIONVARS_VARPOINTER(current_dim);
+        MEMfree(entry->name);
+
+        char name_buffer[STR_BUF_SIZE];
+        snprintf(name_buffer, STR_BUF_SIZE, "%zu", dimcount++);
+        entry->name = STRcatn(4, "tmp-", name_buffer, "-", var_name);
+
+        current_dim = ARRAYDIMENSIONVARS_NEXT(current_dim);
+    }
+
+    DBUG_VOID_RETURN;
+}
