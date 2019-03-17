@@ -2,6 +2,11 @@
 
 int[2, 2] testglobal = [[1,2],[3,4]];
 
+extern int gcd(int a,int b);
+extern int fac(int n);
+extern int fib(int n);
+extern bool isprime(int n);
+
 export int main() {
     int[4] testInt = 4;
     float[4] testFloat = [1.2, 2.3, 3.4, 4.5];
@@ -14,7 +19,36 @@ export int main() {
     float[2,2] multTest;
     float[2,2] multResult;
 
+    int testfun(int a, int b) {
+        float[2,2] multTest;
+        float[2,2] multResult;
+        float[2] testparam = [1.0, 2.0];
+
+        printInt(gcd(10,6));
+        printNewlines(1);
+        printInt(fac(5));
+        printNewlines(1);
+        printInt(fib(10));
+        printNewlines(1);
+        if(isprime(7)) {
+            printInt(1);
+        } else {
+            printInt(0);
+        }
+        printNewlines(1);
+
+        printFloatMat(multTest);
+        printFloatMat(multResult);
+
+        for(int i = 0, 2, 1) {
+            printFloat(testparam[i]);
+        }
+
+        return 0;
+    }
+
     testFloat[0] = 5;
+    testfun(testInt[1], testInt[2]);
 
     printIntVec(testInt);
     printFloatVec(testFloat);

@@ -1,13 +1,13 @@
 #include "civic.h"
 
-// export void printIntVec(int[n] vec) {
-//     for(int i = 0, n) {
-//         printInt(vec[i]);
-//         printSpaces(1);
-//     }
+export void printIntVec(int[n] vec) {
+    for(int i = 0, n) {
+        printInt(vec[i]);
+        printSpaces(1);
+    }
 
-//     printNewlines(1);
-// }
+    printNewlines(1);
+}
 
 export void printFloatVec(float[n] vec) {
     for(int i = 0, n) {
@@ -18,60 +18,60 @@ export void printFloatVec(float[n] vec) {
     printNewlines(1);
 }
 
-// export void printIntMat(int[m, n] vec) {
-//     for(int i = 0, m) {
-//         for(int j = 0, n) {
-//             printInt(vec[i, j]);
-//             printSpaces(1);
-//         }
-//         printNewlines(1);
-//     }
-// }
+export void printIntMat(int[m, n] vec) {
+    for(int i = 0, m) {
+        for(int j = 0, n) {
+            printInt(vec[i, j]);
+            printSpaces(1);
+        }
+        printNewlines(1);
+    }
+}
 
-// export void printFloatMat(float[m, n] vec) {
-//     for(int i = 0, m) {
-//         for(int j = 0, n) {
-//             printFloat(vec[i, j]);
-//             printSpaces(1);
-//         }
-//         printNewlines(1);
-//     }
-// }
+export void printFloatMat(float[m, n] vec) {
+    for(int i = 0, m) {
+        for(int j = 0, n) {
+            printFloat(vec[i, j]);
+            printSpaces(1);
+        }
+        printNewlines(1);
+    }
+}
 
-// export void scanIntVec(int[n] vec) {
-//     for(int i = 0, n) {
-//         vec[i] = scanInt();
-//     }
-// }
+export void scanIntVec(int[n] vec) {
+    for(int i = 0, n) {
+        vec[i] = scanInt();
+    }
+}
 
-// export void scanFloatVec(float[n] vec) {
-//     for(int i = 0, n) {
-//         vec[i] = scanFloat();
-//     }
-// }
+export void scanFloatVec(float[n] vec) {
+    for(int i = 0, n) {
+        vec[i] = scanFloat();
+    }
+}
 
-// export void scanIntMat(int[m, n] mat) {
-//     for(int i = 0, m) {
-//         for(int j = 0, n) {
-//             mat[i, j] = scanInt();
-//         }
-//     }
-// }
+export void scanIntMat(int[m, n] mat) {
+    for(int i = 0, m) {
+        for(int j = 0, n) {
+            mat[i, j] = scanInt();
+        }
+    }
+}
 
-// export void scanFloatMat(float[m, n] mat) {
-//     for(int i = 0, m) {
-//         for(int j = 0, n) {
-//             mat[i, j] = scanFloat();
-//         }
-//     }
-// }
+export void scanFloatMat(float[m, n] mat) {
+    for(int i = 0, m) {
+        for(int j = 0, n) {
+            mat[i, j] = scanFloat();
+        }
+    }
+}
 
-// export void matMul(float[am, ak] a, float[bk, bn] b, float[rm, rn] c) {
-//     for(int i = 0, am) {
-//         for(int j = 0, bn) {
-//             for(int ii = 0, ak) {
-//                 c[i, j] = c[i, j] + (a[i, ii] * b[ii, j]);
-//             }
-//         }
-//     }
-// }
+export void matMul(float[am, ak] a, float[bk, bn] b, float[rm, rn] c) {
+    for(int i = 0, am) {
+        for(int j = 0, bn) {
+            for(int ii = 0, ak) {
+                c[i, j] = c[i, j] + (a[i, ii] * b[ii, j]);
+            }
+        }
+    }
+}
