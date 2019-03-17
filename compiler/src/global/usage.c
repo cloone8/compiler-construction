@@ -28,6 +28,11 @@ void PrintGeneralInfo(void)
           "    -o <filename>   Name of output file.\n\n"
           "    -v <n>          Verbosity level (default: %d).\n\n"
           "    -tc             Apply syntax tree consistency checks.\n\n"
+          "    -p <n>          Print the syntax tree during compilation. n can be any of the following:\n"
+          "                        0: (Default) Don't print the syntax tree\n"
+          "                        1: Print the syntax tree at the beginning and at the end of compilation\n"
+          "                        2: Print the syntax tree at the end of each compilation phase\n"
+          "                        3: Print the syntax tree at every phase that changes it\n\n"
           "    -#d,<id>        Print debugging information for tag <id>.\n"
           "                    Supported tags are:\n\n"
 

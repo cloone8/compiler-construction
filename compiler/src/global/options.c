@@ -29,6 +29,8 @@ void OPTcheckOptions(int argc, char **argv) {
 
     ARGS_FLAG("h", USGprintUsage(); exit(0););
 
+    ARGS_OPTION("p", ARG_RANGE(myglobal.printtree, 0, 3));
+
     ARGS_OPTION("o", global.outfile = copy_arg(ARG));
 
     ARGS_OPTION("v", ARG_RANGE(global.verbosity, 0, 3));

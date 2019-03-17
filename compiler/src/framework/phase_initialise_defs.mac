@@ -281,4 +281,3 @@
   CYCLEPHASEFUNcycle(cycle)
 #define CYCLEPHASEFUN__defined
 #endif
-

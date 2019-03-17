@@ -1,8 +1,6 @@
 /*
  * Phase and subphase definitions
  */
-
-
 #include "phase_initialise_defs.mac"
 
 /******************************************************************************/
@@ -23,7 +21,8 @@ SUBPHASE(scp,
           SPdoScanParse,
           ALWAYS,
           ld)
-// SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ALWAYS, ld)
+
+SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ONLYIF(myglobal.printtree > 0), ld)
 
 ENDPHASE(ld)
 

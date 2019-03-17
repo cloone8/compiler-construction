@@ -25,6 +25,7 @@ GLOBAL(type, name, init)
 GLOBAL(strlist_node*, dangling_strings, NULL);
 GLOBAL(FILE*, input_file_handler, NULL);
 GLOBAL(char*, current_file, NULL);
+GLOBAL(int, printtree, 0);
 
 #undef GLOBALtype
 #undef GLOBALname
