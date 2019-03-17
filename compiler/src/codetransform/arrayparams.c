@@ -67,8 +67,6 @@ static info *APPfreeInfo(info *info) {
 node* APPfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("APPfunction");
 
-    printf("%s\n", FUNCTION_NAME(arg_node));
-
     size_t prev_paramcount = PARAMCOUNT(arg_info);
     type* prev_types = PARAMTYPES(arg_info);
 
@@ -127,14 +125,11 @@ node* APParrayparameter(node* arg_node, info* arg_info) {
         PARAMTYPES(arg_info) = MEMmalloc(PARAMCOUNT(arg_info) * sizeof(type));
     }
 
-    printf("Total dims: %zu\n", dimcount);
-    printf("Setting param %s index %zu\n to %s\n", ARRAYPARAMETER_NAME(arg_node), myindex, print_type(ARRAYPARAMETER_TYPE(arg_node)));
     PARAMTYPES(arg_info)[myindex] = ARRAYPARAMETER_TYPE(arg_node);
 
     if(dimcount != 0) {
 
         for(size_t i = myindex - dimcount; i < myindex; i++) {
-            printf("Setting param %s dimension index %zu\n to %s\n", ARRAYPARAMETER_NAME(arg_node), i, print_type(TP_int));
             PARAMTYPES(arg_info)[i] = TP_int;
         }
     }
@@ -152,7 +147,7 @@ node* APPbasicparameter(node* arg_node, info* arg_info) {
     } else {
         PARAMTYPES(arg_info) = MEMmalloc(PARAMCOUNT(arg_info) * sizeof(type));
     }
-    printf("Setting param %s index %zu\n to %s\n", BASICPARAMETER_NAME(arg_node), myindex, print_type(BASICPARAMETER_TYPE(arg_node)));
+
     PARAMTYPES(arg_info)[myindex] = BASICPARAMETER_TYPE(arg_node);
 
     DBUG_RETURN(arg_node);
