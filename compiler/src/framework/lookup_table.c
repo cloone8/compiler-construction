@@ -139,6 +139,10 @@
 #include "ctinfo.h"
 #include "util.h"
 
+// For compiling with DBUG_OFF defined
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 #if 0
 #include "check_mem.h"
 #include "tree_basic.h"
@@ -1670,3 +1674,4 @@ void *LUTfoldLutP(lut_t *lut, void *init, void *(*fun)(void *, void *))
   DBUG_RETURN(init);
 }
 
+#pragma GCC diagnostic pop

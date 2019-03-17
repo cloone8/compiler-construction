@@ -17,6 +17,7 @@ lemon
 .vscode
 .DS_Store
 y.dot
+dbug_state.h
 
 ## Bron: https://github.com/github/gitignore
 

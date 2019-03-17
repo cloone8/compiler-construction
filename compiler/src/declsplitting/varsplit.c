@@ -210,6 +210,7 @@ node* VSPglobal(node* arg_node, info* arg_info) {
         default:
             // Invalid type and thus a programming error
             DBUG_ASSERT(FALSE, "Invalid global type encountered!");
+            DBUG_RETURN(NULL);
     }
 }
 

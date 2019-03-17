@@ -116,7 +116,13 @@ all: make_devel
 devel:
 	@$(MAKE) CHECK_DEPS="yes" make_devel
 
-make_devel: makefiles civicc.go
+make_devel: enable_dbug makefiles civicc.go
+
+enable_dbug:
+	@cp -f src/util/dbug_enabled.config src/util/dbug_state.h
+
+disable_dbug:
+	@cp -f src/util/dbug_disabled.config src/util/dbug_state.h
 
 makefiles: $(SOURCE_MAKEFILES)
 

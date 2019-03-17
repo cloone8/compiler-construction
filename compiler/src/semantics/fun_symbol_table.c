@@ -223,5 +223,5 @@ void print_fun_symbol_table_chain(fun_symbol_table* table) {
     if(table->upper != NULL)
         print_fun_symbol_table_chain(table->upper);
 
-    DBUG_VOID_RETURN
+    DBUG_VOID_RETURN;
 }

@@ -80,6 +80,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "util.h"
+
+#include "dbug_state.h"
 
 #ifndef DBUG_OFF
     extern int _db_on_;                    /* TRUE if debug currently enabled */
@@ -133,7 +136,7 @@
 #define DBUG_FILE (stderr)
 #define DBUG_SETJMP setjmp
 #define DBUG_LONGJMP longjmp
-#define DBUG_ASSERT(p,q)
+#define DBUG_ASSERT(p,q) {(void)(p);(void)(q);}
 #define DBUG_ASSERTF(p,q)
 #define DBUG_ASSERT_EXPR(p,q,r) (r)
 #define DBUG_LPRINT(key1,key2,arglist)
@@ -192,6 +195,3 @@
 #define DBUG_PRINTE(keyword, arglist ) \
         (printf arglist,printf("\n"),fflush(stdout) )
 # endif
-
-
-

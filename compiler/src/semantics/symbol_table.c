@@ -201,5 +201,5 @@ void print_symbol_table_chain(symbol_table* table) {
     if(table->upper != NULL)
         print_symbol_table_chain(table->upper);
 
-    DBUG_VOID_RETURN
+    DBUG_VOID_RETURN;
 }

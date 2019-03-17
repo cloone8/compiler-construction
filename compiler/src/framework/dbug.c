@@ -55,7 +55,8 @@
  *
  */
 
-
+#include "dbug.h"
+
 #ifndef DBUG_OFF
 
 #include <stdio.h>
@@ -63,8 +64,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdarg.h>
-
-#include "dbug.h"
 
 #include "util.h"
 
@@ -1676,5 +1675,3 @@ int DBUG_almost_useless_dummy_var=0;
  */
 
 #endif /* DBUG_OFF */
-
-
