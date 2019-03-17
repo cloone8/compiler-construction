@@ -67,6 +67,7 @@ static info *APPfreeInfo(info *info) {
 node* APPfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("APPfunction");
 
+    printf("%s\n", FUNCTION_NAME(arg_node));
     // Go through parameters and make them update themselves
     if(FUNCTION_PARAMETERS(arg_node) != NULL) {
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
@@ -119,11 +120,15 @@ node* APParrayparameter(node* arg_node, info* arg_info) {
         PARAMTYPES(arg_info) = MEMmalloc(PARAMCOUNT(arg_info) * sizeof(type));
     }
 
+    printf("Total dims: %zu\n", dimcount);
+    printf("Setting param %s index %zu\n to %s\n", ARRAYPARAMETER_NAME(arg_node), myindex, print_type(ARRAYPARAMETER_TYPE(arg_node)));
     PARAMTYPES(arg_info)[myindex] = ARRAYPARAMETER_TYPE(arg_node);
 
     if(dimcount != 0) {
-        for(size_t i = myindex - 1; i > (myindex - dimcount); i--) {
-            PARAMTYPES(arg_info)[myindex] = TP_int;
+
+        for(size_t i = myindex - dimcount; i < myindex; i++) {
+            printf("Setting param %s dimension index %zu\n to %s\n", ARRAYPARAMETER_NAME(arg_node), i, print_type(TP_int));
+            PARAMTYPES(arg_info)[i] = TP_int;
         }
     }
 
@@ -137,7 +142,11 @@ node* APPbasicparameter(node* arg_node, info* arg_info) {
 
     if(BASICPARAMETER_NEXT(arg_node) != NULL) {
         BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
+    } else {
+        PARAMTYPES(arg_info) = MEMmalloc(PARAMCOUNT(arg_info) * sizeof(type));
     }
+    printf("Setting param %s index %zu\n to %s\n", BASICPARAMETER_NAME(arg_node), PARAMCOUNT(arg_info) - 1, print_type(BASICPARAMETER_TYPE(arg_node)));
+    PARAMTYPES(arg_info)[PARAMCOUNT(arg_info) - 1] = BASICPARAMETER_TYPE(arg_node);
 
     DBUG_RETURN(arg_node);
 }
@@ -245,7 +254,7 @@ node* APPfuncall(node* arg_node, info* arg_info) {
 
     if(PARAMCOUNT(arg_info) != entry->paramamount) {
         CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node),
-            "Invalid array dimensions in function call %s! Expected a total of %zu parameters, but got %zu parameters!",
+            "Invalid array dimensions in function call \"%s\"! Expected a total of %zu parameters, but got %zu parameters!",
             FUNCALL_FUNCTIONNAME(arg_node), entry->paramamount, PARAMCOUNT(arg_info));
     }
 
@@ -287,6 +296,8 @@ node* APPvarread(node* arg_node, info* arg_info) {
             break;
             // No more dimensions
         }
+
+        PARAMCOUNT(arg_info)++;
 
         node* dim_varread = TBmakeVarread(STRcpy(dim_var_name));
         VARREAD_VARPOINTER(dim_varread) = dim_entry;

@@ -28,15 +28,15 @@ export void printFloatVec(float[n] vec) {
 //     }
 // }
 
-export void printFloatMat(float[m, n] vec) {
-    for(int i = 0, m) {
-        for(int j = 0, n) {
-            printFloat(vec[i, j]);
-            printSpaces(1);
-        }
-        printNewlines(1);
-    }
-}
+// export void printFloatMat(float[m, n] vec) {
+//     for(int i = 0, m) {
+//         for(int j = 0, n) {
+//             printFloat(vec[i, j]);
+//             printSpaces(1);
+//         }
+//         printNewlines(1);
+//     }
+// }
 
 // export void scanIntVec(int[n] vec) {
 //     for(int i = 0, n) {

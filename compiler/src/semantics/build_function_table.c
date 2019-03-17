@@ -72,6 +72,8 @@ node *FTBfunction(node *arg_node, info *arg_info) {
     type* parameters = PARAMS(arg_info);
     size_t paramcount = PARAMCOUNT(arg_info);
 
+    DBUG_ASSERT((paramcount == 0 || (paramcount != 0 && parameters != NULL)), "Something went wrong building the function table!");
+
     PARAMS(arg_info) = NULL;
     PARAMCOUNT(arg_info) = 0;
 
