@@ -30,6 +30,8 @@ int fun_symbol_table_free(fun_symbol_table* tofree) {
     for(size_t i = 0; i < tofree->current_entries; i++) {
         fun_symbol_table_entry* current = tofree->entries[i];
         current->name = MEMfree(current->name);
+        if(current->paramamount > 0)
+            current->paramtypes = MEMfree(current->paramtypes);
         MEMfree(current);
     }
 
