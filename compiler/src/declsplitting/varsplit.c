@@ -90,7 +90,7 @@ static node* global_basic(node* arg_node, info* arg_info) {
         symbol_table_entry* varentry = GLOBALDEFINITION_VARPOINTER(def);
 
         node* initval = EXPRARRAY_CURRENT(GLOBALDEFINITION_VALUES(def));
-
+        FREEexprarray(GLOBALDEFINITION_VALUES(def), NULL);
         GLOBALDEFINITION_VALUES(def) = NULL;
 
         // Create a new variable assignment statement
