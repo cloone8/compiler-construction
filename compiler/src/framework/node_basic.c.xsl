@@ -90,7 +90,6 @@ version="1.0">
 #include "memory.h"
 #include "dbug.h"
 #include "globals.h"
-#include "myglobals.h"
 #include "str.h"
 #include "ctinfo.h"
 

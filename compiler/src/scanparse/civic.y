@@ -13,7 +13,6 @@
 #include "ctinfo.h"
 #include "free.h"
 #include "globals.h"
-#include "myglobals.h"
 #include "parsehelper.h"
 
 static node *parseresult = NULL;

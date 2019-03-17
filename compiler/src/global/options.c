@@ -5,7 +5,6 @@
 #include "usage.h"
 #include "ctinfo.h"
 #include "phase_options.h"
-#include "myglobals.h"
 #include "strlist.h"
 
 static char* copy_arg(const char* source) {

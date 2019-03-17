@@ -1291,8 +1291,6 @@ node* PRTlocalfunction(node * arg_node, info * arg_info) {
 node* PRTprogram(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTlocalfunction");
 
-    printf("Printing program:\n");
-
     if (PROGRAM_FUNSYMBOLTABLE(arg_node) != NULL) {
         print_fun_symbol_table(PROGRAM_FUNSYMBOLTABLE(arg_node));
         putchar('\n');
@@ -1337,7 +1335,7 @@ node* PRTdoPrint(node *syntaxtree) {
     DBUG_ASSERT((syntaxtree!= NULL), "PRTdoPrint called with empty syntaxtree");
     DBUG_ASSERT((NODE_TYPE(syntaxtree) == N_program), "First node of syntaxtree not a 'program' node");
 
-    printf("\n\n------------------------------\n\n");
+    printf("\n\n ------------------- PROGRAM START ------------------- \n\n");
 
     info = MakeInfo();
 
@@ -1349,7 +1347,7 @@ node* PRTdoPrint(node *syntaxtree) {
 
     info = FreeInfo(info);
 
-    printf("\n------------------------------\n\n");
+    printf("\n\n ------------------- PROGRAM END --------------------- \n\n");
 
     DBUG_RETURN(syntaxtree);
 }

@@ -65,4 +65,6 @@ extern globals_t global;
 
 extern void GLBinitializeGlobals(int argc, char *argv[]);
 
+#include "myglobals.h"
+
 #endif /* _SAC_GLOBALS_H_ */

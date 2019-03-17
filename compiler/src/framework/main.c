@@ -55,7 +55,6 @@
 #include "phase_drivers.h"
 #include "options.h"
 #include "globals.h"
-#include "myglobals.h"
 #include "ctinfo.h"
 #include "dbug.h"
 
@@ -95,5 +94,3 @@ int main(int argc, char *argv[])
 
   DBUG_RETURN(0);
 }
-
-

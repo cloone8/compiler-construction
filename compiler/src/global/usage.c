@@ -31,8 +31,9 @@ void PrintGeneralInfo(void)
           "    -p <n>          Print the syntax tree during compilation. n can be any of the following:\n"
           "                        0: (Default) Don't print the syntax tree\n"
           "                        1: Print the syntax tree at the beginning and at the end of compilation\n"
-          "                        2: Print the syntax tree at the end of each compilation phase\n"
-          "                        3: Print the syntax tree at every phase that changes it\n\n"
+          "                        2: Print the syntax tree at the end of each compilation phase where the AST has been changed\n"
+          "                        3: Print the syntax tree at every subphase that changes it\n\n"
+
           "    -#d,<id>        Print debugging information for tag <id>.\n"
           "                    Supported tags are:\n\n"
 

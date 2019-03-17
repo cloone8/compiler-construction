@@ -260,5 +260,3 @@ node *PHrunCyclePhase(compiler_phase_t cyclephase,
 
   DBUG_RETURN(syntax_tree);
 }
-
-

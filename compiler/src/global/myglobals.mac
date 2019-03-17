@@ -22,6 +22,11 @@
 GLOBAL(type, name, init)
 #endif
 
+#define PRINT_NONE (0)
+#define PRINT_START_END (1)
+#define PRINT_END_PHASE (2)
+#define PRINT_ALL (3)
+
 GLOBAL(strlist_node*, dangling_strings, NULL);
 GLOBAL(FILE*, input_file_handler, NULL);
 GLOBAL(char*, current_file, NULL);

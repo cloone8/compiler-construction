@@ -1,7 +1,8 @@
 #include "finalise.h"
 #include "strlist.h"
-#include "myglobals.h"
 #include "memory.h"
+#include "types.h"
+#include "globals.h"
 
 /**
  * Cleans all remaining memory and buffers

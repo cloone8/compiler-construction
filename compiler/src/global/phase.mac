@@ -22,7 +22,7 @@ SUBPHASE(scp,
           ALWAYS,
           ld)
 
-SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ONLYIF(myglobal.printtree > 0), ld)
+SUBPHASE(prt_ast, "Print ast", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_START_END), ld)
 
 ENDPHASE(ld)
 
@@ -52,9 +52,7 @@ SUBPHASE( cfs,
           ALWAYS,
           sa)
 
-#ifndef DBUG_OFF
-SUBPHASE(prt_sa_ast, "Printing symbol tables", PRTdoPrint, ALWAYS, sa)
-#endif
+SUBPHASE(prt_sa_ast, "Printing symbol tables", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), sa)
 
 ENDPHASE(sa)
 
@@ -83,9 +81,7 @@ SUBPHASE( vrn,
           ALWAYS,
           i2a)
 
-#ifndef DBUG_OFF
-SUBPHASE(prt_rn_ast, "Printing split AST", PRTdoPrint, ALWAYS, i2a)
-#endif
+SUBPHASE(prt_rn_ast, "Printing split AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), i2a)
 
 ENDPHASE(i2a)
 
@@ -116,9 +112,7 @@ SUBPHASE(app,
          ALWAYS,
          ict)
 
-#ifndef DBUG_OFF
-SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
-#endif
+SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
 
 SUBPHASE( tc,
            "Checking expanded array types",
@@ -126,21 +120,21 @@ SUBPHASE( tc,
            ALWAYS,
            ict)
 
-#ifndef DBUG_OFF
-SUBPHASE(prt_apptc_ast, "Printing split AST", PRTdoPrint, ALWAYS, ict)
-#endif
-
 SUBPHASE(bdc,
          "Boolean compiling",
          BDCdo,
          ALWAYS,
          ict)
 
+SUBPHASE(prt_bdc_ast, "Printing boolean compiled AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
+
 SUBPHASE(cbc,
          "Compiling boolean cast expressions",
          CBCdo,
          ALWAYS,
          ict)
+
+SUBPHASE(prt_ict_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), ict)
 
 ENDPHASE(ict)
 
@@ -149,6 +143,9 @@ ENDPHASE(ict)
 PHASE(cg,
        "Generating Code",
        ALWAYS)
+
+SUBPHASE(prt_fin_ast, "Print final AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_START_END), cg)
+
 SUBPHASE(prt, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)
 
 

@@ -52,7 +52,6 @@
 #include "scanparse.h"
 #include "dbug.h"
 #include "globals.h"
-#include "myglobals.h"
 #include "ctinfo.h"
 #include "str.h"
 #include "memory.h"
