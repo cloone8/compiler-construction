@@ -82,8 +82,6 @@
 #include <stdlib.h>
 #include "util.h"
 
-#include "dbug_state.h"
-
 #ifndef DBUG_OFF
     extern int _db_on_;                    /* TRUE if debug currently enabled */
     extern int _db_dummy_;                 /* dummy for fooling macro preprocessor */
