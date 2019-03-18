@@ -134,7 +134,15 @@ SUBPHASE(cbc,
          ALWAYS,
          ict)
 
-SUBPHASE(prt_ict_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), ict)
+SUBPHASE(prt_ict_ast, "Printing boolean cast compiled AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
+
+SUBPHASE(lad,
+         "Lowering array dimensions",
+         LADdo,
+         ALWAYS,
+         ict)
+
+SUBPHASE(prt_lad_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), ict)
 
 ENDPHASE(ict)
 

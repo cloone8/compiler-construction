@@ -125,4 +125,4 @@ declsplitting = varsplit.o declsplitting_lib.o forsplit.o varrename.o
 
 typechecking = typecheck.o
 
-codetransform = arrayparams.o boolcomp.o boolcast.o
+codetransform = arrayparams.o boolcomp.o boolcast.o arraylower.o

@@ -170,6 +170,13 @@
                 </travuser>
             </traversal>
 
+            <traversal id="LAD" name="Lowering array dimensions" default="sons" include="arraylower.h">
+                <travuser>
+                    <node name="ArrayVarRead" />
+                    <node name="ArrayVarAssign" />
+                </travuser>
+            </traversal>
+
         </general>
     </phases>
 
