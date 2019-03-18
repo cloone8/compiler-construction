@@ -3,6 +3,7 @@
 #include "tree_basic.h"
 #include "traverse.h"
 #include "dbug.h"
+#include "free_node.h"
 
 #include "str.h"
 #include "memory.h"
@@ -109,6 +110,7 @@ node* BDCbinop(node* arg_node, info* arg_info) {
 
     /* If we set the cond_expr node, we return our new conditional expr node. */
     if (cond_expr != NULL) {
+        FREEbinop(arg_node, arg_info);
         DBUG_RETURN(cond_expr);
     }
 

@@ -2,6 +2,7 @@
 #include "types.h"
 #include "tree_basic.h"
 #include "traverse.h"
+#include "free_node.h"
 #include "dbug.h"
 
 #include "str.h"
@@ -95,20 +96,21 @@ node* handle_boolcast(node* arg_node, info* arg_info) {
     if(TO_CAST(arg_info) == TP_float) {
         /*We have a float.*/
         if (FLOAT_VAL(arg_info) != 0) {
-            arg_node = TBmakeBoolconst(TRUE);
+            DBUG_RETURN(TBmakeBoolconst(TRUE));
         } else {
-            arg_node = TBmakeBoolconst(FALSE);
+            DBUG_RETURN(TBmakeBoolconst(FALSE));
         }
     }
     else {
         /*We have an int.*/
         if (INT_VAL(arg_info) != 0) {
-            arg_node = TBmakeBoolconst(TRUE);
+            DBUG_RETURN(TBmakeBoolconst(TRUE));
         } else {
-            arg_node = TBmakeBoolconst(FALSE);
+            DBUG_RETURN(TBmakeBoolconst(FALSE));
         }
     }
 
+    
     DBUG_RETURN(arg_node);
 }
 
@@ -143,11 +145,20 @@ node* CBCcast(node* arg_node, info* arg_info) {
     if (TO_CAST(arg_info) != TP_bool || CAST_CASTTO(arg_node) != TP_bool) {
         if (CAST_CASTTO(arg_node) == TP_bool) {
             /*casting towards bool*/
+            node* old_cast = arg_node;
             arg_node = handle_boolcast(arg_node, arg_info);
-            
+            TRAVpush(TR_free);
+            FREEcast(old_cast, NULL);
+            TRAVpop();
+            // CBCfreeInfo(arg_info);
         } else {
             /*casting towards non-bool*/
+            node *old_cast = arg_node;
             arg_node = handle_from_boolcast(arg_node, arg_info);
+            TRAVpush(TR_free);
+            FREEcast(old_cast, NULL);
+            TRAVpop();
+            // CBCfreeInfo(arg_info);
         }
         DBUG_RETURN(arg_node);
     }

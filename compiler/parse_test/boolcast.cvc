@@ -3,6 +3,7 @@ int foo() {
     float c = (float)a;
     int k = (int)false;
     bool v = (bool)5.5;
+    bool p = (bool)5.5;
     bool l = (bool)0;
     bool wow = (bool)(1 + 2 + 3);
     return 1;
@@ -10,7 +11,7 @@ int foo() {
 
 export int main() {
     int a = foo();
-    float tst = (float)false;
+    // float tst = (float)false;
 
     return 1;
 }
