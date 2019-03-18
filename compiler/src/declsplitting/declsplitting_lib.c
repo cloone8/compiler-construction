@@ -470,6 +470,7 @@ void rename_extern_global_dims(char* var_name, node* dims) {
     DBUG_ENTER("rename_extern_global_dims");
     DBUG_ASSERT((NODE_TYPE(dims) = N_arraydimensionvars), "Invalid array dimension type for global!");
     DBUG_ASSERT((dims != NULL), "Dims was NULL!");
+    DBUG_ASSERT((var_name != NULL && STRlen(var_name) != 0), "var_name was NULL!");
 
     size_t dimcount = 0;
 

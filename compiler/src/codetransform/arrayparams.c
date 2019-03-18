@@ -98,6 +98,17 @@ node* APPfunction(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node* APPglobal(node* arg_node, info* arg_info) {
+    DBUG_ENTER("APPglobal");
+    // Purposefully skip dimension vars, as they have already been renamed
+
+    if(GLOBAL_DEFINITION(arg_node) != NULL) {
+        GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 node* APParrayparameter(node* arg_node, info* arg_info) {
     DBUG_ENTER("APParrayparameter");
     node* toreturn = arg_node;
@@ -158,8 +169,6 @@ node* APPbasicparameter(node* arg_node, info* arg_info) {
 
 node* APParraydimensionvars(node* arg_node, info* arg_info) {
     DBUG_ENTER("APParraydimensionvars");
-
-    // PARAMCOUNT(arg_info)++;
 
     // Rename the dimension variable to be in line with the standard dimension name
     char name_buffer[STR_BUF_SIZE];
