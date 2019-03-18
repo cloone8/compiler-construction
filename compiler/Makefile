@@ -107,15 +107,17 @@ DEPS = $(foreach file,$(DEPENDENCY_FILES),$(dir $(file)).$(notdir $(file)))
 #
 # Start rules
 #
-
 all: devel
 
-devel: export CIVICC_PROD="no"
-devel: makefiles civicc.go
+devel:
+	@$(MAKE) CHECK_DEPS="yes" make_devel
 
-prod: export CIVICC_PROD="yes"
-prod: clean makefiles civicc.go
-	@$(ECHO) $(PROD)
+prod:
+	@$(MAKE) CHECK_DEPS="yes" make_prod
+
+make_devel: makefiles civicc.go
+
+make_prod: makefiles civicc.prod.go
 
 makefiles: $(SOURCE_MAKEFILES)
 
@@ -176,15 +178,7 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
               $(ECHO) "Compiling files in directory $(dir $@)" ; \
          fi
 	@$(ECHO) "  Compiling code:  $(notdir $<)"
-	@if [ $(CIVICC_PROD) = "yes" ] ;\
-		then \
-			$(CC) $(CCPROD_FLAGS) $(YYFLAGS) $(INCS) -o $@ -c $< ;\
-		else \
-			$(CC) $(CCFLAGS) $(YYFLAGS) $(INCS) -o $@ -c $< ;\
-		fi
-
-
-
+	@$(CC) $(CCFLAGS) $(CFLAGS) $(YYFLAGS) $(INCS) -o $@ -c $<
 
 %.lex.c: %.l %.track
 	@$(ECHO) "  Generating source code from LEX specification:  $(notdir $<)"
