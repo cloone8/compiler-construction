@@ -88,28 +88,66 @@ node* CBCvarread(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/* Handle the conversion from an int or float towards a bool. */
+node* handle_boolcast(node* arg_node, info* arg_info) {
+    DBUG_ENTER("handle_boolcast");
+
+    if(TO_CAST(arg_info) == TP_float) {
+        /*We have a float.*/
+        if (FLOAT_VAL(arg_info) != 0) {
+            arg_node = TBmakeBoolconst(TRUE);
+        } else {
+            arg_node = TBmakeBoolconst(FALSE);
+        }
+    }
+    else {
+        /*We have an int.*/
+        if (INT_VAL(arg_info) != 0) {
+            arg_node = TBmakeBoolconst(TRUE);
+        } else {
+            arg_node = TBmakeBoolconst(FALSE);
+        }
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+/* Handle the conversion from a bool towards an int or towards a float. */
+node* handle_from_boolcast(node* arg_node, info* arg_info) {
+    DBUG_ENTER("handle_from_boolcast");
+
+    if (CAST_CASTTO(arg_node) == TP_float) {
+        /*We need a float cast.*/
+        if (BOOL_VAL(arg_info) == TRUE) {
+            arg_node = TBmakeFloatconst(1.0);
+        } else {
+            arg_node = TBmakeFloatconst(0.0);
+        }
+    } else {
+        /*We need an int cast*/
+        if (BOOL_VAL(arg_info) == TRUE) {
+            arg_node = TBmakeIntconst(1);
+        } else {
+            arg_node = TBmakeIntconst(0);
+        }
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 node* CBCcast(node* arg_node, info* arg_info) {
     DBUG_ENTER("CBCcast");
 
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
-    type cast_to = CAST_CASTTO(arg_node);
 
-    printf("%s", print_type(cast_to));
-    printf("%s", print_type(TO_CAST(arg_info)));
-
-    if (TO_CAST(arg_info) != TP_bool || cast_to != TP_bool) {
-        if (cast_to == TP_bool) {
+    if (TO_CAST(arg_info) != TP_bool || CAST_CASTTO(arg_node) != TP_bool) {
+        if (CAST_CASTTO(arg_node) == TP_bool) {
             /*casting towards bool*/
+            arg_node = handle_boolcast(arg_node, arg_info);
             
         } else {
             /*casting towards non-bool*/
-            if (BOOL_VAL(arg_info)) {
-                int toreturn = 1;
-                printf("het is nu %d", toreturn);
-            } else {
-                int toreturn = 0;
-                printf("het is nu %d", toreturn);
-            }
+            arg_node = handle_from_boolcast(arg_node, arg_info);
         }
         DBUG_RETURN(arg_node);
     }
