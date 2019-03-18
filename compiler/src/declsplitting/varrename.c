@@ -153,6 +153,8 @@ node* VRNarrayparameter(node* arg_node, info* arg_info) {
         ARRAYPARAMETER_NAME(arg_node) = STRcpy(entry->name);
     }
 
+    ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
+
     if(ARRAYPARAMETER_NEXT(arg_node) != NULL) {
         ARRAYPARAMETER_NEXT(arg_node) = TRAVdo(ARRAYPARAMETER_NEXT(arg_node), arg_info);
     }

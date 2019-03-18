@@ -80,7 +80,7 @@ static size_t get_array_dims(symbol_table_entry* array_entry, symbol_table_entry
     size_t count = 0;
 
     symbol_table* array_table = array_entry->table;
-
+    print_symbol_table(array_table);
     while(TRUE) {
         char name_buffer[STR_BUF_SIZE];
         snprintf(name_buffer, STR_BUF_SIZE, "%zu", count);
@@ -182,8 +182,8 @@ static node* flatten_position_exprarray(symbol_table_entry* array_entry, node* p
 
     if(expected_position_count != given_position_count) {
         CTIerrorFile(NODE_FILE(positions), NODE_LINE(positions),
-                     "Invalid number of array position arguments! Expected %zu but got %zu",
-                      expected_position_count, given_position_count);
+                     "Invalid number of array position arguments for array \"%s\"! Expected %zu but got %zu",
+                      array_entry->name, expected_position_count, given_position_count);
         DBUG_RETURN(NULL);
     }
 

@@ -75,7 +75,7 @@ SUBPHASE( fsp,
           ALWAYS,
           i2a)
 
-SUBPHASE( vrn,
+SUBPHASE( i2a_vrn,
           "Updating renamed variable names",
           VRNdo,
           ALWAYS,
@@ -111,6 +111,12 @@ SUBPHASE(app,
          APPdo,
          ALWAYS,
          ict)
+
+SUBPHASE( app_vrn,
+          "Updating renamed variable names",
+          VRNdo,
+          ALWAYS,
+          ict)
 
 SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
 

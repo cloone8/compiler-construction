@@ -22,6 +22,7 @@ struct INFO {
     type* paramtypes;
     node* newparamnodes;
     bool infuncall;
+    char* current_array_param_name;
 };
 
 /*
@@ -34,6 +35,7 @@ struct INFO {
 #define PARAMTYPES(__arg_info_struct__) ((__arg_info_struct__)->paramtypes)
 #define NEWNODES(__arg_info_struct__) ((__arg_info_struct__)->newparamnodes)
 #define IN_FUNCALL(__arg_info_struct__) ((__arg_info_struct__)->infuncall)
+#define ARRAYPARAMNAME(__arg_info_struct__) ((__arg_info_struct__)->current_array_param_name)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -49,6 +51,7 @@ static info *APPmakeInfo(void) {
     result->paramtypes = NULL;
     result->newparamnodes = NULL;
     result->infuncall = FALSE;
+    result->current_array_param_name = NULL;
 
     DBUG_RETURN(result);
 }
@@ -102,7 +105,7 @@ node* APParrayparameter(node* arg_node, info* arg_info) {
     size_t myindex = PARAMCOUNT(arg_info)++;
 
     info* dims_info = APPmakeInfo();
-
+    ARRAYPARAMNAME(dims_info) = ARRAYPARAMETER_VARPOINTER(arg_node)->name;
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), dims_info);
 
     size_t dimcount = PARAMCOUNT(dims_info);
@@ -156,8 +159,18 @@ node* APPbasicparameter(node* arg_node, info* arg_info) {
 node* APParraydimensionvars(node* arg_node, info* arg_info) {
     DBUG_ENTER("APParraydimensionvars");
 
-    PARAMCOUNT(arg_info)++;
-    node* new_param = TBmakeBasicparameter(STRcpy(ARRAYDIMENSIONVARS_NAME(arg_node)), TP_int, NULL);
+    // PARAMCOUNT(arg_info)++;
+
+    // Rename the dimension variable to be in line with the standard dimension name
+    char name_buffer[STR_BUF_SIZE];
+    snprintf(name_buffer, STR_BUF_SIZE, "%zu", PARAMCOUNT(arg_info)++);
+    char* dim_var_name = STRcatn(4, "tmp-", name_buffer, "-", ARRAYPARAMNAME(arg_info));
+
+    symbol_table_entry* entry = ARRAYDIMENSIONVARS_VARPOINTER(arg_node);
+    symbol_table_update(entry->table, entry->idx, dim_var_name);
+
+    node* new_param = TBmakeBasicparameter(STRcpy(dim_var_name), TP_int, NULL);
+    MEMfree(dim_var_name);
     BASICPARAMETER_VARPOINTER(new_param) = ARRAYDIMENSIONVARS_VARPOINTER(arg_node);
 
     if(NEWNODES(arg_info) == NULL) {
