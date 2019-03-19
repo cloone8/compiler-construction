@@ -85,6 +85,8 @@ static size_t get_array_dims(symbol_table_entry* array_entry, symbol_table_entry
         char* dim_var_name = STRcatn(4, "tmp-", name_buffer, "-", array_entry->name);
 
         symbol_table_entry* dim_var = symbol_table_get_name(array_table, dim_var_name);
+
+        MEMfree(dim_var_name);
         if(dim_var == NULL) {
             break;
         }
