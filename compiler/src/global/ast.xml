@@ -126,6 +126,7 @@
                     <node name="FunCallParameter" />
                     <node name="FunCall" />
                     <node name="BinOp" />
+                    <node name="MonOp" />
                     <node name="IntConst" />
                     <node name="FloatConst" />
                     <node name="BoolConst" />
