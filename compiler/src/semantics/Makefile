@@ -95,7 +95,7 @@ devel:
 prod:
 	@$(ECHO) ""
 	@$(ECHO) "Making current subdirectory (product version)"
-	@$(MAKE) -C $(PROJECT_ROOT) TARGET="$(TARGET)" MODE="prod" CHECK_DEPS="yes" makesubdir
+	@$(MAKE) -C $(PROJECT_ROOT) TARGET="$(TARGET)" MODE="prod" CHECK_DEPS="yes"makesubdir
 
 
 
