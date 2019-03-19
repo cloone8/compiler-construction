@@ -110,7 +110,7 @@ node* handle_boolcast(node* arg_node, info* arg_info) {
         }
     }
 
-    
+
     DBUG_RETURN(arg_node);
 }
 
@@ -146,7 +146,7 @@ node* CBCcast(node* arg_node, info* arg_info) {
         if (CAST_CASTTO(arg_node) == TP_bool) {
             /*casting towards bool*/
             node* old_cast = arg_node;
-            arg_node = handle_boolcast(arg_node, arg_info);
+            arg_node = TBmakeConstant(handle_boolcast(arg_node, arg_info));
             TRAVpush(TR_free);
             FREEcast(old_cast, NULL);
             TRAVpop();
@@ -154,7 +154,7 @@ node* CBCcast(node* arg_node, info* arg_info) {
         } else {
             /*casting towards non-bool*/
             node *old_cast = arg_node;
-            arg_node = handle_from_boolcast(arg_node, arg_info);
+            arg_node = TBmakeConstant(handle_from_boolcast(arg_node, arg_info));
             TRAVpush(TR_free);
             FREEcast(old_cast, NULL);
             TRAVpop();
