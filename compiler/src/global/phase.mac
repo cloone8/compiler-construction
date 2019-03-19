@@ -150,17 +150,11 @@ SUBPHASE(lad,
 
 SUBPHASE(prt_lad_ast, "Printing array dimension lowered AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
 
-SUBPHASE(fsm,
-         "Migrating for-loop symbol tables",
-         FSMdo,
+SUBPHASE(ftw,
+         "Transforming for-loops to while-loops",
+         FTWdo,
          ALWAYS,
          ict)
-
-// SUBPHASE(ftw,
-//          "Converting for-loops to while-loops",
-//          FTWdo,
-//          ALWAYS,
-//          ict)
 
 SUBPHASE(prt_ict_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), ict)
 

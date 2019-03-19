@@ -179,19 +179,12 @@
                 </travuser>
             </traversal>
 
-            <traversal id="FSM" name="Migrate for-loop symbol tables to upper scope" default="sons" include="forsymtablemigrate.h">
+            <traversal id="FTW" name="Migrate for-loops to while-loops" default="sons" include="fortowhile.h">
                 <travuser>
                     <node name="FunctionDefinition" />
                     <node name="For" />
                 </travuser>
             </traversal>
-
-            <traversal id="FTW" name="For-loops to while-loops" default="sons" include="fortowhile.h">
-                <travuser>
-                    <node name="For" />
-                </travuser>
-            </traversal>
-
         </general>
     </phases>
 
