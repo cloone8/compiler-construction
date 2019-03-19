@@ -1,0 +1,12 @@
+export int main() {
+    float a = 2.2;
+    float b = 3.5;
+    int c = a % b;
+    // float b = 10.0;
+    // float a = -10.0;
+    // bool b = -false;
+    // int[4] a = [1,2,3,4];
+    // float z = 3.3;
+    // int c = a[z];
+    return 1;
+}
