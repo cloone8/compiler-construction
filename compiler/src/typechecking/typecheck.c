@@ -303,19 +303,47 @@ node *TCbinop(node* arg_node, info* arg_info) {
         switch(BINOP_BINOPERATORS(arg_node)) {
             case BO_mod:
                 if (TYPE(left_info) != TP_int) {
-                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"modulo\" requires two integers");
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"modulo\" requires two integers.");
                 }
                 TYPE(arg_info) = TYPE(left_info);
                 break;
             case BO_lt:
+                if (TYPE(left_info) != TP_int) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<\" requires two integers or two floats.");
+                }
+                TYPE(arg_info) = TYPE(left_info);
+                break;
             case BO_le:
+                if (TYPE(left_info) != TP_int) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<=\" requires two integers or two floats.");
+                }
+                TYPE(arg_info) = TYPE(left_info);
+                break;
             case BO_eq:
             case BO_ne:
             case BO_ge:
+                if (TYPE(left_info) != TP_int) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">=\" requires two integers or two floats.");
+                }
+                TYPE(arg_info) = TYPE(left_info);
+                break;
             case BO_gt:
+                if (TYPE(left_info) != TP_int) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">\" requires two integers or two floats.");
+                }
+                TYPE(arg_info) = TYPE(left_info);
+                break;
             case BO_and:
+                if (TYPE(left_info) != TP_bool) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"&&\" requires two bools.");
+                }
+                TYPE(arg_info) = TYPE(left_info);
+                break;
             case BO_or:
-                TYPE(arg_info) = TP_bool;
+                if (TYPE(left_info) != TP_bool) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"||\" requires two bools.");
+                }
+                TYPE(arg_info) = TYPE(left_info);
                 break;
             default:
                 TYPE(arg_info) = TYPE(left_info);
