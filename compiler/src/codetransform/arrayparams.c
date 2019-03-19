@@ -171,8 +171,7 @@ node* APParraydimensionvars(node* arg_node, info* arg_info) {
     DBUG_ENTER("APParraydimensionvars");
 
     // Rename the dimension variable to be in line with the standard dimension name
-    char name_buffer[STR_BUF_SIZE];
-    snprintf(name_buffer, STR_BUF_SIZE, "%zu", PARAMCOUNT(arg_info)++);
+    get_size_t_str(name_buffer, PARAMCOUNT(arg_info)++);
     char* dim_var_name = STRcatn(4, "tmp-", name_buffer, "-", ARRAYPARAMNAME(arg_info));
 
     symbol_table_entry* entry = ARRAYDIMENSIONVARS_VARPOINTER(arg_node);
@@ -308,8 +307,7 @@ node* APPvarread(node* arg_node, info* arg_info) {
     size_t i = 0;
 
     while(TRUE) {
-        char name_buffer[STR_BUF_SIZE];
-        snprintf(name_buffer, STR_BUF_SIZE, "%zu", i++);
+        get_size_t_str(name_buffer, i++);
         char* dim_var_name = STRcatn(4, "tmp-", name_buffer, "-", entry->name);
 
         // As we do not track the dimensions in the symbol table, find the dimensions manually

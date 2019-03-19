@@ -100,17 +100,13 @@ node* FSPfor(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfor");
 
     DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR_COUNTER was NULL, while it shouldn't yet be!");
-
     // Lift the counter out of the loop
     node* counter_dec = FOR_COUNTER(arg_node);
     FOR_COUNTER(arg_node) = NULL;
     symbol_table_entry* entry = BASICVARDECLARATION_VARPOINTER(counter_dec);
 
     // Change the name for clarity
-    // char* new_name = STRcat("for-counter-", entry->name);
-
-    char table_id_buffer[STR_BUF_SIZE];
-    snprintf(table_id_buffer, STR_BUF_SIZE, "%zu", entry->table->id);
+    get_size_t_str(table_id_buffer, entry->table->id);
 
     char* new_name = STRcatn(4, "for-", table_id_buffer, "-counter-", entry->name);
     symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), entry->idx, new_name);
