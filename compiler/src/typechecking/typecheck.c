@@ -114,7 +114,7 @@ node* TCreturn(node *arg_node, info *arg_info) {
         TRAVdo(RETURN_VALUE(arg_node), new_info);
 
         if(TYPE(new_info) != funtype) {
-            CTIerror("Return statement with invalid type! Expected %s but got %s", print_type(funtype), print_type(TYPE(new_info)));
+            CTIerror("Return statement with invalid type! Expected %s but got %s", get_type_str(funtype), get_type_str(TYPE(new_info)));
         }
 
         TCfreeInfo(new_info);
@@ -158,7 +158,7 @@ node* TCvarassign(node* arg_node, info* arg_info) {
     }
 
     if (TYPE(val_info) != TYPE(arg_info)) {
-        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, print_type(TYPE(arg_info)), print_type(TYPE(val_info)));
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, get_type_str(TYPE(arg_info)), get_type_str(TYPE(val_info)));
     }
 
     TCfreeInfo(val_info);
@@ -179,7 +179,7 @@ node* TCarrayvarassign(node* arg_node, info* arg_info) {
     }
 
     if (TYPE(val_info) != TYPE(arg_info)) {
-        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, print_type(TYPE(arg_info)), print_type(TYPE(val_info)));
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, get_type_str(TYPE(arg_info)), get_type_str(TYPE(val_info)));
     }
 
     TCfreeInfo(val_info);
@@ -252,8 +252,8 @@ node* TCfuncall(node* arg_node, info* arg_info) {
                              "Wrong types given for function %s, argument %zu needs %s, but got, %s",
                              FUNCALL_FUNCTIONNAME(arg_node),
                              i + 1,
-                             print_type(needed[i]),
-                             print_type(GIVEN(new_info)[i]));
+                             get_type_str(needed[i]),
+                             get_type_str(GIVEN(new_info)[i]));
             }
         }
         TCfreeInfo(new_info);
@@ -303,7 +303,7 @@ node *TCbinop(node* arg_node, info* arg_info) {
         switch(BINOP_BINOPERATORS(arg_node)) {
             case BO_mod:
                 if (TYPE(left_info) != TP_int) {
-                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"modulo\" requires two integers.");
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"\%\" requires two integers.");
                 }
                 TYPE(arg_info) = TYPE(left_info);
                 break;
@@ -359,7 +359,7 @@ node *TCbinop(node* arg_node, info* arg_info) {
                 TYPE(arg_info) = TYPE(left_info);
         }
     } else {
-        CTIerror("Unequal types for binop!");
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unequal types for binop \"%s\"!", get_binop_str(BINOP_BINOPERATORS(arg_node)));
     }
 
     TCfreeInfo(left_info);

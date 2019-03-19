@@ -104,8 +104,8 @@ void print_exprarray(node* exprs) {
     DBUG_VOID_RETURN;
 }
 
-char* print_type(type to_print) {
-    DBUG_ENTER("print_type");
+char* get_type_str(type to_print) {
+    DBUG_ENTER("get_type_str");
 
     static char* result;
 
@@ -255,6 +255,56 @@ char* get_nodetype_string(nodetype nt) {
         default:
             DBUG_ASSERT((FALSE), "Invalid nodetype given!");
     }
+    DBUG_RETURN(toreturn);
+}
+
+char* get_binop_str(binop bo_type) {
+    DBUG_ENTER("get_binop_srt");
+    static char* toreturn;
+
+    switch (bo_type) {
+        case BO_add:
+            toreturn = "+";
+            break;
+        case BO_sub:
+            toreturn = "-";
+            break;
+        case BO_mul:
+            toreturn = "*";
+            break;
+        case BO_div:
+            toreturn = "/";
+            break;
+        case BO_mod:
+            toreturn = "%";
+            break;
+        case BO_lt:
+            toreturn = "<";
+            break;
+        case BO_le:
+            toreturn = "<=";
+            break;
+        case BO_ge:
+            toreturn = ">=";
+            break;
+        case BO_gt:
+            toreturn = ">";
+            break;
+        case BO_eq:
+            toreturn = "==";
+            break;
+        case BO_ne:
+            toreturn = "!=";
+            break;
+        case BO_and:
+            toreturn = "&&";
+            break;
+        case BO_or:
+            toreturn = "||";
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Incorrect binop type!");
+        }
     DBUG_RETURN(toreturn);
 }
 

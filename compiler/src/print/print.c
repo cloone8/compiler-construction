@@ -75,50 +75,7 @@ node* PRTbinop (node * arg_node, info * arg_info) {
     putchar('(');
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
 
-    switch (BINOP_BINOPERATORS(arg_node))
-    {
-    case BO_add:
-        printf(" + ");
-        break;
-    case BO_sub:
-        printf(" - ");
-        break;
-    case BO_mul:
-        printf(" * ");
-        break;
-    case BO_div:
-        printf(" / ");
-        break;
-    case BO_mod:
-        printf(" %% ");
-        break;
-    case BO_lt:
-        printf(" < ");
-        break;
-    case BO_le:
-        printf(" <= ");
-        break;
-    case BO_ge:
-        printf(" >= ");
-        break;
-    case BO_gt:
-        printf(" > ");
-        break;
-    case BO_eq:
-        printf(" == ");
-        break;
-    case BO_ne:
-        printf(" != ");
-        break;
-    case BO_and:
-        printf(" && ");
-        break;
-    case BO_or:
-        printf(" || ");
-        break;
-    default:
-        printf(" UNKNOWN_LOGIC_OPERATOR ");
-    }
+    printf(" %s ", get_binop_str(BINOP_BINOPERATORS(arg_node)));
 
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     putchar(')');
