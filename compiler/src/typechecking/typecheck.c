@@ -308,27 +308,37 @@ node *TCbinop(node* arg_node, info* arg_info) {
                 TYPE(arg_info) = TYPE(left_info);
                 break;
             case BO_lt:
-                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
+                if (TYPE(left_info) != TP_int && TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TP_bool;
                 break;
             case BO_le:
-                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
+                if (TYPE(left_info) != TP_int && TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<=\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TP_bool;
                 break;
             case BO_eq:
+                if (array_type_to_type(TYPE(left_info)) != TYPE(left_info)) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"==\" requires a non-array type.");
+                }
+                TYPE(arg_info) = TP_bool;
+                break;
             case BO_ne:
+                if (array_type_to_type(TYPE(left_info)) != TYPE(left_info)) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"!=\" requires a non-array type.");
+                }
+                TYPE(arg_info) = TP_bool;
+                break;
             case BO_ge:
-                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
+                if (TYPE(left_info) != TP_int && TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">=\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TP_bool;
                 break;
             case BO_gt:
-                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
+                if (TYPE(left_info) != TP_int && TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TP_bool;
