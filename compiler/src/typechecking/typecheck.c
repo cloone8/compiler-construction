@@ -224,7 +224,7 @@ node *TCarrayvarread(node *arg_node, info *arg_info) {
 
     ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), array_pos);
     if (TYPE(array_pos) != TP_int) {
-        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), 
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node),
                      "Array subscript of \"%s[]\" must be of type int.", ARRAYVARREAD_ARRAYVARNAME(arg_node));
     }
 
@@ -308,13 +308,13 @@ node *TCbinop(node* arg_node, info* arg_info) {
                 TYPE(arg_info) = TYPE(left_info);
                 break;
             case BO_lt:
-                if (TYPE(left_info) != TP_int) {
+                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TYPE(left_info);
                 break;
             case BO_le:
-                if (TYPE(left_info) != TP_int) {
+                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<=\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TYPE(left_info);
@@ -322,13 +322,13 @@ node *TCbinop(node* arg_node, info* arg_info) {
             case BO_eq:
             case BO_ne:
             case BO_ge:
-                if (TYPE(left_info) != TP_int) {
+                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">=\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TYPE(left_info);
                 break;
             case BO_gt:
-                if (TYPE(left_info) != TP_int) {
+                if (TYPE(left_info) != TP_int || TYPE(left_info) != TP_float) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">\" requires two integers or two floats.");
                 }
                 TYPE(arg_info) = TYPE(left_info);
