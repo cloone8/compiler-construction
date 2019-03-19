@@ -42,6 +42,16 @@ int symbol_table_free(symbol_table* tofree) {
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
+int symbol_table_free_no_entries(symbol_table* tofree) {
+    DBUG_ENTER("symbol_table_free_no_entries");
+    DBUG_ASSERT((tofree != NULL), "Table was NULL!");
+
+    MEMfree(tofree->entries);
+    MEMfree(tofree);
+
+    DBUG_RETURN(EXIT_SUCCESS);
+}
+
 static void increase_table_size(symbol_table* toincrease) {
     DBUG_ENTER("increase_table_size");
 
@@ -64,8 +74,8 @@ static void increase_table_size(symbol_table* toincrease) {
 
 symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_type) {
     DBUG_ENTER("symbol_table_add");
-    DBUG_ASSERT((table != NULL), "Table was NULL!");
-    DBUG_ASSERT((name != NULL), "Name is NULL!");
+    DBUG_ASSERT((table != NULL), "table was NULL!");
+    DBUG_ASSERT((name != NULL), "name is NULL!");
 
     if (symbol_table_get_name(table, name) != NULL) {
         CTIerror("Var %s already in scope", name);
@@ -90,6 +100,32 @@ symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_t
     DBUG_ASSERT((table->entries[table->current_entries - 1] != NULL), "Couldn't add new entry!");
     DBUG_PRINT("symbol_table", ("Added %zu %s %d\n", new_entry->idx, new_entry->name, new_entry->vartype));
     DBUG_RETURN(new_entry);
+}
+
+void symbol_table_insert(symbol_table* table, symbol_table_entry* to_insert) {
+    DBUG_ENTER("symbol_table_insert");
+    DBUG_ASSERT((table != NULL), "table was NULL!");
+    DBUG_ASSERT((to_insert != NULL), "to_insert is NULL!");
+
+    if (symbol_table_get_name(table, to_insert->name) != NULL) {
+        CTIerror("Var %s already in scope", to_insert->name);
+        DBUG_VOID_RETURN;
+    }
+
+    table->current_entries++;
+
+    if(table->current_entries > table->__entry_array_size) {
+        increase_table_size(table);
+    }
+
+
+    table->entries[table->current_entries - 1] = to_insert;
+    to_insert->idx = table->current_entries - 1;
+    to_insert->table = table;
+
+    DBUG_ASSERT((table->entries[table->current_entries - 1] != NULL), "Couldn't add new entry!");
+    DBUG_PRINT("symbol_table", ("Inserted %zu %s %d\n", to_insert->idx, to_insert->name, to_insert->vartype));
+    DBUG_VOID_RETURN;
 }
 
 symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name) {
