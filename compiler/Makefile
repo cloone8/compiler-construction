@@ -110,10 +110,10 @@ DEPS = $(foreach file,$(DEPENDENCY_FILES),$(dir $(file)).$(notdir $(file)))
 
 all: devel
 
-devel: export CIVICC_PROD="no"
+devel: export CIVICC_COMPILE_PROD="no"
 devel: makefiles civicc.go
 
-prod: export CIVICC_PROD="yes"
+prod: export CIVICC_COMPILE_PROD="yes"
 prod: clean makefiles civicc.go
 	@$(ECHO) $(PROD)
 
@@ -176,7 +176,7 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
               $(ECHO) "Compiling files in directory $(dir $@)" ; \
          fi
 	@$(ECHO) "  Compiling code:  $(notdir $<)"
-	@if [ $(CIVICC_PROD) = "yes" ] ;\
+	@if [ $(CIVICC_COMPILE_PROD) = "yes" ] ;\
 		then \
 			$(CC) $(CCPROD_FLAGS) $(YYFLAGS) $(INCS) -o $@ -c $< ;\
 		else \
