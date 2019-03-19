@@ -243,8 +243,7 @@ node* global_convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
         node* new_definition = TBmakeGlobaldefinition(FALSE, TBmakeExprarray(NULL, dim_value));
 
         // Convert the dimension into a name of the format "tmp-[dimcount]-[global_name]"
-        char name_buffer[STR_BUF_SIZE];
-        snprintf(name_buffer, STR_BUF_SIZE, "%zu", dimcount++);
+        get_size_t_str(name_buffer, dimcount++);
         char *new_global_name = STRcatn(4, "tmp-", name_buffer, "-", global_name);
 
         // Add the new variable to the symbol table
@@ -300,8 +299,8 @@ void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
 
         // Create a new variable with the format "tmp-[dimcount]-[var_name]",
         // for example for the first dimension of "int[1, 2] a;" -> "tmp-0-a"
-        char name_buffer[STR_BUF_SIZE];
-        snprintf(name_buffer, STR_BUF_SIZE, "%zu", dimcount++);
+        get_size_t_str(name_buffer, dimcount++);
+
         char *new_var_name = STRcatn(4, "tmp-", name_buffer, "-", var_name);
 
         // Create the declaration
@@ -348,8 +347,7 @@ void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
 }
 
 static char* counter_to_name(char* var_name, size_t counter_num) {
-    char name_buffer[STR_BUF_SIZE];
-    snprintf(name_buffer, STR_BUF_SIZE, "%zu", counter_num);
+    get_size_t_str(name_buffer, counter_num);
     return STRcatn(4, "tmp-counter-", name_buffer, "-", var_name);
 }
 
@@ -481,8 +479,7 @@ void rename_extern_global_dims(char* var_name, node* dims) {
         symbol_table_entry* entry = ARRAYDIMENSIONVARS_VARPOINTER(current_dim);
         MEMfree(entry->name);
 
-        char name_buffer[STR_BUF_SIZE];
-        snprintf(name_buffer, STR_BUF_SIZE, "%zu", dimcount++);
+        get_size_t_str(name_buffer, dimcount++);
         entry->name = STRcatn(4, "tmp-", name_buffer, "-", var_name);
 
         current_dim = ARRAYDIMENSIONVARS_NEXT(current_dim);

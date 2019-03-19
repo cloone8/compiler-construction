@@ -268,3 +268,15 @@ void copy_node_error_data(node* source, node* target) {
 
     DBUG_VOID_RETURN;
 }
+
+void size_t_to_str(char* buffer, size_t toconvert) {
+    DBUG_ENTER("size_t_to_str");
+    DBUG_ASSERT((buffer != NULL), "Buffer can't be NULL!");
+
+    int result = snprintf(buffer, STR_BUF_SIZE, "%zu", toconvert);
+
+    DBUG_ASSERT((result != STR_BUF_SIZE), "String buffer too small to hold toconvert");
+    DBUG_ASSERT((result >= 0), "Error converting toconvert");
+
+    DBUG_VOID_RETURN;
+}

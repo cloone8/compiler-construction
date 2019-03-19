@@ -1,20 +1,21 @@
+#include <stdlib.h>
 #include "types.h"
 #include "dbug.h"
 #include "memory.h"
 #include "str.h"
-
-#include <stdlib.h>
+#include "ctinfo.h"
+#include "globals.h"
 
 #include "fun_symbol_table.h"
-#include "ctinfo.h"
 
 fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_depth) {
     DBUG_ENTER("fun_symbol_table_make");
     DBUG_PRINT("fun_symbol_table", ("Making new symbol table\n"));
     fun_symbol_table* toreturn = MEMmalloc(sizeof(fun_symbol_table));
 
+    toreturn->id = myglobal.funsymtable_num++;
     toreturn->__entry_array_size = 10;
-    toreturn->next_id = 0;
+    toreturn->__next_id = 0;
     toreturn->current_entries = 0;
     toreturn->upper = parent;
     toreturn->table_depth = table_depth;
@@ -71,7 +72,7 @@ fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table* table, char* name
     }
 
     fun_symbol_table_entry* new_entry = MEMmalloc(sizeof(fun_symbol_table_entry));
-    new_entry->idx = table->next_id++;
+    new_entry->idx = table->__next_id++;
     new_entry->name = STRcpy(name);
     new_entry->returntype = return_type;
     new_entry->paramamount = param_amount;
