@@ -35,8 +35,25 @@ struct INFO {
 
 #define INFO_FIRSTERROR(n) ((n)->firsterror)
 #define INFO_INDENTLEVEL(n) ((n)->indentlevel)
-#define PRINT_INDENTS(__indents_info_struct__) for(int __indents_counter__ = 0; __indents_counter__ < (__indents_info_struct__)->indentlevel * 4; __indents_counter__++) \
-                                                    fputc(' ', stderr);
+
+#ifdef _MSC_VER
+
+__forceinline
+static inline void print_indents(info *arg_info) {
+    for(register int i = 0; i < arg_info->indentlevel * 4; i++)
+        fputc(' ', stderr);
+}
+
+#else
+
+__attribute__((always_inline))
+static inline void print_indents(info *arg_info) {
+    for(register int i = 0; i < arg_info->indentlevel * 4; i++)
+        fputc(' ', stderr);
+}
+
+#endif
+
 
 static info *MakeInfo() {
     info *result;
@@ -120,7 +137,7 @@ node* PRTdeclaration (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTarrayvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTarrayvarassign");
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
 
     fprintf(stderr, "%s[", ARRAYVARASSIGN_VARNAME(arg_node));
 
@@ -394,7 +411,7 @@ node* PRTerror (node * arg_node, info * arg_info) {
 
 node* PRTfunction (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfunction");
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
 
     // Only used when the definition is actually given. Otherwise remains empty
     char* prefix = "";
@@ -437,7 +454,7 @@ node* PRTfunction (node * arg_node, info * arg_info) {
     if(FUNCTION_DEFINITION(arg_node) != NULL) {
         fprintf(stderr, " {\n");
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
-        PRINT_INDENTS(arg_info);
+        print_indents(arg_info);
         fprintf(stderr, "}\n");
     } else {
         fprintf(stderr, ";\n");
@@ -646,7 +663,7 @@ node* PRTstatements (node * arg_node, info * arg_info) {
     switch(NODE_TYPE(STATEMENTS_CURRENT(arg_node))) {
         case N_funcall:
         case N_varassign:
-            PRINT_INDENTS(arg_info);
+            print_indents(arg_info);
             break;
         default:
             break;
@@ -683,7 +700,7 @@ node* PRTstatements (node * arg_node, info * arg_info) {
 
 node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbasicvardeclaration");
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
 
     char* type = "";
 
@@ -729,7 +746,7 @@ node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
 
 node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTarrayvardeclaration");
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
 
     char* type = "";
 
@@ -815,7 +832,7 @@ node* PRTexprarray (node * arg_node, info * arg_info) {
 node* PRTfor (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTfor");
 
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     if(FOR_COUNTER(arg_node) != NULL) {
         fprintf(stderr, "for(int %s = ", BASICVARDECLARATION_VARNAME(FOR_COUNTER(arg_node)));
         BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)) =
@@ -843,7 +860,7 @@ node* PRTfor (node * arg_node, info * arg_info) {
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
     INFO_INDENTLEVEL(arg_info) -= 1;
 
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
@@ -865,7 +882,7 @@ node* PRTfor (node * arg_node, info * arg_info) {
 node* PRTwhile (node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTwhile");
 
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     fprintf(stderr, "while(");
 
     WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
@@ -876,7 +893,7 @@ node* PRTwhile (node * arg_node, info * arg_info) {
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
     INFO_INDENTLEVEL(arg_info) -= 1;
 
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
@@ -898,14 +915,14 @@ node* PRTwhile (node * arg_node, info * arg_info) {
 node* PRTdowhile(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTdowhile");
 
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     fprintf(stderr, "do {\n");
 
     INFO_INDENTLEVEL(arg_info) += 1;
     DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
     INFO_INDENTLEVEL(arg_info) -= 1;
 
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     fprintf(stderr, "} while(");
     DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
     fprintf(stderr, ");\n");
@@ -1067,7 +1084,7 @@ node* PRTfuncallparameter(node * arg_node, info * arg_info) {
 
 node* PRTreturn(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTreturn");
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     fprintf(stderr, "return");
 
     if(RETURN_VALUE(arg_node) != NULL) {
@@ -1093,7 +1110,7 @@ node* PRTreturn(node * arg_node, info * arg_info) {
 
 node* PRTbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTbranch");
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
 
     fprintf(stderr, "if(");
 
@@ -1108,7 +1125,7 @@ node* PRTbranch(node * arg_node, info * arg_info) {
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
 
-        PRINT_INDENTS(arg_info);
+        print_indents(arg_info);
         fprintf(stderr, "} else {\n");
 
         INFO_INDENTLEVEL(arg_info) += 1;
@@ -1116,7 +1133,7 @@ node* PRTbranch(node * arg_node, info * arg_info) {
         INFO_INDENTLEVEL(arg_info) -= 1;
     }
 
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
     fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
@@ -1218,7 +1235,7 @@ node* PRTfunctionvardeclaration(node * arg_node, info * arg_info) {
 
 node* PRTlocalfunction(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTlocalfunction");
-    PRINT_INDENTS(arg_info);
+    print_indents(arg_info);
 
     fprintf(stderr, "__LOCAL FUNCTION__\n");
 
