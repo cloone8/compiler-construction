@@ -19,7 +19,8 @@ struct __fun_symbol_table_entry {
 };
 
 struct __fun_symbol_table {
-    size_t next_id;
+    size_t id;
+    size_t __next_id;
     size_t current_entries;
     size_t table_depth;
     size_t __entry_array_size;
