@@ -159,7 +159,10 @@ static node* get_nd_to_1d_exprs(char* var_name, symbol_table_entry** dim_entries
 
     DBUG_ASSERT((NODE_TYPE(toreturn) == N_expr), "Did not get expression back from recursive function!");
 
+    // Free all the old expression arrays
+    TRAVpush(TR_free);
     FREEexprarray(positions, NULL);
+    TRAVpop();
 
     DBUG_RETURN(toreturn);
 }
