@@ -179,6 +179,12 @@
                 </travuser>
             </traversal>
 
+            <traversal id="FTW" name="Migrate for-loops to while-loops" default="sons" include="fortowhile.h">
+                <travuser>
+                    <node name="FunctionDefinition" />
+                    <node name="For" />
+                </travuser>
+            </traversal>
         </general>
     </phases>
 

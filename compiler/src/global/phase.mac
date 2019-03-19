@@ -120,7 +120,7 @@ SUBPHASE( app_vrn,
 
 SUBPHASE(prt_app_ast, "Printing split AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
 
-SUBPHASE( tc,
+SUBPHASE( tc_app,
            "Checking expanded array types",
            TCdo,
            ALWAYS,
@@ -140,7 +140,7 @@ SUBPHASE(cbc,
          ALWAYS,
          ict)
 
-SUBPHASE(prt_ict_ast, "Printing boolean cast compiled AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
+SUBPHASE(prt_cbc_ast, "Printing boolean cast compiled AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
 
 SUBPHASE(lad,
          "Lowering array dimensions",
@@ -148,7 +148,15 @@ SUBPHASE(lad,
          ALWAYS,
          ict)
 
-SUBPHASE(prt_lad_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), ict)
+SUBPHASE(prt_lad_ast, "Printing array dimension lowered AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_ALL), ict)
+
+SUBPHASE(ftw,
+         "Transforming for-loops to while-loops",
+         FTWdo,
+         ALWAYS,
+         ict)
+
+SUBPHASE(prt_ict_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), ict)
 
 ENDPHASE(ict)
 
