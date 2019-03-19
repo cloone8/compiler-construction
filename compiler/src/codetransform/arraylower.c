@@ -80,7 +80,6 @@ static size_t get_array_dims(symbol_table_entry* array_entry, symbol_table_entry
     size_t count = 0;
 
     symbol_table* array_table = array_entry->table;
-    print_symbol_table(array_table);
     while(TRUE) {
         get_size_t_str(name_buffer, count);
         char* dim_var_name = STRcatn(4, "tmp-", name_buffer, "-", array_entry->name);
