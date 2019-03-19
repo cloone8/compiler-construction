@@ -311,13 +311,13 @@ node *TCbinop(node* arg_node, info* arg_info) {
                 if (TYPE(left_info) != TP_int) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<\" requires two integers or two floats.");
                 }
-                TYPE(arg_info) = TYPE(left_info);
+                TYPE(arg_info) = TP_bool;
                 break;
             case BO_le:
                 if (TYPE(left_info) != TP_int) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \"<=\" requires two integers or two floats.");
                 }
-                TYPE(arg_info) = TYPE(left_info);
+                TYPE(arg_info) = TP_bool;
                 break;
             case BO_eq:
             case BO_ne:
@@ -325,13 +325,13 @@ node *TCbinop(node* arg_node, info* arg_info) {
                 if (TYPE(left_info) != TP_int) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">=\" requires two integers or two floats.");
                 }
-                TYPE(arg_info) = TYPE(left_info);
+                TYPE(arg_info) = TP_bool;
                 break;
             case BO_gt:
                 if (TYPE(left_info) != TP_int) {
                     CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Binop \">\" requires two integers or two floats.");
                 }
-                TYPE(arg_info) = TYPE(left_info);
+                TYPE(arg_info) = TP_bool;
                 break;
             case BO_and:
                 if (TYPE(left_info) != TP_bool) {
