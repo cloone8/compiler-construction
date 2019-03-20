@@ -5,9 +5,11 @@
 #include "traverse.h"
 #include "dbug.h"
 
+#include "util.h"
 
-node* PRTbinop (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTbinop");
+
+node* GBCbinop (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCbinop");
 
     fputc('(', stderr);
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
@@ -22,7 +24,7 @@ node* PRTbinop (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTdeclaration
+ * @fn GBCdeclaration
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -32,8 +34,8 @@ node* PRTbinop (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTdeclaration (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTdeclaration");
+node* GBCdeclaration (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCdeclaration");
 
     DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
 
@@ -45,7 +47,7 @@ node* PRTdeclaration (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTarrayvarassign
+ * @fn GBCarrayvarassign
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -55,9 +57,9 @@ node* PRTdeclaration (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTarrayvarassign (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTarrayvarassign");
-    print_indents(arg_info);
+node* GBCarrayvarassign (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCarrayvarassign");
+
 
     fprintf(stderr, "%s[", ARRAYVARASSIGN_VARNAME(arg_node));
 
@@ -71,7 +73,7 @@ node* PRTarrayvarassign (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTarrayvarread
+ * @fn GBCarrayvarread
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -81,8 +83,8 @@ node* PRTarrayvarassign (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTarrayvarread (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTarrayvarread");
+node* GBCarrayvarread (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCarrayvarread");
 
     fprintf(stderr, "%s[", ARRAYVARREAD_ARRAYVARNAME(arg_node));
 
@@ -96,7 +98,7 @@ node* PRTarrayvarread (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTvarassign
+ * @fn GBCvarassign
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -106,8 +108,8 @@ node* PRTarrayvarread (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTvarassign (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTvarassign");
+node* GBCvarassign (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCvarassign");
 
     fprintf(stderr, "%s = ", VARASSIGN_VARNAME(arg_node));
 
@@ -119,7 +121,7 @@ node* PRTvarassign (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTvarread
+ * @fn GBCvarread
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -129,8 +131,8 @@ node* PRTvarassign (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTvarread (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTvarread");
+node* GBCvarread (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCvarread");
     UNUSED(arg_info);
     fprintf(stderr, "%s", VARREAD_VARNAME(arg_node));
 
@@ -140,7 +142,7 @@ node* PRTvarread (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTcast
+ * @fn GBCcast
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -150,8 +152,8 @@ node* PRTvarread (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTcast (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTcast");
+node* GBCcast (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCcast");
 
     switch(CAST_CASTTO(arg_node)) {
         case TP_bool:
@@ -178,7 +180,7 @@ node* PRTcast (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTboolconst
+ * @fn GBCboolconst
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -188,8 +190,8 @@ node* PRTcast (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTboolconst (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTboolconst");
+node* GBCboolconst (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCboolconst");
     UNUSED(arg_info);
     switch (BOOLCONST_VALUE(arg_node))
     {
@@ -209,7 +211,7 @@ node* PRTboolconst (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTintconst
+ * @fn GBCintconst
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -219,8 +221,8 @@ node* PRTboolconst (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTintconst (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTintconst");
+node* GBCintconst (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCintconst");
     UNUSED(arg_info);
     fprintf(stderr, "%d", INTCONST_VALUE(arg_node));
 
@@ -230,7 +232,7 @@ node* PRTintconst (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfloatconst
+ * @fn GBCfloatconst
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -240,8 +242,8 @@ node* PRTintconst (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTfloatconst (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTfloatconst");
+node* GBCfloatconst (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCfloatconst");
     UNUSED(arg_info);
     fprintf(stderr, "%.10f", FLOATCONST_VALUE(arg_node));
 
@@ -251,7 +253,7 @@ node* PRTfloatconst (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTconstant
+ * @fn GBCconstant
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -261,8 +263,8 @@ node* PRTfloatconst (node * arg_node, info * arg_info) {
  * @return processed node
  *
  ***************************************************************************/
-node* PRTconstant (node * arg_node, info * arg_info) {
-    DBUG_ENTER("PRTconstant");
+node* GBCconstant (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCconstant");
 
     CONSTANT_CURRENT(arg_node) = TRAVdo(CONSTANT_CURRENT(arg_node), arg_info);
 
@@ -271,7 +273,7 @@ node* PRTconstant (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTerror
+ * @fn GBCerror
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -282,43 +284,16 @@ node* PRTconstant (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTerror (node * arg_node, info * arg_info) {
-    bool first_error;
+node* GBCerror (node * arg_node, info * arg_info) {
+    DBUG_ENTER("GBCerror");
+    UNUSED(arg_info);
 
-    DBUG_ENTER ("PRTerror");
-
-    if (NODE_ERROR (arg_node) != NULL) {
-        NODE_ERROR (arg_node) = TRAVdo (NODE_ERROR (arg_node), arg_info);
-    }
-
-    first_error = INFO_FIRSTERROR(arg_info);
-
-    if((global.outfile != NULL)
-            && (ERROR_ANYPHASE(arg_node) == global.compiler_anyphase)) {
-
-        if (first_error) {
-            printf ("\n/******* BEGIN TREE CORRUPTION ********\n");
-            INFO_FIRSTERROR(arg_info) = FALSE;
-        }
-
-        printf ("%s\n", ERROR_MESSAGE(arg_node));
-
-        if (ERROR_NEXT (arg_node) != NULL) {
-            TRAVopt (ERROR_NEXT (arg_node), arg_info);
-        }
-
-        if (first_error) {
-            printf ("********  END TREE CORRUPTION  *******/\n");
-            INFO_FIRSTERROR(arg_info) = TRUE;
-        }
-    }
-
-    DBUG_RETURN (arg_node);
+    DBUG_RETURN(arg_node);
 }
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfunction
+ * @fn GBCfunction
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -329,9 +304,9 @@ node* PRTerror (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTfunction (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTfunction");
-    print_indents(arg_info);
+node* GBCfunction (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCfunction");
+
 
     // Only used when the definition is actually given. Otherwise remains empty
     char* prefix = "";
@@ -374,7 +349,7 @@ node* PRTfunction (node * arg_node, info * arg_info) {
     if(FUNCTION_DEFINITION(arg_node) != NULL) {
         fprintf(stderr, " {\n");
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
-        print_indents(arg_info);
+
         fprintf(stderr, "}\n");
     } else {
         fprintf(stderr, ";\n");
@@ -385,7 +360,7 @@ node* PRTfunction (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTbasicparameter
+ * @fn GBCbasicparameter
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -396,8 +371,8 @@ node* PRTfunction (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTbasicparameter (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTbasicparameter");
+node* GBCbasicparameter (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCbasicparameter");
     char* type = "";
 
     switch(BASICPARAMETER_TYPE(arg_node)) {
@@ -426,7 +401,7 @@ node* PRTbasicparameter (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTarrayparameter
+ * @fn GBCarrayparameter
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -437,8 +412,8 @@ node* PRTbasicparameter (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTarrayparameter (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTarrayparameter");
+node* GBCarrayparameter (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCarrayparameter");
 
     char* type = "";
 
@@ -476,7 +451,7 @@ node* PRTarrayparameter (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTarraydimensionvars
+ * @fn GBCarraydimensionvars
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -487,8 +462,8 @@ node* PRTarrayparameter (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTarraydimensionvars (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTarraydimensionvars");
+node* GBCarraydimensionvars (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCarraydimensionvars");
     fprintf(stderr, "%s", ARRAYDIMENSIONVARS_NAME(arg_node));
 
     if(ARRAYDIMENSIONVARS_NEXT(arg_node) != NULL) {
@@ -501,7 +476,7 @@ node* PRTarraydimensionvars (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfunctiondefinition
+ * @fn GBCfunctiondefinition
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -512,8 +487,8 @@ node* PRTarraydimensionvars (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTfunctiondefinition (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTfunctiondefinition");
+node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCfunctiondefinition");
 
     if (FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node) != NULL) {
         print_fun_symbol_table(FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node));
@@ -532,7 +507,7 @@ node* PRTfunctiondefinition (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfunctionbody
+ * @fn GBCfunctionbody
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -543,9 +518,8 @@ node* PRTfunctiondefinition (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTfunctionbody (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTfunctionbody");
-    INFO_INDENTLEVEL(arg_info) += 1;
+node* GBCfunctionbody (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCfunctionbody");
 
     if(FUNCTIONBODY_VARDECLARATIONS(arg_node) != NULL) {
         FUNCTIONBODY_VARDECLARATIONS(arg_node) = TRAVdo(FUNCTIONBODY_VARDECLARATIONS(arg_node), arg_info);
@@ -559,13 +533,12 @@ node* PRTfunctionbody (node * arg_node, info * arg_info) {
         FUNCTIONBODY_STATEMENTS(arg_node) = TRAVdo(FUNCTIONBODY_STATEMENTS(arg_node), arg_info);
     }
 
-    INFO_INDENTLEVEL(arg_info) -= 1;
     DBUG_RETURN (arg_node);
 }
 
 /** <!--******************************************************************-->
  *
- * @fn PRTstatements
+ * @fn GBCstatements
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -576,14 +549,14 @@ node* PRTfunctionbody (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTstatements (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTstatements");
+node* GBCstatements (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCstatements");
 
     // These can also be expressions, so we can't just print the indents there
     switch(NODE_TYPE(STATEMENTS_CURRENT(arg_node))) {
         case N_funcall:
         case N_varassign:
-            print_indents(arg_info);
+
             break;
         default:
             break;
@@ -607,7 +580,7 @@ node* PRTstatements (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTbasicvardeclaration
+ * @fn GBCbasicvardeclaration
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -618,9 +591,9 @@ node* PRTstatements (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTbasicvardeclaration");
-    print_indents(arg_info);
+node* GBCbasicvardeclaration (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCbasicvardeclaration");
+
 
     char* type = "";
 
@@ -653,7 +626,7 @@ node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTarrayvardeclaration
+ * @fn GBCarrayvardeclaration
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -664,9 +637,9 @@ node* PRTbasicvardeclaration (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTarrayvardeclaration");
-    print_indents(arg_info);
+node* GBCarrayvardeclaration (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCarrayvardeclaration");
+
 
     char* type = "";
 
@@ -706,7 +679,7 @@ node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTexprarray
+ * @fn GBCexprarray
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -717,8 +690,8 @@ node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTexprarray (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTexprarray");
+node* GBCexprarray (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCexprarray");
 
     if(NODE_TYPE(EXPRARRAY_CURRENT(arg_node)) == N_exprarray) {
         fputc('[', stderr);
@@ -738,7 +711,7 @@ node* PRTexprarray (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfor
+ * @fn GBCfor
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -749,10 +722,10 @@ node* PRTexprarray (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTfor (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTfor");
+node* GBCfor (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCfor");
 
-    print_indents(arg_info);
+
     if(FOR_COUNTER(arg_node) != NULL) {
         fprintf(stderr, "for(int %s = ", BASICVARDECLARATION_VARNAME(FOR_COUNTER(arg_node)));
         BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)) =
@@ -776,11 +749,9 @@ node* PRTfor (node * arg_node, info * arg_info) {
         print_symbol_table(FOR_VARSYMBOLTABLE(arg_node));
         fputc('\n', stderr);
     }
-    INFO_INDENTLEVEL(arg_info) += 1;
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
-    INFO_INDENTLEVEL(arg_info) -= 1;
 
-    print_indents(arg_info);
+
     fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
@@ -788,7 +759,7 @@ node* PRTfor (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTwhile
+ * @fn GBCwhile
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -799,21 +770,19 @@ node* PRTfor (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTwhile (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTwhile");
+node* GBCwhile (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCwhile");
 
-    print_indents(arg_info);
+
     fprintf(stderr, "while(");
 
     WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
 
     fprintf(stderr, ") {\n");
 
-    INFO_INDENTLEVEL(arg_info) += 1;
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
-    INFO_INDENTLEVEL(arg_info) -= 1;
 
-    print_indents(arg_info);
+
     fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
@@ -821,7 +790,7 @@ node* PRTwhile (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTdowhile
+ * @fn GBCdowhile
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -832,17 +801,15 @@ node* PRTwhile (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTdowhile(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTdowhile");
+node* GBCdowhile(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCdowhile");
 
-    print_indents(arg_info);
+
     fprintf(stderr, "do {\n");
 
-    INFO_INDENTLEVEL(arg_info) += 1;
     DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
-    INFO_INDENTLEVEL(arg_info) -= 1;
 
-    print_indents(arg_info);
+
     fprintf(stderr, "} while(");
     DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
     fprintf(stderr, ");\n");
@@ -852,7 +819,7 @@ node* PRTdowhile(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTglobal
+ * @fn GBCglobal
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -863,8 +830,8 @@ node* PRTdowhile(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTglobal(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTglobal");
+node* GBCglobal(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCglobal");
     char* exportextern;
     char* type;
 
@@ -914,7 +881,7 @@ node* PRTglobal(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTglobaldefinition
+ * @fn GBCglobaldefinition
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -925,8 +892,8 @@ node* PRTglobal(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTglobaldefinition (node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTglobaldefinition");
+node* GBCglobaldefinition (node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCglobaldefinition");
 
     if(GLOBALDEFINITION_VALUES(arg_node) != NULL) {
         fprintf(stderr, " = ");
@@ -938,7 +905,7 @@ node* PRTglobaldefinition (node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfuncall
+ * @fn GBCfuncall
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -949,8 +916,8 @@ node* PRTglobaldefinition (node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTfuncall(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTfuncall");
+node* GBCfuncall(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCfuncall");
 
     fprintf(stderr, "%s(", FUNCALL_FUNCTIONNAME(arg_node));
 
@@ -965,7 +932,7 @@ node* PRTfuncall(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfuncallparameter
+ * @fn GBCfuncallparameter
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -976,8 +943,8 @@ node* PRTfuncall(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTfuncallparameter(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTfuncallparameter");
+node* GBCfuncallparameter(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCfuncallparameter");
 
     FUNCALLPARAMETER_VALUE(arg_node) = TRAVdo(FUNCALLPARAMETER_VALUE(arg_node), arg_info);
 
@@ -991,7 +958,7 @@ node* PRTfuncallparameter(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTreturn
+ * @fn GBCreturn
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -1002,9 +969,9 @@ node* PRTfuncallparameter(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTreturn(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTreturn");
-    print_indents(arg_info);
+node* GBCreturn(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCreturn");
+
     fprintf(stderr, "return");
 
     if(RETURN_VALUE(arg_node) != NULL) {
@@ -1017,7 +984,7 @@ node* PRTreturn(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTbranch
+ * @fn GBCbranch
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -1028,9 +995,9 @@ node* PRTreturn(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTbranch(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTbranch");
-    print_indents(arg_info);
+node* GBCbranch(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCbranch");
+
 
     fprintf(stderr, "if(");
 
@@ -1039,21 +1006,19 @@ node* PRTbranch(node * arg_node, info * arg_info) {
 
 
     fprintf(stderr, ") {\n");
-    INFO_INDENTLEVEL(arg_info) += 1;
     BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
-    INFO_INDENTLEVEL(arg_info) -= 1;
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
 
-        print_indents(arg_info);
+
         fprintf(stderr, "} else {\n");
 
-        INFO_INDENTLEVEL(arg_info) += 1;
+
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
-        INFO_INDENTLEVEL(arg_info) -= 1;
+
     }
 
-    print_indents(arg_info);
+
     fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
@@ -1061,7 +1026,7 @@ node* PRTbranch(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTexpr
+ * @fn GBCexpr
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -1072,8 +1037,8 @@ node* PRTbranch(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTexpr(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTexpr");
+node* GBCexpr(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCexpr");
 
     EXPR_CURRENT(arg_node) = TRAVdo(EXPR_CURRENT(arg_node), arg_info);
 
@@ -1082,7 +1047,7 @@ node* PRTexpr(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTmonop
+ * @fn GBCmonop
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -1093,8 +1058,8 @@ node* PRTexpr(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTmonop(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTmonop");
+node* GBCmonop(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCmonop");
 
     fputc('(', stderr);
 
@@ -1117,7 +1082,7 @@ node* PRTmonop(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTfunctionvardeclaration
+ * @fn GBCfunctionvardeclaration
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -1128,8 +1093,8 @@ node* PRTmonop(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTfunctionvardeclaration(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTfunctionvardeclaration");
+node* GBCfunctionvardeclaration(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBCfunctionvardeclaration");
 
     FUNCTIONVARDECLARATION_CURRENT(arg_node) = TRAVdo(FUNCTIONVARDECLARATION_CURRENT(arg_node), arg_info);
 
@@ -1142,7 +1107,7 @@ node* PRTfunctionvardeclaration(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTlocalfunction
+ * @fn GBClocalfunction
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -1153,9 +1118,9 @@ node* PRTfunctionvardeclaration(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTlocalfunction(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTlocalfunction");
-    print_indents(arg_info);
+node* GBClocalfunction(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBClocalfunction");
+
 
     fprintf(stderr, "__LOCAL FUNCTION__\n");
 
@@ -1171,7 +1136,7 @@ node* PRTlocalfunction(node * arg_node, info * arg_info) {
 
 /** <!--******************************************************************-->
  *
- * @fn PRTprogram
+ * @fn GBCprogram
  *
  * @brief Prints the node and its sons/attributes
  *
@@ -1182,8 +1147,8 @@ node* PRTlocalfunction(node * arg_node, info * arg_info) {
  *
  ***************************************************************************/
 
-node* PRTprogram(node * arg_node, info * arg_info) {
-    DBUG_ENTER ("PRTlocalfunction");
+node* GBCprogram(node * arg_node, info * arg_info) {
+    DBUG_ENTER ("GBClocalfunction");
 
     if (PROGRAM_FUNSYMBOLTABLE(arg_node) != NULL) {
         print_fun_symbol_table(PROGRAM_FUNSYMBOLTABLE(arg_node));
@@ -1200,8 +1165,8 @@ node* PRTprogram(node * arg_node, info * arg_info) {
     DBUG_RETURN (arg_node);
 }
 
-node* PRTconditionalexpr(node* arg_node, info* arg_info) {
-    DBUG_ENTER("PRTconditionalexpr");
+node* GBCconditionalexpr(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCconditionalexpr");
 
     CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
     fprintf(stderr, " ? ");
