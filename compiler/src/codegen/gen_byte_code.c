@@ -934,9 +934,12 @@ node *GBCdoGenByteCode(node *syntaxtree) {
     FILE* output_file = NULL;
 
     // If there is no output file supplies, just use stdout
+    DBUG_PRINT("GBC", ("Opening output stream"));
     if(global.outfile == NULL) {
+        DBUG_PRINT("GBC", ("No output file supplies, using STDOUT"));
         output_file = stdout;
     } else {
+        DBUG_PRINT("GBC", ("Opening file %s", global.outfile));
         output_file = fopen(global.outfile, "w");
     }
 
@@ -951,7 +954,10 @@ node *GBCdoGenByteCode(node *syntaxtree) {
 
     // Only close non-stdout output streams
     if(global.outfile == NULL) {
+        DBUG_PRINT("GBC", ("Closing output stream"));
         fclose(output_file);
+    } else {
+        DBUG_PRINT("GBC", ("STDOUT detected as output stream, not closing"));
     }
 
     TRAVpop();
