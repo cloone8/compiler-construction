@@ -610,14 +610,10 @@ node* GBCfor (node * arg_node, info * arg_info) {
 node* GBCwhile (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCwhile");
 
-
-
     WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
 
 
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
-
-
 
     DBUG_RETURN (arg_node);
 }
@@ -637,10 +633,7 @@ node* GBCwhile (node * arg_node, info * arg_info) {
 node* GBCdowhile(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCdowhile");
 
-
-
     DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
-
 
     DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
 
@@ -781,24 +774,13 @@ node* GBCreturn(node * arg_node, info * arg_info) {
 node* GBCbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbranch");
 
-
-
-
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
-
 
     BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
-
-
-
-
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
-
     }
-
-
 
     DBUG_RETURN (arg_node);
 }
@@ -882,14 +864,11 @@ node* GBCfunctionvardeclaration(node * arg_node, info * arg_info) {
 node* GBClocalfunction(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBClocalfunction");
 
-
-
     LOCALFUNCTION_CURRENT(arg_node) = TRAVdo(LOCALFUNCTION_CURRENT(arg_node), arg_info);
 
     if (LOCALFUNCTION_NEXT(arg_node) != NULL) {
         LOCALFUNCTION_NEXT(arg_node) = TRAVdo(LOCALFUNCTION_NEXT(arg_node), arg_info);
     }
-
 
     DBUG_RETURN (arg_node);
 }
@@ -926,7 +905,6 @@ node* GBCconditionalexpr(node* arg_node, info* arg_info) {
     CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
     CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), arg_info);
     CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), arg_info);
-
 
     DBUG_RETURN(arg_node);
 }
