@@ -27,7 +27,7 @@
  * @param current: The type to convert
  * @return: The converted type
  */
-type type_to_array_type(type current);
+extern type type_to_array_type(type current);
 
 /**
  * Converts an array type to its respective basic type.
@@ -36,7 +36,7 @@ type type_to_array_type(type current);
  * @param current: The type to convert
  * @return: The converted type
  */
-type array_type_to_type(type current);
+extern type array_type_to_type(type current);
 
 /**
  * Given the name of a function, tries to find it in the current symbol table
@@ -46,7 +46,7 @@ type array_type_to_type(type current);
  * @return The table entry of the function if it was found and is in scope,
  *         NULL otherwise.
  */
-fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find);
+extern fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find);
 
 /**
  * Given the name of a variable, tries to find it in the current symbol table
@@ -56,7 +56,7 @@ fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* t
  * @return The table entry of the variable if it was found and is in scope,
  *         NULL otherwise.
  */
-symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find);
+extern symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find);
 
 /**
  * Prints the given exprarray and all its sub-arrays to the DBUG output. Does nothing if
@@ -64,7 +64,7 @@ symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find);
  *
  * @param exprs: The exprarray to print
  */
-void print_exprarray(node* exprs);
+extern void print_exprarray(node* exprs);
 
 /**
  * Converts the given type to its string representation.
@@ -72,7 +72,7 @@ void print_exprarray(node* exprs);
  * @return pointer to the string of the given type. String is
  *         located on the heap, so needs freeing.
  */
-char* get_type_str(type to_print);
+extern char* get_type_str(type to_print);
 
 /**
  * Converts the given binop to its string representation.
@@ -80,7 +80,7 @@ char* get_type_str(type to_print);
  * @return pointer to the string of the given binop. String is
  *         located on the heap, so needs freeing.
  */
-char* get_binop_str(binop bo_type);
+extern char* get_binop_str(binop bo_type);
 
 /**
  * Converts the given nodetype to its string representation.
@@ -88,7 +88,7 @@ char* get_binop_str(binop bo_type);
  * @return pointer to the string of the given nodetype. String is
  *         located on the heap, so needs freeing.
  */
-char* get_nodetype_string(nodetype nt);
+extern char* get_nodetype_string(nodetype nt);
 
 /**
  * Copies the node diagnostic data NODE_FILE, NODE_LINE and NODE_COL
@@ -96,7 +96,7 @@ char* get_nodetype_string(nodetype nt);
  * @param source: Node to copy from
  * @param target: Node to copy to
  */
-void copy_node_error_data(node* source, node* target);
+extern void copy_node_error_data(node* source, node* target);
 
 
 /**
@@ -107,6 +107,6 @@ void copy_node_error_data(node* source, node* target);
  *                 the converted size_t in.
  *  @param toconvert: The size_t to convert
  */
-void size_t_to_str(char* buffer, size_t toconvert);
+extern void size_t_to_str(char* buffer, size_t toconvert);
 
 #endif

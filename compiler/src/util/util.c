@@ -195,6 +195,12 @@ char* get_type_str(type to_print) {
     }
 }
 
+/**
+ * Converts the given nodetype to its string representation.
+ * @param nt: The nodetype to convert
+ * @return pointer to the string of the given nodetype. String is
+ *         located on the heap, so needs freeing.
+ */
 char* get_nodetype_string(nodetype nt) {
     DBUG_ENTER("get_nodetype_string");
 
@@ -279,6 +285,12 @@ char* get_nodetype_string(nodetype nt) {
     }
 }
 
+/**
+ * Converts the given binop to its string representation.
+ * @param bo_type: The binop to convert
+ * @return pointer to the string of the given binop. String is
+ *         located on the heap, so needs freeing.
+ */
 char* get_binop_str(binop bo_type) {
     DBUG_ENTER("get_binop_str");
     switch (bo_type) {
@@ -314,10 +326,18 @@ char* get_binop_str(binop bo_type) {
         }
 }
 
+/**
+ * Copies the node diagnostic data NODE_FILE, NODE_LINE and NODE_COL
+ * from source to target.
+ * @param source: Node to copy from
+ * @param target: Node to copy to
+ */
 void copy_node_error_data(node* source, node* target) {
     DBUG_ENTER("copy_node_error_data");
+
     DBUG_ASSERT((source != NULL), "Source node was NULL!");
     DBUG_ASSERT((target != NULL), "Target node was NULL!");
+
     NODE_FILE(target) = NODE_FILE(source);
     NODE_LINE(target) = NODE_LINE(source);
     NODE_COL(target) = NODE_COL(source);
@@ -325,6 +345,14 @@ void copy_node_error_data(node* source, node* target) {
     DBUG_VOID_RETURN;
 }
 
+/**
+ * Takes a size_t type integer and stores its string representation in the given buffer
+ * WARNING: This function needs a string buffer of at least STR_BUF_SIZE characters
+ * long.
+ *  @param buffer: The char* buffer (of at least size STR_BUF_SIZE long) to store
+ *                 the converted size_t in.
+ *  @param toconvert: The size_t to convert
+ */
 void size_t_to_str(char* buffer, size_t toconvert) {
     DBUG_ENTER("size_t_to_str");
     DBUG_ASSERT((buffer != NULL), "Buffer can't be NULL!");
