@@ -8,6 +8,12 @@
 
 #include "fun_symbol_table.h"
 
+/**
+ * This function creates a new fun_symbol_table. Most struct members are set to standard values.
+ * 
+ * @params parent: The parent function symboltable, we need to store this connection.
+ * @params table_depth: The scoping depth of the new fun_symbol_table.
+ **/
 fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_depth) {
     DBUG_ENTER("fun_symbol_table_make");
     DBUG_PRINT("fun_symbol_table", ("Making new symbol table\n"));
@@ -24,6 +30,9 @@ fun_symbol_table* fun_symbol_table_make(fun_symbol_table* parent, size_t table_d
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * The function to free a symbol table and make the memory available again.
+ **/
 int fun_symbol_table_free(fun_symbol_table* tofree) {
     DBUG_ENTER("fun_symbol_table_free");
     DBUG_ASSERT((tofree != NULL), "Table was NULL!");
@@ -42,11 +51,18 @@ int fun_symbol_table_free(fun_symbol_table* tofree) {
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
+/**
+ * Increase the size of the given fun_symbol_table.
+ * 
+ * @params toincrease: The symbol table that needs more memory.
+ **/
 static void increase_table_size(fun_symbol_table* toincrease) {
     DBUG_ENTER("increase_table_size");
+    DBUG_ASSERT((toincrease != NULL), "Table was NULL!");
 
     size_t extra_size;
 
+    /* Check the size of the current table. */
     if(toincrease->__entry_array_size * 0.5 > 10) {
         extra_size = 10;
     } else if(toincrease->__entry_array_size * 0.5 < 1) {
@@ -57,11 +73,21 @@ static void increase_table_size(fun_symbol_table* toincrease) {
 
     toincrease->__entry_array_size += extra_size;
 
+    /* Allocate memory for the extra size. */
     toincrease->entries = MEMrealloc(toincrease->entries, toincrease->__entry_array_size * sizeof(fun_symbol_table_entry*));
 
     DBUG_VOID_RETURN;
 }
 
+/**
+ * This function adds an entry to the given fun_symbol_table.
+ * 
+ * @params table: The table to which we want to add an entry.
+ * @param name: The name of the function to add.
+ * @param return_type: The return type of the function.
+ * @param param_amount: The amount of parameters the function needs.
+ * @param param_types: An array of types with the types the function needs.
+ **/
 fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, size_t param_amount, type* param_types) {
     DBUG_ENTER("fun_symbol_table_add");
     DBUG_ASSERT((table != NULL), "Table was NULL!");
