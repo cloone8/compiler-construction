@@ -5,13 +5,15 @@
 #include "node_appends.h"
 
 #define UNUSED(x) ((void) x)
-#define STR_BUF_SIZE (64)
+
+// The default size for string buffers. Set to the amount of bits in a size_t, as this way it
+// can hold at least a size_t number
+#define STR_BUF_SIZE (sizeof(size_t) * 8)
 
 #define get_size_t_str(__buffer_name__, __to_convert__) char __buffer_name__[STR_BUF_SIZE]; \
                                                         size_t_to_str(__buffer_name__, __to_convert__)
 
-// The default size for string buffers. Set to 64 characters, as this way it
-// can hold most number types when they are converted to a string
+
 
 type type_to_array_type(type current);
 type array_type_to_type(type current);

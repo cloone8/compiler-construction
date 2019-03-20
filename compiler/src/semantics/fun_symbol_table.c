@@ -173,10 +173,10 @@ void print_fun_symbol_table(fun_symbol_table *table) {
     DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     for (size_t i = 0; i < table->table_depth; i++) {
-        printf("    ");
+        fprintf(stderr, "    ");
     }
 
-    printf("**** Function symbol table with depth: %zu ****\n", table->table_depth);
+    fprintf(stderr, "**** Function symbol table with depth: %zu ****\n", table->table_depth);
     fun_symbol_table_entry *current;
     for (size_t i = 0; i < table->current_entries; i++) {
         current = table->entries[i];
@@ -209,9 +209,9 @@ void print_fun_symbol_table(fun_symbol_table *table) {
         }
 
         for (size_t i = 0; i < table->table_depth; i++) {
-            printf("    ");
+            fprintf(stderr, "    ");
         }
-        printf("**** ID: %zu name: %s returntype: %s parameters: %zu ****\n", current->idx, current->name, type, current->paramamount);
+        fprintf(stderr, "**** ID: %zu name: %s returntype: %s parameters: %zu ****\n", current->idx, current->name, type, current->paramamount);
     }
 
     DBUG_VOID_RETURN;

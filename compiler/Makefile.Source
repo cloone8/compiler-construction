@@ -85,19 +85,10 @@ TARGET = $(notdir $(PWD))
 # Start rules
 #
 
-all: devel
-
-devel:
+all:
 	@$(ECHO) ""
-	@$(ECHO) "Making current subdirectory (developer version)"
+	@$(ECHO) "Making current subdirectory"
 	@$(MAKE) -C $(PROJECT_ROOT) TARGET="$(TARGET)" MODE="" CHECK_DEPS="yes" makesubdir
-
-prod:
-	@$(ECHO) ""
-	@$(ECHO) "Making current subdirectory (product version)"
-	@$(MAKE) -C $(PROJECT_ROOT) TARGET="$(TARGET)" MODE="prod" CHECK_DEPS="yes" makesubdir
-
-
 
 
 ###############################################################################

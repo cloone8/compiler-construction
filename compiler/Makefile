@@ -107,17 +107,18 @@ DEPS = $(foreach file,$(DEPENDENCY_FILES),$(dir $(file)).$(notdir $(file)))
 #
 # Start rules
 #
+
 all: devel
 
-devel:
-	@$(MAKE) CHECK_DEPS="yes" make_devel
+devel: export CIVICC_CC=$(CCDEV)
+devel: export CIVICC_CCFLAGS=$(CCDEV_FLAGS)
+devel: export CIVICC_TYPE="Development version"
+devel: makefiles civicc.go
 
-prod:
-	@$(MAKE) CHECK_DEPS="yes" make_prod
-
-make_devel: makefiles civicc.go
-
-make_prod: makefiles civicc.prod.go
+prod: export CIVICC_CC=$(CCPROD)
+prod: export CIVICC_CCFLAGS=$(CCPROD_FLAGS)
+prod: export CIVICC_TYPE="Prodcution version"
+prod: clean makefiles civicc.go
 
 makefiles: $(SOURCE_MAKEFILES)
 
@@ -129,6 +130,8 @@ src/%/Makefile: Makefile.Source
 	@$(ECHO) ""
 	@$(ECHO) "************************************"
 	@$(ECHO) "* Making $*"
+	@$(ECHO) "*"
+	@$(ECHO) "* $(CIVICC_TYPE)"
 	@$(ECHO) "************************************"
 	@touch make_track
 	@$(ECHO) ""
@@ -178,7 +181,7 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
               $(ECHO) "Compiling files in directory $(dir $@)" ; \
          fi
 	@$(ECHO) "  Compiling code:  $(notdir $<)"
-	@$(CC) $(CCFLAGS) $(CFLAGS) $(YYFLAGS) $(INCS) -o $@ -c $<
+	@$(CIVICC_CC) $(CIVICC_CCFLAGS) $(YYFLAGS) $(INCS) -o $@ -c $<
 
 %.lex.c: %.l %.track
 	@$(ECHO) "  Generating source code from LEX specification:  $(notdir $<)"
@@ -243,7 +246,7 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
              $(ECHO) "Checking dependencies in directory $(dir $@)" ; \
         fi
 	@$(ECHO) "  Checking dependencies of source file: $(notdir $<)"
-	@if $(CC) $(CCDEPS_FLAGS) $(CFLAGS) $(INCS) $<  > $@d ; \
+	@if $(CIVICC_CC) $(CCDEPS_FLAGS) $(CFLAGS) $(INCS) $<  > $@d ; \
 	 then sed 's/\($(notdir $*)\)\.o[ :]*/$(subst /,\/,$*)\.o $(subst /,\/,$@)\: $$\(PROJECT_ROOT\)\/Makefile.Config /'  <$@d >$@; \
 	      $(RM) $@d ; \
 	 else $(RM) $@d ; \

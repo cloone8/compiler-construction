@@ -191,9 +191,9 @@ void print_symbol_table(symbol_table* table) {
     DBUG_ASSERT((table != NULL), "Table was NULL!");
 
     for (size_t i = 0; i < table->table_depth; i++) {
-        printf("    ");
+        fprintf(stderr, "    ");
     }
-    printf("**** Variable symbol table with depth: %zu ****\n", table->table_depth);
+    fprintf(stderr, "**** Variable symbol table with depth: %zu ****\n", table->table_depth);
     symbol_table_entry *current;
 
     for (size_t i = 0; i < table->current_entries; i++) {
@@ -224,9 +224,9 @@ void print_symbol_table(symbol_table* table) {
         }
 
         for (size_t i = 0; i < table->table_depth; i++) {
-            printf("    ");
+            fprintf(stderr, "    ");
         }
-        printf("**** ID: %zu name: %s type: %s ****\n", current->idx, current->name, type);
+        fprintf(stderr, "**** ID: %zu name: %s type: %s ****\n", current->idx, current->name, type);
     }
 
     DBUG_VOID_RETURN;

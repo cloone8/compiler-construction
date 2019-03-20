@@ -63,6 +63,7 @@ src/scanparse/civic.lex.c
 src/scanparse/civic.tab.c
 src/scanparse/civic.tab.h
 src/scanparse/y.output
+src/*/Makefile
 make_track
 *.d
 y.output
