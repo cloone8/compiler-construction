@@ -152,18 +152,6 @@ node* GBCvarread (node * arg_node, info * arg_info) {
 node* GBCcast (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCcast");
 
-    switch(CAST_CASTTO(arg_node)) {
-        case TP_bool:
-            break;
-        case TP_float:
-            break;
-        case TP_int:
-            break;
-        case TP_void:
-            break;
-        default:
-    }
-
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
@@ -309,22 +297,6 @@ node* GBCfunction (node * arg_node, info * arg_info) {
 
 node* GBCbasicparameter (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbasicparameter");
-    char* type = "";
-
-    switch(BASICPARAMETER_TYPE(arg_node)) {
-        case TP_bool:
-            type = "bool";
-            break;
-        case TP_float:
-            type = "float";
-            break;
-        case TP_int:
-            type = "int";
-            break;
-        default:
-            type = "INVALID_PARAMETER_TYPE";
-    }
-
 
     if(BASICPARAMETER_NEXT(arg_node) != NULL) {
         BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
@@ -347,26 +319,6 @@ node* GBCbasicparameter (node * arg_node, info * arg_info) {
 
 node* GBCarrayparameter (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCarrayparameter");
-
-    char* type = "";
-
-    switch(ARRAYPARAMETER_TYPE(arg_node)) {
-        case TP_bool:
-        case TP_bool_array:
-            type = "bool";
-            break;
-        case TP_float:
-        case TP_float_array:
-            type = "float";
-            break;
-        case TP_int:
-        case TP_int_array:
-            type = "int";
-            break;
-        default:
-            type = "INVALID_PARAMETER_TYPE";
-    }
-
 
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
 
@@ -510,24 +462,6 @@ node* GBCstatements (node * arg_node, info * arg_info) {
 node* GBCbasicvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbasicvardeclaration");
 
-
-    char* type = "";
-
-    switch(BASICVARDECLARATION_TYPE(arg_node)) {
-        case TP_bool:
-            type = "bool";
-            break;
-        case TP_float:
-            type = "float";
-            break;
-        case TP_int:
-            type = "int";
-            break;
-        default:
-            type = "INVALID_BASICVARDEC_TYPE";
-    }
-
-
     if(BASICVARDECLARATION_INITVAL(arg_node) != NULL) {
 
         BASICVARDECLARATION_INITVAL(arg_node) = TRAVdo(BASICVARDECLARATION_INITVAL(arg_node), arg_info);
@@ -552,30 +486,7 @@ node* GBCbasicvardeclaration (node * arg_node, info * arg_info) {
 node* GBCarrayvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCarrayvardeclaration");
 
-
-    char* type = "";
-
-    switch(ARRAYVARDECLARATION_TYPE(arg_node)) {
-        case TP_bool:
-        case TP_bool_array:
-            type = "bool";
-            break;
-        case TP_float:
-        case TP_float_array:
-            type = "float";
-            break;
-        case TP_int:
-        case TP_int_array:
-            type = "int";
-            break;
-        default:
-            type = "INVALID_ARRAYVARDEC_TYPE";
-    }
-
-
     ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
-
-
 
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
         ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
@@ -718,37 +629,6 @@ node* GBCdowhile(node * arg_node, info * arg_info) {
 
 node* GBCglobal(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCglobal");
-    char* exportextern;
-    char* type;
-
-    switch (GLOBAL_TYPE(arg_node)) {
-        case TP_int:
-        case TP_int_array:
-            type = "int";
-            break;
-        case TP_float:
-        case TP_float_array:
-            type = "float";
-            break;
-        case TP_bool:
-        case TP_bool_array:
-            type = "bool";
-            break;
-        default:
-            type = "INVALID_GLOBAL_TYPE";
-            break;
-    }
-
-    if (GLOBAL_DEFINITION(arg_node) != NULL) {
-        if(GLOBALDEFINITION_ISEXPORT(GLOBAL_DEFINITION(arg_node))) {
-            exportextern = "export ";
-        } else {
-            exportextern = "";
-        }
-    } else {
-        exportextern = "extern ";
-    }
-
 
     if(GLOBAL_DIMENSIONS(arg_node) != NULL) {
         GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
