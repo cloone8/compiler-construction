@@ -11,20 +11,18 @@
 #include "globals.h"
 #include "ctinfo.h"
 
+#include "opcode_lib.h"
 #include "util.h"
 
 /*
  * INFO structure
  */
 struct INFO {
-    FILE* fd;
 };
 
 /*
  * INFO macros
  */
-
-#define OFILE(__arg_info_struct__) ((__arg_info_struct__)->fd)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -33,7 +31,6 @@ static info *GBCmakeInfo(void) {
     DBUG_ENTER("GBCmakeInfo");
 
     info *result = (info *)MEMmalloc(sizeof(info));
-    result->fd = NULL;
 
     DBUG_RETURN(result);
 }
@@ -931,31 +928,28 @@ node *GBCdoGenByteCode(node *syntaxtree) {
     TRAVpush(TR_gbc);
 
 
-    FILE* output_file = NULL;
 
     // If there is no output file supplies, just use stdout
     DBUG_PRINT("GBC", ("Opening output stream"));
     if(global.outfile == NULL) {
         DBUG_PRINT("GBC", ("No output file supplies, using STDOUT"));
-        output_file = stdout;
+        ofile = stdout;
     } else {
         DBUG_PRINT("GBC", ("Opening file %s", global.outfile));
-        output_file = fopen(global.outfile, "w");
+        ofile = fopen(global.outfile, "w");
     }
 
 
-    if(output_file == NULL) {
+    if(ofile == NULL) {
         CTIabort("Error writing to output file: %s", global.outfile);
     }
-
-    OFILE(arg_info) = output_file;
 
     syntaxtree = TRAVdo(syntaxtree, arg_info);
 
     // Only close non-stdout output streams
     if(global.outfile == NULL) {
         DBUG_PRINT("GBC", ("Closing output stream"));
-        fclose(output_file);
+        fclose(ofile);
     } else {
         DBUG_PRINT("GBC", ("STDOUT detected as output stream, not closing"));
     }

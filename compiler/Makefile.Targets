@@ -111,7 +111,7 @@ scanparse   = civic.tab.o civic.lex.o parsehelper.o
 
 print       = print.o
 
-codegen     = gen_byte_code.o
+codegen     = gen_byte_code.o opcode_lib.o
 
 counters    = count_map.o
 
