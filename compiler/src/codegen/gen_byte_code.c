@@ -184,14 +184,8 @@ node* GBCcast (node * arg_node, info * arg_info) {
 node* GBCboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCboolconst");
     UNUSED(arg_info);
-    switch (BOOLCONST_VALUE(arg_node))
-    {
-        case TRUE:
-            break;
-        case FALSE:
-            break;
-        default:
-    }
+
+
 
     DBUG_RETURN(arg_node);
 }
@@ -287,39 +281,6 @@ node* GBCerror (node * arg_node, info * arg_info) {
 
 node* GBCfunction (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfunction");
-
-
-    // Only used when the definition is actually given. Otherwise remains empty
-    char* prefix = "";
-
-    if(FUNCTION_DEFINITION(arg_node) != NULL) {
-        if(FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node))) {
-            prefix = "export ";
-        }
-    } else {
-        prefix = "extern ";
-    }
-
-    char* functiontype = NULL;
-
-    switch(FUNCTION_TYPE(arg_node)) {
-        case TP_bool:
-            functiontype = "bool";
-            break;
-        case TP_float:
-            functiontype = "float";
-            break;
-        case TP_void:
-            functiontype = "void";
-            break;
-        case TP_int:
-            functiontype = "int";
-            break;
-        default:
-            functiontype = "UNKNOWN_FUNCTION_TYPE";
-    }
-
-
 
     if(FUNCTION_PARAMETERS(arg_node) != NULL)
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
