@@ -1127,7 +1127,7 @@ lut_t *LUTremoveLut(lut_t *lut)
 
 void LUTtouchContentLut(lut_t *lut, info *arg_info)
 {
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
 
   void **tmp;
   hash_key_t k;

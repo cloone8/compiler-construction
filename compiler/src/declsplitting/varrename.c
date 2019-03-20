@@ -71,7 +71,7 @@ node* VRNarrayvarread(node* arg_node, info* arg_info) {
 
 node* VRNvarread(node* arg_node, info* arg_info) {
     DBUG_ENTER("VRNvarread");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
 
     symbol_table_entry* entry = VARREAD_VARPOINTER(arg_node);
     DBUG_ASSERT((entry != NULL), "Entry pointer not set!");

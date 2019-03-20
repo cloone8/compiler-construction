@@ -70,7 +70,7 @@
  ***************************************************************************/
 char* FREEattribString (char *attr, node * parent) {
     DBUG_ENTER ("FREEattribString");
-    UNUSED(parent);
+    UNUSED_VAR(parent);
 
     if (attr != NULL) {
         DBUG_PRINT ("FREE", ("Freeing string '%s' at " F_PTR, attr, attr));
@@ -95,15 +95,15 @@ char* FREEattribString (char *attr, node * parent) {
  ***************************************************************************/
 node* FREEattribLink (node *attr, node * parent) {
     DBUG_ENTER ("FREEattribLink");
-    UNUSED(attr);
-    UNUSED(parent);
+    UNUSED_VAR(attr);
+    UNUSED_VAR(parent);
     DBUG_RETURN (NULL);
 }
 
 
 symbol_table* FREEattribVarSymbolTable(symbol_table * attr, node * parent) {
     DBUG_ENTER ("FREEattribVarSymbolTable");
-    UNUSED(parent);
+    UNUSED_VAR(parent);
 
     if(attr != NULL) {
         DBUG_PRINT ("FREE", ("Freeing varsymboltable at " F_PTR, attr));
@@ -115,7 +115,7 @@ symbol_table* FREEattribVarSymbolTable(symbol_table * attr, node * parent) {
 
 fun_symbol_table* FREEattribFunSymbolTable(fun_symbol_table * attr, node * parent) {
     DBUG_ENTER ("FREEattribFunSymbolTable");
-    UNUSED(parent);
+    UNUSED_VAR(parent);
 
     if(attr != NULL) {
         DBUG_PRINT ("FREE", ("Freeing funsymboltable at " F_PTR, attr));

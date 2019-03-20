@@ -164,7 +164,7 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCvarread");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -203,7 +203,7 @@ node* GBCcast (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCboolconst");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
 
 
 
@@ -224,7 +224,7 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCintconst");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -243,7 +243,7 @@ node* GBCintconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCfloatconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCfloatconst");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -282,7 +282,7 @@ node* GBCconstant (node * arg_node, info * arg_info) {
 
 node* GBCerror (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCerror");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
 
     DBUG_RETURN(arg_node);
 }
