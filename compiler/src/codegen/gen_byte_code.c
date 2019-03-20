@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "gen_byte_code.h"
 
 #include "types.h"
@@ -927,7 +930,16 @@ node *GBCdoGenByteCode(node *syntaxtree) {
 
     TRAVpush(TR_gbc);
 
-    FILE* output_file = fopen(global.outfile, "w");
+
+    FILE* output_file = NULL;
+
+    // If there is no output file supplies, just use stdout
+    if(global.outfile == NULL) {
+        output_file = stdout;
+    } else {
+        output_file = fopen(global.outfile, "w");
+    }
+
 
     if(output_file == NULL) {
         CTIabort("Error writing to output file: %s", global.outfile);
@@ -937,7 +949,10 @@ node *GBCdoGenByteCode(node *syntaxtree) {
 
     syntaxtree = TRAVdo(syntaxtree, arg_info);
 
-    fclose(output_file);
+    // Only close non-stdout output streams
+    if(global.outfile == NULL) {
+        fclose(output_file);
+    }
 
     TRAVpop();
 
