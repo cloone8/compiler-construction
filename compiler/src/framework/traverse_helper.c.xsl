@@ -90,13 +90,13 @@
 
 node *TRAVnone(node *arg_node, info *arg_info)
 {
-   UNUSED(arg_info);
+   UNUSED_VAR(arg_info);
    return(arg_node);
 }
 
 node *TRAVerror(node *arg_node, info *arg_info)
 {
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
   DBUG_ASSERT((FALSE), "Illegal node type found.");
 
   return(arg_node);

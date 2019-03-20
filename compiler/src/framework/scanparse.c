@@ -67,38 +67,47 @@ FILE *yyin;
  */
 extern node *YYparseTree();
 
+/**
+ * Fills the initial raw syntax tree with the parsed nodes, gathered by bison.
+ * @param syntax_tree: MUST be NULL
+ * @return the filled in syntax tree.
+ */
 node* SPdoScanParse(node *syntax_tree) {
+    DBUG_ENTER("SPdoScanParse");
+
     node *result = NULL;
     char *filename;
 
-    DBUG_ENTER("SPdoScanParse");
-
+    // Something went wrong with phasing if the syntax tree is already initialised
     DBUG_ASSERT(syntax_tree == NULL,
                 "SPdoScanParse() called with existing syntax tree.");
 
     if (global.cpp) {
+        // Take the preprocessed file
         filename = STRcatn(3,
                             "./",
                             global.infile,
                             CVC_PROCESSED_EXTENSION);
-    }
-    else {
+    } else {
+        // Take the raw file
         filename = STRcpy(global.infile);
     }
 
     yyin = fopen(filename, "r");
-    myglobal.input_file_handler = yyin;
 
     if (yyin == NULL) {
         CTIabort("Cannot open file '%s'.", filename);
     }
 
+    // For clean closing later
+    myglobal.input_file_handler = yyin;
+
+    // Do the actual parsing
     result = YYparseTree();
 
+    // Delete the intermediate file to make sure we don't leave any trash
     char* rm_intermediate_file_str = STRcat(DELETE_COMMAND, filename);
-
     int err = system(rm_intermediate_file_str);
-
     rm_intermediate_file_str = MEMfree(rm_intermediate_file_str);
 
     if(err) {
@@ -112,15 +121,20 @@ node* SPdoScanParse(node *syntax_tree) {
 }
 
 /**
- * Runs the GCC C preprocessor.
+ * Runs the GCC C preprocessor, putting the result in an intermediate file.
+ * @param syntax_tree: Parameter required by the framework. UNUSED_VAR
+ * @return NULL
  */
 node* SPdoRunPreProcessor(node *syntax_tree) {
+    UNUSED_VAR(syntax_tree);
+
     int  err;
     char *cppcallstr;
     char *processedfile;
 
     DBUG_ENTER("SPdoRunPreProcessor");
 
+    // New name of pre-processed file
     processedfile = STRcat(global.infile, CVC_PROCESSED_EXTENSION);
 
     cppcallstr = STRcatn(5,
@@ -133,6 +147,7 @@ node* SPdoRunPreProcessor(node *syntax_tree) {
     err = system(cppcallstr);
 
     if (err) {
+        // Delete the intermediate file and free the strings.
         char* rm_intermediate_file_str = STRcat(DELETE_COMMAND, processedfile);
         err = system(rm_intermediate_file_str);
 
@@ -146,7 +161,8 @@ node* SPdoRunPreProcessor(node *syntax_tree) {
     cppcallstr = MEMfree(cppcallstr);
     processedfile = MEMfree(processedfile);
 
+    // Let the other phases know that the preprocessor has been used.
     global.cpp = TRUE;
 
-    DBUG_RETURN(syntax_tree);
+    DBUG_RETURN(NULL);
 }

@@ -4,7 +4,7 @@
 #include "types.h"
 #include "node_appends.h"
 
-#define UNUSED(x) ((void) x)
+#define UNUSED_VAR(x) ((void) x)
 
 // The default size for string buffers. Set to the amount of bits in a size_t, as this way it
 // can hold at least a size_t number

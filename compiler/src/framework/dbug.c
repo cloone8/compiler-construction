@@ -1474,7 +1474,7 @@ LOCAL BOOLEAN Writable (char *pathname)
 #endif
 
 #ifndef unix
-    UNUSED(pathname);
+    UNUSED_VAR(pathname);
     granted = TRUE;
 #else
     granted = FALSE;

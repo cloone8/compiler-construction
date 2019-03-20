@@ -233,8 +233,8 @@ node *CHKdoTreeCheck(node *syntax_tree)
     </xsl:call-template>
     <xsl:value-of select="'{'"/>
       <!-- Done to silence compiler warnings -->
-    <xsl:value-of select="'UNUSED(arg_info);'"/>
-    <xsl:value-of select="'UNUSED(arg_node);'"/>
+    <xsl:value-of select="'UNUSED_VAR(arg_info);'"/>
+    <xsl:value-of select="'UNUSED_VAR(arg_node);'"/>
     <xsl:if test="attributes/attribute[key(&quot;arraytypes&quot;, ./type/@name)]">
       <xsl:value-of select="'int cnt;'" />
     </xsl:if>

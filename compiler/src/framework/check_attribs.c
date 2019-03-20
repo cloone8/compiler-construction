@@ -68,7 +68,7 @@
  ***************************************************************************/
 symbol_table* CHKMattribVarSymbolTable(symbol_table * attr, info * arg_info) {
   DBUG_ENTER("CHKMattribVarSymtolTable");
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
   /* do nothing */
 
   DBUG_RETURN (attr);
@@ -88,7 +88,7 @@ symbol_table* CHKMattribVarSymbolTable(symbol_table * attr, info * arg_info) {
  ***************************************************************************/
 fun_symbol_table* CHKMattribFunSymbolTable(fun_symbol_table * attr, info * arg_info) {
   DBUG_ENTER("CHKMattribFunSymtolTable");
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
   /* do nothing */
 
   DBUG_RETURN (attr);
@@ -108,7 +108,7 @@ fun_symbol_table* CHKMattribFunSymbolTable(fun_symbol_table * attr, info * arg_i
  ***************************************************************************/
 char* CHKMattribString(char *attr, info * arg_info) {
   DBUG_ENTER("CHKMattribString");
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
   /* do nothing */
 
   DBUG_RETURN (attr);
@@ -129,7 +129,7 @@ char* CHKMattribString(char *attr, info * arg_info) {
  ***************************************************************************/
 char* CHKMattribSharedString(char *attr, info * arg_info) {
   DBUG_ENTER("CHKMattribSharedString");
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
   /* do nothing */
 
   DBUG_RETURN(attr);
@@ -174,7 +174,7 @@ node* CHKMattribNode(node * attr, info * arg_info) {
  ***************************************************************************/
 node* CHKMattribLink(node * attr, info * arg_info) {
   DBUG_ENTER("CHKMattribLink");
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
   /*
    * NEVER do anything with this kind of attribute
    * as you cannot make sure the node you reference
@@ -198,6 +198,6 @@ node* CHKMattribLink(node * attr, info * arg_info) {
  ***************************************************************************/
 node* CHKMattribExtLink(node * attr, info * arg_info) {
   DBUG_ENTER("CHKMattribExtLink");
-  UNUSED(arg_info);
+  UNUSED_VAR(arg_info);
   DBUG_RETURN(attr);
 }

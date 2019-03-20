@@ -211,7 +211,7 @@ node* PRTvarassign (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTvarread");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
     fprintf(stderr, "%s", VARREAD_VARNAME(arg_node));
 
     DBUG_RETURN(arg_node);
@@ -270,7 +270,7 @@ node* PRTcast (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTboolconst");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
     switch (BOOLCONST_VALUE(arg_node))
     {
         case TRUE:
@@ -301,7 +301,7 @@ node* PRTboolconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTintconst");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
     fprintf(stderr, "%d", INTCONST_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);
@@ -322,7 +322,7 @@ node* PRTintconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* PRTfloatconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("PRTfloatconst");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
     fprintf(stderr, "%.10f", FLOATCONST_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);

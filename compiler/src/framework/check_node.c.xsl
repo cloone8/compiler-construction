@@ -135,7 +135,7 @@ version="1.0">
 node *CHKMpostfun(node * arg_node, info * arg_info)
 {
 DBUG_ENTER("CHKMpostfun");
-UNUSED(arg_info);
+UNUSED_VAR(arg_info);
 DBUG_RETURN(arg_node);
 }
   </xsl:text>

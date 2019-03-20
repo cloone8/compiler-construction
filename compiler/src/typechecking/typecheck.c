@@ -75,7 +75,7 @@ node* TCfunctiondefinition(node* arg_node, info* arg_info) {
 
 node* TCfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfunction");
-    UNUSED(arg_info);
+    UNUSED_VAR(arg_info);
 
     if (FUNCTION_DEFINITION(arg_node) != NULL) {
         info* new_info = TCmakeInfo();
@@ -298,7 +298,7 @@ node* TCmonop(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-/** In this function we check for the correct types for binary operators. 
+/** In this function we check for the correct types for binary operators.
  * param arg_node: The current binary operator node to be evaluated.
  * param arg_info: The info structure for the current node.
  **/

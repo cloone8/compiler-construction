@@ -180,7 +180,7 @@ node *PHrunCycle(compiler_phase_t cycle, node *syntax_tree, bool cond, bool rese
 {
   DBUG_ENTER("PHrunCycle");
 
-  UNUSED(reset);
+  UNUSED_VAR(reset);
 
   DBUG_ASSERTF(PHIphaseType(cycle) == PHT_cycle,
                 ("PHrunCycle called with incompatible phase: %s",
