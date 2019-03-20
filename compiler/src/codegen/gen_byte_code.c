@@ -8,6 +8,18 @@
 #include "util.h"
 
 
+/** <!--******************************************************************-->
+ *
+ * @fn GBCbinop
+ *
+ * @brief Prints the node and its sons/attributes
+ *
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
+ *
+ * @return processed node
+ *
+ ***************************************************************************/
 node* GBCbinop (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbinop");
 
@@ -24,8 +36,8 @@ node* GBCbinop (node * arg_node, info * arg_info) {
  * @fn GBCdeclaration
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -46,8 +58,8 @@ node* GBCdeclaration (node * arg_node, info * arg_info) {
  * @fn GBCarrayvarassign
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -69,8 +81,8 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
  * @fn GBCarrayvarread
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -91,8 +103,8 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
  * @fn GBCvarassign
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -112,8 +124,8 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
  * @fn GBCvarread
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -131,8 +143,8 @@ node* GBCvarread (node * arg_node, info * arg_info) {
  * @fn GBCcast
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -163,8 +175,8 @@ node* GBCcast (node * arg_node, info * arg_info) {
  * @fn GBCboolconst
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -190,8 +202,8 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
  * @fn GBCintconst
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -209,8 +221,8 @@ node* GBCintconst (node * arg_node, info * arg_info) {
  * @fn GBCfloatconst
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -228,8 +240,8 @@ node* GBCfloatconst (node * arg_node, info * arg_info) {
  * @fn GBCconstant
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -247,8 +259,8 @@ node* GBCconstant (node * arg_node, info * arg_info) {
  * @fn GBCerror
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -266,8 +278,8 @@ node* GBCerror (node * arg_node, info * arg_info) {
  * @fn GBCfunction
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -327,8 +339,8 @@ node* GBCfunction (node * arg_node, info * arg_info) {
  * @fn GBCbasicparameter
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -365,8 +377,8 @@ node* GBCbasicparameter (node * arg_node, info * arg_info) {
  * @fn GBCarrayparameter
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -410,8 +422,8 @@ node* GBCarrayparameter (node * arg_node, info * arg_info) {
  * @fn GBCarraydimensionvars
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -432,8 +444,8 @@ node* GBCarraydimensionvars (node * arg_node, info * arg_info) {
  * @fn GBCfunctiondefinition
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -458,8 +470,8 @@ node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
  * @fn GBCfunctionbody
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -488,8 +500,8 @@ node* GBCfunctionbody (node * arg_node, info * arg_info) {
  * @fn GBCstatements
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -527,8 +539,8 @@ node* GBCstatements (node * arg_node, info * arg_info) {
  * @fn GBCbasicvardeclaration
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -569,8 +581,8 @@ node* GBCbasicvardeclaration (node * arg_node, info * arg_info) {
  * @fn GBCarrayvardeclaration
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -617,8 +629,8 @@ node* GBCarrayvardeclaration (node * arg_node, info * arg_info) {
  * @fn GBCexprarray
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -645,8 +657,8 @@ node* GBCexprarray (node * arg_node, info * arg_info) {
  * @fn GBCfor
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -684,8 +696,8 @@ node* GBCfor (node * arg_node, info * arg_info) {
  * @fn GBCwhile
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -711,8 +723,8 @@ node* GBCwhile (node * arg_node, info * arg_info) {
  * @fn GBCdowhile
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -736,8 +748,8 @@ node* GBCdowhile(node * arg_node, info * arg_info) {
  * @fn GBCglobal
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -793,8 +805,8 @@ node* GBCglobal(node * arg_node, info * arg_info) {
  * @fn GBCglobaldefinition
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -815,8 +827,8 @@ node* GBCglobaldefinition (node * arg_node, info * arg_info) {
  * @fn GBCfuncall
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -839,8 +851,8 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
  * @fn GBCfuncallparameter
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -863,8 +875,8 @@ node* GBCfuncallparameter(node * arg_node, info * arg_info) {
  * @fn GBCreturn
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -886,8 +898,8 @@ node* GBCreturn(node * arg_node, info * arg_info) {
  * @fn GBCbranch
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -923,8 +935,8 @@ node* GBCbranch(node * arg_node, info * arg_info) {
  * @fn GBCexpr
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -943,8 +955,8 @@ node* GBCexpr(node * arg_node, info * arg_info) {
  * @fn GBCmonop
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -963,8 +975,8 @@ node* GBCmonop(node * arg_node, info * arg_info) {
  * @fn GBCfunctionvardeclaration
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -987,8 +999,8 @@ node* GBCfunctionvardeclaration(node * arg_node, info * arg_info) {
  * @fn GBClocalfunction
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
@@ -1014,8 +1026,8 @@ node* GBClocalfunction(node * arg_node, info * arg_info) {
  * @fn GBCprogram
  *
  *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
+ * @param arg_node: node to process
+ * @param arg_info: pointer to info structure
  *
  * @return processed node
  *
