@@ -4,9 +4,41 @@
 #include "tree_basic.h"
 #include "traverse.h"
 #include "dbug.h"
+#include "memory.h"
 
 #include "util.h"
 
+/*
+ * INFO structure
+ */
+struct INFO {
+};
+
+/*
+ * INFO macros
+ */
+
+/**
+ * Creates a new info struct and sets the initial values
+ */
+static info *GBCmakeInfo(void) {
+    DBUG_ENTER("GBCmakeInfo");
+
+    info *result = (info *)MEMmalloc(sizeof(info));
+
+    DBUG_RETURN(result);
+}
+
+/**
+ * Frees the memory of an info struct
+ */
+static info *GBCfreeInfo(info *info) {
+    DBUG_ENTER("GBCfreeInfo");
+
+    info = MEMfree(info);
+
+    DBUG_RETURN(info);
+}
 
 /** <!--******************************************************************-->
  *
@@ -905,11 +937,17 @@ node* GBCconditionalexpr(node* arg_node, info* arg_info) {
  */
 
 node *GBCdoGenByteCode(node *syntaxtree) {
-  DBUG_ENTER("GBCdoGenByteCode");
+    DBUG_ENTER("GBCdoGenByteCode");
 
-  /*
-   * Your work here....
-   */
+    info* arg_info = GBCmakeInfo();
 
-  DBUG_RETURN(syntaxtree);
+    TRAVpush(TR_gbc);
+
+    syntaxtree = TRAVdo(syntaxtree, arg_info);
+
+    TRAVpop();
+
+    arg_info = GBCfreeInfo(arg_info);
+
+    DBUG_RETURN(syntaxtree);
 }
