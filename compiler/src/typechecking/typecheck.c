@@ -114,7 +114,13 @@ node* TCreturn(node *arg_node, info *arg_info) {
         TRAVdo(RETURN_VALUE(arg_node), new_info);
 
         if(TYPE(new_info) != funtype) {
-            CTIerror("Return statement with invalid type! Expected %s but got %s", get_type_str(funtype), get_type_str(TYPE(new_info)));
+            char* expected_type = get_type_str(funtype);
+            char* actual_type = get_type_str(TYPE(new_info));
+
+            CTIerror("Return statement with invalid type! Expected %s but got %s", expected_type, actual_type);
+
+            MEMfree(expected_type);
+            MEMfree(actual_type);
         }
 
         TCfreeInfo(new_info);
@@ -158,7 +164,15 @@ node* TCvarassign(node* arg_node, info* arg_info) {
     }
 
     if (TYPE(val_info) != TYPE(arg_info)) {
-        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, get_type_str(TYPE(arg_info)), get_type_str(TYPE(val_info)));
+        char* expected_type = get_type_str(TYPE(arg_info));
+        char* actual_type = get_type_str(TYPE(val_info));
+
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node),
+                     "Wrong type for %s, expected %s but got %s",
+                      entry->name, expected_type, actual_type);
+
+        MEMfree(expected_type);
+        MEMfree(actual_type);
     }
 
     TCfreeInfo(val_info);
@@ -179,7 +193,15 @@ node* TCarrayvarassign(node* arg_node, info* arg_info) {
     }
 
     if (TYPE(val_info) != TYPE(arg_info)) {
-        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Wrong type for %s, expected %s but got %s", entry->name, get_type_str(TYPE(arg_info)), get_type_str(TYPE(val_info)));
+        char* expected_type = get_type_str(TYPE(arg_info));
+        char* actual_type = get_type_str(TYPE(val_info));
+
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node),
+                     "Wrong type for %s, expected %s but got %s",
+                      entry->name, expected_type, actual_type);
+
+        MEMfree(expected_type);
+        MEMfree(actual_type);
     }
 
     TCfreeInfo(val_info);
@@ -249,12 +271,18 @@ node* TCfuncall(node* arg_node, info* arg_info) {
 
         for (size_t i = 0; i < params; i++) {
             if (needed[i] != GIVEN(new_info)[i]) {
+                char* needed_str = get_type_str(needed[i]);
+                char* given_str = get_type_str(GIVEN(new_info)[i]);
+
                 CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node),
                              "Wrong types given for function %s, argument %zu needs %s, but got, %s",
                              FUNCALL_FUNCTIONNAME(arg_node),
                              i + 1,
-                             get_type_str(needed[i]),
-                             get_type_str(GIVEN(new_info)[i]));
+                             needed_str,
+                             given_str);
+
+                MEMfree(needed_str);
+                MEMfree(given_str);
             }
         }
         TCfreeInfo(new_info);

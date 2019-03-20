@@ -5,9 +5,15 @@
 #include "fun_symbol_table.h"
 #include "str.h"
 
+/**
+ * Converts a basic type to its respective array type.
+ * If the given type is not a basic type, does nothing and
+ * just returns the parameter
+ * @param current: The type to convert
+ * @return: The converted type
+ */
 type type_to_array_type(type current) {
     DBUG_ENTER("type_to_array_type");
-    DBUG_ASSERT((current != TP_void && current != TP_unknown), "Invalid type given");
 
     switch(current) {
         case TP_bool:
@@ -21,9 +27,15 @@ type type_to_array_type(type current) {
     }
 }
 
+/**
+ * Converts an array type to its respective basic type.
+ * If the given type is not an array type, does nothing and
+ * just returns the parameter
+ * @param current: The type to convert
+ * @return: The converted type
+ */
 type array_type_to_type(type current) {
     DBUG_ENTER("array_type_to_type");
-    DBUG_ASSERT((current != TP_void && current != TP_unknown), "Invalid type given");
 
     switch(current) {
         case TP_bool_array:
@@ -37,8 +49,19 @@ type array_type_to_type(type current) {
     }
 }
 
+/**
+ * Given the name of a function, tries to find it in the current symbol table
+ * and all parent tables.
+ * @param deepest_table: The table representing the current deepest scope.
+ * @param to_find: The name of the function to find.
+ * @return The table entry of the function if it was found and is in scope,
+ *         NULL otherwise.
+ */
 fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* to_find) {
     DBUG_ENTER("fun_is_in_scope");
+    DBUG_ASSERT((deepest_table != NULL), "deepest_table cannot be NULL!");
+    DBUG_ASSERT((to_find != NULL), "to_find cannot be NULL!");
+
     fun_symbol_table* current_table = deepest_table;
 
     while(current_table != NULL) {
@@ -58,8 +81,19 @@ fun_symbol_table_entry* fun_is_in_scope(fun_symbol_table* deepest_table, char* t
     DBUG_RETURN(NULL);
 }
 
+/**
+ * Given the name of a variable, tries to find it in the current symbol table
+ * and all parent tables.
+ * @param deepest_table: The table representing the current deepest scope.
+ * @param to_find: The name of the variable to find.
+ * @return The table entry of the variable if it was found and is in scope,
+ *         NULL otherwise.
+ */
 symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find) {
     DBUG_ENTER("var_is_in_scope");
+    DBUG_ASSERT((deepest_table != NULL), "deepest_table cannot be NULL!");
+    DBUG_ASSERT((to_find != NULL), "to_find cannot be NULL!");
+
     symbol_table* current_table = deepest_table;
 
     while(current_table != NULL) {
@@ -79,61 +113,86 @@ symbol_table_entry* var_is_in_scope(symbol_table* deepest_table, char* to_find) 
     DBUG_RETURN(NULL);
 }
 
-static void print_exprarray_rec(node* exprs, size_t level) {
-    DBUG_ENTER("print_exprarray_red");
-    DBUG_ASSERT((NODE_TYPE(exprs) == N_exprarray), "Wrong node type given!");
-    DBUG_PRINT("print_exprarray_rec", ("Entering exprarray (level %zu)", level));
 
-    if(NODE_TYPE(EXPRARRAY_CURRENT(exprs)) == N_exprarray) {
-        print_exprarray_rec(EXPRARRAY_CURRENT(exprs), level + 1);
+// As the function is only used when DBUG_OFF is not defined, we don't have
+// to compile it if it is.
+#ifndef DBUG_OFF
+
+    /**
+     * The actual recursive function for print_exprarrray
+     * @param exprs: The exprarray to print
+     * @param level: The current nesting level of this exprarray
+     * @see print_exprarray
+     */
+    static void print_exprarray_rec(node* exprs, size_t level) {
+        DBUG_ENTER("print_exprarray_rec");
+        DBUG_ASSERT((NODE_TYPE(exprs) == N_exprarray), "Wrong node type given!");
+
+
+
+        // If this EXPRARRAY contains another EXPRARRAY, go deeper
+        if(NODE_TYPE(EXPRARRAY_CURRENT(exprs)) == N_exprarray) {
+            DBUG_PRINT("print_exprarray_rec", ("Entering exprarray (level %zu)", level));
+            print_exprarray_rec(EXPRARRAY_CURRENT(exprs), level + 1);
+            DBUG_PRINT("print_exprarray_rec", ("Leaving exprarray (level %zu)", level));
+        } else {
+            DBUG_PRINT("print_exprarray_rec", ("Deepest exprarray (level %zu)", level));
+        }
+
+        if(EXPRARRAY_NEXT(exprs) != NULL) {
+            print_exprarray_rec(EXPRARRAY_NEXT(exprs), level);
+        }
+
+        DBUG_VOID_RETURN;
     }
+#endif
 
-    DBUG_PRINT("print_exprarray_rec", ("Leaving exprarray (level %zu)", level));
-
-    if(EXPRARRAY_NEXT(exprs) != NULL) {
-        print_exprarray_rec(EXPRARRAY_NEXT(exprs), level);
-    }
-
-    DBUG_VOID_RETURN;
-}
-
+/**
+ * Prints the given exprarray and all its sub-arrays to the DBUG output. Does nothing if
+ * DBUG_OFF is defined.
+ *
+ * @param exprs: The exprarray to print
+ */
 void print_exprarray(node* exprs) {
     DBUG_ENTER("print_exprarray");
     DBUG_ASSERT((NODE_TYPE(exprs) == N_exprarray), "Wrong node type given!");
+
+    // As the function only prints to the debug stream, we dont have to do anything
+    // when DBUG_OFF is defined
+    #ifndef DBUG_OFF
     print_exprarray_rec(exprs, 0);
+    #else
+    UNUSED_VAR(exprs);
+    #endif
+
     DBUG_VOID_RETURN;
 }
 
+/**
+ * Converts the given type to its string representation.
+ * @param to_print: The type to convert
+ * @return pointer to the string of the given type. String is
+ *         located on the heap, so needs freeing.
+ */
 char* get_type_str(type to_print) {
     DBUG_ENTER("get_type_str");
 
-    static char* result;
-
     switch (to_print) {
         case TP_bool:
-            result = "BOOL";
-            break;
+            DBUG_RETURN(STRcpy("BOOL"));
         case TP_bool_array:
-            result = "BOOL_ARRAY";
-            break;
+            DBUG_RETURN(STRcpy("BOOL_ARRAY"));
         case TP_int:
-            result = "INT";
-            break;
+            DBUG_RETURN(STRcpy("INT"));
         case TP_int_array:
-            result = "INT_ARRAY";
-            break;
+            DBUG_RETURN(STRcpy("INT_ARRAY"));
         case TP_float:
-            result = "FLOAT";
-            break;
+            DBUG_RETURN(STRcpy("FLOAT"));
         case TP_float_array:
-            result = "FLOAT_ARRAY";
-            break;
+            DBUG_RETURN(STRcpy("FLOAT_ARRAY"));
         default:
-            result = "UNKNOWN";
-            break;
+            DBUG_RETURN(STRcpy("UNKNOWN"));
     }
-
-    DBUG_RETURN(result);
 }
 
 char* get_nodetype_string(nodetype nt) {
