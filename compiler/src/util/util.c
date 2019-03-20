@@ -197,174 +197,121 @@ char* get_type_str(type to_print) {
 
 char* get_nodetype_string(nodetype nt) {
     DBUG_ENTER("get_nodetype_string");
-    static char* toreturn = NULL;
 
     switch(nt) {
         case N_undefined:
-            toreturn = "undefined";
-            break;
+            DBUG_RETURN(STRcpy("undefined"));
         case N_program:
-            toreturn = "program";
-            break;
+            DBUG_RETURN(STRcpy("program"));
         case N_declaration:
-            toreturn = "declaration";
-            break;
+            DBUG_RETURN(STRcpy("declaration"));
         case N_function:
-            toreturn = "function";
-            break;
+            DBUG_RETURN(STRcpy("function"));
         case N_basicparameter:
-            toreturn = "basicparameter";
-            break;
+            DBUG_RETURN(STRcpy("basicparameter"));
         case N_arrayparameter:
-            toreturn = "arrayparameter";
-            break;
+            DBUG_RETURN(STRcpy("arrayparameter"));
         case N_arraydimensionvars:
-            toreturn = "arraydimensionvars";
-            break;
+            DBUG_RETURN(STRcpy("arraydimensionvars"));
         case N_functiondefinition:
-            toreturn = "functiondefinition";
-            break;
+            DBUG_RETURN(STRcpy("functiondefinition"));
         case N_functionbody:
-            toreturn = "functionbody";
-            break;
+            DBUG_RETURN(STRcpy("functionbody"));
         case N_functionvardeclaration:
-            toreturn = "functionvardeclaration";
-            break;
+            DBUG_RETURN(STRcpy("functionvardeclaration"));
         case N_localfunction:
-            toreturn = "localfunction";
-            break;
+            DBUG_RETURN(STRcpy("localfunction"));
         case N_statements:
-            toreturn = "statements";
-            break;
+            DBUG_RETURN(STRcpy("statements"));
         case N_basicvardeclaration:
-            toreturn = "basicvardeclaration";
-            break;
+            DBUG_RETURN(STRcpy("basicvardeclaration"));
         case N_arrayvardeclaration:
-            toreturn = "arrayvardeclaration";
-            break;
+            DBUG_RETURN(STRcpy("arrayvardeclaration"));
         case N_exprarray:
-            toreturn = "exprarray";
-            break;
+            DBUG_RETURN(STRcpy("exprarray"));
         case N_globaldefinition:
-            toreturn = "globaldefintion";
-            break;
+            DBUG_RETURN(STRcpy("globaldefintion"));
         case N_for:
-            toreturn = "for";
-            break;
+            DBUG_RETURN(STRcpy("for"));
         case N_while:
-            toreturn = "while";
-            break;
+            DBUG_RETURN(STRcpy("while"));
         case N_dowhile:
-            toreturn = "dowhile";
-            break;
+            DBUG_RETURN(STRcpy("dowhile"));
         case N_global:
-            toreturn = "global";
-            break;
+            DBUG_RETURN(STRcpy("global"));
         case N_error:
-            toreturn = "error";
-            break;
+            DBUG_RETURN(STRcpy("error"));
         case N_funcall:
-            toreturn = "funcall";
-            break;
+            DBUG_RETURN(STRcpy("funcall"));
         case N_funcallparameter:
-            toreturn = "funcallparameter";
-            break;
+            DBUG_RETURN(STRcpy("funcallparameter"));
         case N_return:
-            toreturn = "return";
-            break;
+            DBUG_RETURN(STRcpy("return"));
         case N_branch:
-            toreturn = "branch";
-            break;
+            DBUG_RETURN(STRcpy("branch"));
         case N_expr:
-            toreturn = "expr";
-            break;
+            DBUG_RETURN(STRcpy("expr"));
         case N_monop:
-            toreturn = "monop";
-            break;
+            DBUG_RETURN(STRcpy("monop"));
         case N_constant:
-            toreturn = "constant";
-            break;
+            DBUG_RETURN(STRcpy("constant"));
         case N_floatconst:
-            toreturn = "floatconst";
-            break;
+            DBUG_RETURN(STRcpy("floatconst"));
         case N_intconst:
-            toreturn = "intconst";
-            break;
+            DBUG_RETURN(STRcpy("intconst"));
         case N_boolconst:
-            toreturn = "boolconst";
-            break;
+            DBUG_RETURN(STRcpy("boolconst"));
         case N_cast:
-            toreturn = "cast";
-            break;
+            DBUG_RETURN(STRcpy("cast"));
         case N_varread:
-            toreturn = "varread";
-            break;
+            DBUG_RETURN(STRcpy("varread"));
         case N_varassign:
-            toreturn = "varassign";
-            break;
+            DBUG_RETURN(STRcpy("varassign"));
         case N_arrayvarread:
-            toreturn = "arrayvarread";
-            break;
+            DBUG_RETURN(STRcpy("arrayvarread"));
         case N_arrayvarassign:
-            toreturn = "arrayvarassign";
-            break;
+            DBUG_RETURN(STRcpy("arrayvarassign"));
         case N_binop:
-            toreturn = "binop";
-            break;
+            DBUG_RETURN(STRcpy("binop"));
         default:
             DBUG_ASSERT((FALSE), "Invalid nodetype given!");
+            DBUG_RETURN(NULL);
     }
-    DBUG_RETURN(toreturn);
 }
 
 char* get_binop_str(binop bo_type) {
-    DBUG_ENTER("get_binop_srt");
-    static char* toreturn;
-
+    DBUG_ENTER("get_binop_str");
     switch (bo_type) {
         case BO_add:
-            toreturn = "+";
-            break;
+            DBUG_RETURN(STRcpy("+"));
         case BO_sub:
-            toreturn = "-";
-            break;
+            DBUG_RETURN(STRcpy("-"));
         case BO_mul:
-            toreturn = "*";
-            break;
+            DBUG_RETURN(STRcpy("*"));
         case BO_div:
-            toreturn = "/";
-            break;
+            DBUG_RETURN(STRcpy("/"));
         case BO_mod:
-            toreturn = "%";
-            break;
+            DBUG_RETURN(STRcpy("%"));
         case BO_lt:
-            toreturn = "<";
-            break;
+            DBUG_RETURN(STRcpy("<"));
         case BO_le:
-            toreturn = "<=";
-            break;
+            DBUG_RETURN(STRcpy("<="));
         case BO_ge:
-            toreturn = ">=";
-            break;
+            DBUG_RETURN(STRcpy(">="));
         case BO_gt:
-            toreturn = ">";
-            break;
+            DBUG_RETURN(STRcpy(">"));
         case BO_eq:
-            toreturn = "==";
-            break;
+            DBUG_RETURN(STRcpy("=="));
         case BO_ne:
-            toreturn = "!=";
-            break;
+            DBUG_RETURN(STRcpy("!="));
         case BO_and:
-            toreturn = "&&";
-            break;
+            DBUG_RETURN(STRcpy("&&"));
         case BO_or:
-            toreturn = "||";
-            break;
+            DBUG_RETURN(STRcpy("||"));
         default:
             DBUG_ASSERT((FALSE), "Incorrect binop type!");
+            DBUG_RETURN(NULL);
         }
-    DBUG_RETURN(toreturn);
 }
 
 void copy_node_error_data(node* source, node* target) {

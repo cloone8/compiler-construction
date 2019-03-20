@@ -92,7 +92,9 @@ node* PRTbinop (node * arg_node, info * arg_info) {
     fputc('(', stderr);
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
 
-    fprintf(stderr, " %s ", get_binop_str(BINOP_BINOPERATORS(arg_node)));
+    char* binop_str = get_binop_str(BINOP_BINOPERATORS(arg_node));
+    fprintf(stderr, " %s ", binop_str);
+    MEMfree(binop_str);
 
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     fputc(')', stderr);

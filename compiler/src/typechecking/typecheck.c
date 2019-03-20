@@ -401,7 +401,9 @@ node *TCbinop(node* arg_node, info* arg_info) {
                 TYPE(arg_info) = TYPE(left_info);
         }
     } else {
-        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unequal types for binop \"%s\"!", get_binop_str(BINOP_BINOPERATORS(arg_node)));
+        char* binop_str = get_binop_str(BINOP_BINOPERATORS(arg_node));
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unequal types for binop \"%s\"!", binop_str);
+        MEMfree(binop_str);
     }
 
     TCfreeInfo(left_info);
