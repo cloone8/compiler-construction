@@ -14,7 +14,6 @@ node* GBCbinop (node * arg_node, info * arg_info) {
     fputc('(', stderr);
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
 
-    fprintf(stderr, " %s ", get_binop_str(BINOP_BINOPERATORS(arg_node)));
 
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     fputc(')', stderr);
@@ -61,11 +60,9 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCarrayvarassign");
 
 
-    fprintf(stderr, "%s[", ARRAYVARASSIGN_VARNAME(arg_node));
 
     ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
 
-    fprintf(stderr, "] = ");
     ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
@@ -86,11 +83,9 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
 node* GBCarrayvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCarrayvarread");
 
-    fprintf(stderr, "%s[", ARRAYVARREAD_ARRAYVARNAME(arg_node));
 
     ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
 
-    fprintf(stderr, "]");
 
     DBUG_RETURN(arg_node);
 }
@@ -111,7 +106,6 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
 node* GBCvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCvarassign");
 
-    fprintf(stderr, "%s = ", VARASSIGN_VARNAME(arg_node));
 
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
 
@@ -134,7 +128,6 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
 node* GBCvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCvarread");
     UNUSED(arg_info);
-    fprintf(stderr, "%s", VARREAD_VARNAME(arg_node));
 
     DBUG_RETURN(arg_node);
 }
@@ -157,19 +150,14 @@ node* GBCcast (node * arg_node, info * arg_info) {
 
     switch(CAST_CASTTO(arg_node)) {
         case TP_bool:
-            fprintf(stderr, "(bool) ");
             break;
         case TP_float:
-            fprintf(stderr, "(float) ");
             break;
         case TP_int:
-            fprintf(stderr, "(int) ");
             break;
         case TP_void:
-            fprintf(stderr, "(void) ");
             break;
         default:
-            fprintf(stderr, "(UNKNOWN_TYPE_CAST) ");
     }
 
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
@@ -196,13 +184,10 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
     switch (BOOLCONST_VALUE(arg_node))
     {
         case TRUE:
-            fprintf(stderr, "TRUE");
             break;
         case FALSE:
-            fprintf(stderr, "FALSE");
             break;
         default:
-            fprintf(stderr, "INVALID_BOOL_CONST_VALUE");
     }
 
     DBUG_RETURN(arg_node);
@@ -224,7 +209,6 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
 node* GBCintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCintconst");
     UNUSED(arg_info);
-    fprintf(stderr, "%d", INTCONST_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);
 }
@@ -245,7 +229,6 @@ node* GBCintconst (node * arg_node, info * arg_info) {
 node* GBCfloatconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCfloatconst");
     UNUSED(arg_info);
-    fprintf(stderr, "%.10f", FLOATCONST_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);
 }
@@ -339,7 +322,6 @@ node* GBCfunction (node * arg_node, info * arg_info) {
     }
 
 
-    fprintf(stderr, "%s%s %s(", prefix, functiontype, FUNCTION_NAME(arg_node));
 
     if(FUNCTION_PARAMETERS(arg_node) != NULL)
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
@@ -347,12 +329,9 @@ node* GBCfunction (node * arg_node, info * arg_info) {
     fputc(')', stderr);
 
     if(FUNCTION_DEFINITION(arg_node) != NULL) {
-        fprintf(stderr, " {\n");
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
 
-        fprintf(stderr, "}\n");
     } else {
-        fprintf(stderr, ";\n");
     }
 
     DBUG_RETURN (arg_node);
@@ -389,10 +368,8 @@ node* GBCbasicparameter (node * arg_node, info * arg_info) {
             type = "INVALID_PARAMETER_TYPE";
     }
 
-    fprintf(stderr, "%s %s", type, BASICPARAMETER_NAME(arg_node));
 
     if(BASICPARAMETER_NEXT(arg_node) != NULL) {
-        fprintf(stderr, ", ");
         BASICPARAMETER_NEXT(arg_node) = TRAVdo(BASICPARAMETER_NEXT(arg_node), arg_info);
     }
 
@@ -434,15 +411,12 @@ node* GBCarrayparameter (node * arg_node, info * arg_info) {
             type = "INVALID_PARAMETER_TYPE";
     }
 
-    fprintf(stderr, "%s%s", type, "[");
 
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
 
     fputc(']', stderr);
-    fprintf(stderr, " %s", ARRAYPARAMETER_NAME(arg_node));
 
     if(ARRAYPARAMETER_NEXT(arg_node) != NULL) {
-        fprintf(stderr, ", ");
         ARRAYPARAMETER_NEXT(arg_node) = TRAVdo(ARRAYPARAMETER_NEXT(arg_node), arg_info);
     }
 
@@ -464,10 +438,8 @@ node* GBCarrayparameter (node * arg_node, info * arg_info) {
 
 node* GBCarraydimensionvars (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCarraydimensionvars");
-    fprintf(stderr, "%s", ARRAYDIMENSIONVARS_NAME(arg_node));
 
     if(ARRAYDIMENSIONVARS_NEXT(arg_node) != NULL) {
-        fprintf(stderr, ", ");
         ARRAYDIMENSIONVARS_NEXT(arg_node) = TRAVdo(ARRAYDIMENSIONVARS_NEXT(arg_node), arg_info);
     }
 
@@ -568,7 +540,6 @@ node* GBCstatements (node * arg_node, info * arg_info) {
         NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_branch &&
         NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_while &&
         NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_dowhile) {
-        fprintf(stderr, ";\n");
     }
 
     if(STATEMENTS_NEXT(arg_node) != NULL) {
@@ -611,15 +582,12 @@ node* GBCbasicvardeclaration (node * arg_node, info * arg_info) {
             type = "INVALID_BASICVARDEC_TYPE";
     }
 
-    fprintf(stderr, "%s %s", type, BASICVARDECLARATION_VARNAME(arg_node));
 
     if(BASICVARDECLARATION_INITVAL(arg_node) != NULL) {
 
-        fprintf(stderr, " = ");
         BASICVARDECLARATION_INITVAL(arg_node) = TRAVdo(BASICVARDECLARATION_INITVAL(arg_node), arg_info);
     }
 
-    fprintf(stderr, ";\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -660,19 +628,15 @@ node* GBCarrayvardeclaration (node * arg_node, info * arg_info) {
             type = "INVALID_ARRAYVARDEC_TYPE";
     }
 
-    fprintf(stderr, "%s [", type);
 
     ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
 
-    fprintf(stderr, "] %s", ARRAYVARDECLARATION_VARNAME(arg_node));
 
 
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
-        fprintf(stderr, " = ");
         ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
     }
 
-    fprintf(stderr, ";\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -702,7 +666,6 @@ node* GBCexprarray (node * arg_node, info * arg_info) {
     }
 
     if(EXPRARRAY_NEXT(arg_node) != NULL) {
-        fprintf(stderr, ", ");
         EXPRARRAY_NEXT(arg_node) = TRAVdo(EXPRARRAY_NEXT(arg_node), arg_info);
     }
 
@@ -727,24 +690,19 @@ node* GBCfor (node * arg_node, info * arg_info) {
 
 
     if(FOR_COUNTER(arg_node) != NULL) {
-        fprintf(stderr, "for(int %s = ", BASICVARDECLARATION_VARNAME(FOR_COUNTER(arg_node)));
         BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)) =
             TRAVdo(BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)), arg_info);
 
-        fprintf(stderr, ", ");
     } else {
-        fprintf(stderr, "for(");
     }
 
 
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
 
     if (FOR_STEP(arg_node) != NULL) {
-          fprintf(stderr, ", ");
         FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
     }
 
-    fprintf(stderr, ") {\n");
     if (FOR_VARSYMBOLTABLE(arg_node) != NULL) {
         print_symbol_table(FOR_VARSYMBOLTABLE(arg_node));
         fputc('\n', stderr);
@@ -752,7 +710,6 @@ node* GBCfor (node * arg_node, info * arg_info) {
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
 
 
-    fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -774,16 +731,13 @@ node* GBCwhile (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCwhile");
 
 
-    fprintf(stderr, "while(");
 
     WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
 
-    fprintf(stderr, ") {\n");
 
     WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
 
 
-    fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -805,14 +759,11 @@ node* GBCdowhile(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCdowhile");
 
 
-    fprintf(stderr, "do {\n");
 
     DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
 
 
-    fprintf(stderr, "} while(");
     DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
-    fprintf(stderr, ");\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -863,7 +814,6 @@ node* GBCglobal(node * arg_node, info * arg_info) {
         exportextern = "extern ";
     }
 
-    fprintf(stderr, "%s%s %s", exportextern, type, GLOBAL_NAME(arg_node));
 
     if(GLOBAL_DIMENSIONS(arg_node) != NULL) {
         fputc('[', stderr);
@@ -875,7 +825,6 @@ node* GBCglobal(node * arg_node, info * arg_info) {
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
     }
 
-    fprintf(stderr, ";\n");
     DBUG_RETURN (arg_node);
 }
 
@@ -896,7 +845,6 @@ node* GBCglobaldefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCglobaldefinition");
 
     if(GLOBALDEFINITION_VALUES(arg_node) != NULL) {
-        fprintf(stderr, " = ");
         GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
     }
 
@@ -919,7 +867,6 @@ node* GBCglobaldefinition (node * arg_node, info * arg_info) {
 node* GBCfuncall(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfuncall");
 
-    fprintf(stderr, "%s(", FUNCALL_FUNCTIONNAME(arg_node));
 
     if(FUNCALL_PARAMS(arg_node) != NULL) {
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
@@ -949,7 +896,6 @@ node* GBCfuncallparameter(node * arg_node, info * arg_info) {
     FUNCALLPARAMETER_VALUE(arg_node) = TRAVdo(FUNCALLPARAMETER_VALUE(arg_node), arg_info);
 
     if (FUNCALLPARAMETER_NEXT(arg_node) != NULL) {
-        fprintf(stderr, ", ");
         FUNCALLPARAMETER_NEXT(arg_node) = TRAVdo(FUNCALLPARAMETER_NEXT(arg_node), arg_info);
     }
 
@@ -972,7 +918,6 @@ node* GBCfuncallparameter(node * arg_node, info * arg_info) {
 node* GBCreturn(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCreturn");
 
-    fprintf(stderr, "return");
 
     if(RETURN_VALUE(arg_node) != NULL) {
         fputc(' ', stderr);
@@ -999,19 +944,16 @@ node* GBCbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbranch");
 
 
-    fprintf(stderr, "if(");
 
 
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
 
 
-    fprintf(stderr, ") {\n");
     BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
 
 
-        fprintf(stderr, "} else {\n");
 
 
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
@@ -1019,7 +961,6 @@ node* GBCbranch(node * arg_node, info * arg_info) {
     }
 
 
-    fprintf(stderr, "}\n");
 
     DBUG_RETURN (arg_node);
 }
@@ -1071,7 +1012,6 @@ node* GBCmonop(node * arg_node, info * arg_info) {
             fputc('-', stderr);
             break;
         default:
-            fprintf(stderr, "INVALID_MONOP_TYPE");
     }
 
     MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
@@ -1122,7 +1062,6 @@ node* GBClocalfunction(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBClocalfunction");
 
 
-    fprintf(stderr, "__LOCAL FUNCTION__\n");
 
     LOCALFUNCTION_CURRENT(arg_node) = TRAVdo(LOCALFUNCTION_CURRENT(arg_node), arg_info);
 
@@ -1169,9 +1108,7 @@ node* GBCconditionalexpr(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCconditionalexpr");
 
     CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
-    fprintf(stderr, " ? ");
     CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), arg_info);
-    fprintf(stderr, " : ");
     CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), arg_info);
 
 
