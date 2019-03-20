@@ -179,17 +179,17 @@ char* get_type_str(type to_print) {
 
     switch (to_print) {
         case TP_bool:
-            DBUG_RETURN(STRcpy("BOOL"));
+            DBUG_RETURN(STRcpy("bool"));
         case TP_bool_array:
-            DBUG_RETURN(STRcpy("BOOL_ARRAY"));
+            DBUG_RETURN(STRcpy("bool[]"));
         case TP_int:
-            DBUG_RETURN(STRcpy("INT"));
+            DBUG_RETURN(STRcpy("int"));
         case TP_int_array:
-            DBUG_RETURN(STRcpy("INT_ARRAY"));
+            DBUG_RETURN(STRcpy("int[]"));
         case TP_float:
-            DBUG_RETURN(STRcpy("FLOAT"));
+            DBUG_RETURN(STRcpy("float"));
         case TP_float_array:
-            DBUG_RETURN(STRcpy("FLOAT_ARRAY"));
+            DBUG_RETURN(STRcpy("float[]"));
         default:
             DBUG_RETURN(STRcpy("UNKNOWN"));
     }

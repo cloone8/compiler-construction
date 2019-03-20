@@ -198,35 +198,14 @@ void print_symbol_table(symbol_table* table) {
 
     for (size_t i = 0; i < table->current_entries; i++) {
         current = table->entries[i];
-        char* type;
-
-        switch (current->vartype) {
-            case TP_bool:
-                type = "BOOL";
-                break;
-            case TP_bool_array:
-                type = "BOOL_ARRAY";
-                break;
-            case TP_int:
-                type = "INT";
-                break;
-            case TP_int_array:
-                type = "INT_ARRAY";
-                break;
-            case TP_float:
-                type = "FLOAT";
-                break;
-            case TP_float_array:
-                type = "FLOAT_ARRAY";
-                break;
-            default:
-                type = "UNKNOWN TYPE";
-        }
+        char* type = get_type_str(current->vartype);
 
         for (size_t i = 0; i < table->table_depth; i++) {
             fprintf(stderr, "    ");
         }
         fprintf(stderr, "**** ID: %zu name: %s type: %s ****\n", current->idx, current->name, type);
+
+        MEMfree(type);
     }
 
     DBUG_VOID_RETURN;
