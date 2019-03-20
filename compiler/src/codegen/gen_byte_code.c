@@ -11,12 +11,10 @@
 node* GBCbinop (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbinop");
 
-    fputc('(', stderr);
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
 
 
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
-    fputc(')', stderr);
 
     DBUG_RETURN (arg_node);
 }
@@ -25,7 +23,6 @@ node* GBCbinop (node * arg_node, info * arg_info) {
  *
  * @fn GBCdeclaration
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -48,7 +45,6 @@ node* GBCdeclaration (node * arg_node, info * arg_info) {
  *
  * @fn GBCarrayvarassign
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -72,7 +68,6 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
  *
  * @fn GBCarrayvarread
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -95,7 +90,6 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
  *
  * @fn GBCvarassign
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -117,7 +111,6 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
  *
  * @fn GBCvarread
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -137,7 +130,6 @@ node* GBCvarread (node * arg_node, info * arg_info) {
  *
  * @fn GBCcast
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -170,7 +162,6 @@ node* GBCcast (node * arg_node, info * arg_info) {
  *
  * @fn GBCboolconst
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -198,7 +189,6 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
  *
  * @fn GBCintconst
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -218,7 +208,6 @@ node* GBCintconst (node * arg_node, info * arg_info) {
  *
  * @fn GBCfloatconst
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -238,7 +227,6 @@ node* GBCfloatconst (node * arg_node, info * arg_info) {
  *
  * @fn GBCconstant
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -258,7 +246,6 @@ node* GBCconstant (node * arg_node, info * arg_info) {
  *
  * @fn GBCerror
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -278,7 +265,6 @@ node* GBCerror (node * arg_node, info * arg_info) {
  *
  * @fn GBCfunction
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -326,7 +312,6 @@ node* GBCfunction (node * arg_node, info * arg_info) {
     if(FUNCTION_PARAMETERS(arg_node) != NULL)
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
 
-    fputc(')', stderr);
 
     if(FUNCTION_DEFINITION(arg_node) != NULL) {
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
@@ -341,7 +326,6 @@ node* GBCfunction (node * arg_node, info * arg_info) {
  *
  * @fn GBCbasicparameter
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -380,7 +364,6 @@ node* GBCbasicparameter (node * arg_node, info * arg_info) {
  *
  * @fn GBCarrayparameter
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -414,7 +397,6 @@ node* GBCarrayparameter (node * arg_node, info * arg_info) {
 
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
 
-    fputc(']', stderr);
 
     if(ARRAYPARAMETER_NEXT(arg_node) != NULL) {
         ARRAYPARAMETER_NEXT(arg_node) = TRAVdo(ARRAYPARAMETER_NEXT(arg_node), arg_info);
@@ -427,7 +409,6 @@ node* GBCarrayparameter (node * arg_node, info * arg_info) {
  *
  * @fn GBCarraydimensionvars
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -450,7 +431,6 @@ node* GBCarraydimensionvars (node * arg_node, info * arg_info) {
  *
  * @fn GBCfunctiondefinition
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -463,13 +443,9 @@ node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfunctiondefinition");
 
     if (FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node) != NULL) {
-        print_fun_symbol_table(FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node));
-        fputc('\n', stderr);
     }
 
     if (FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node) != NULL) {
-        print_symbol_table(FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node));
-        fputc('\n', stderr);
     }
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
@@ -481,7 +457,6 @@ node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
  *
  * @fn GBCfunctionbody
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -512,7 +487,6 @@ node* GBCfunctionbody (node * arg_node, info * arg_info) {
  *
  * @fn GBCstatements
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -524,7 +498,6 @@ node* GBCfunctionbody (node * arg_node, info * arg_info) {
 node* GBCstatements (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCstatements");
 
-    // These can also be expressions, so we can't just print the indents there
     switch(NODE_TYPE(STATEMENTS_CURRENT(arg_node))) {
         case N_funcall:
         case N_varassign:
@@ -553,7 +526,6 @@ node* GBCstatements (node * arg_node, info * arg_info) {
  *
  * @fn GBCbasicvardeclaration
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -596,7 +568,6 @@ node* GBCbasicvardeclaration (node * arg_node, info * arg_info) {
  *
  * @fn GBCarrayvardeclaration
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -645,7 +616,6 @@ node* GBCarrayvardeclaration (node * arg_node, info * arg_info) {
  *
  * @fn GBCexprarray
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -658,9 +628,7 @@ node* GBCexprarray (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCexprarray");
 
     if(NODE_TYPE(EXPRARRAY_CURRENT(arg_node)) == N_exprarray) {
-        fputc('[', stderr);
         EXPRARRAY_CURRENT(arg_node) = TRAVdo(EXPRARRAY_CURRENT(arg_node), arg_info);
-        fputc(']', stderr);
     } else {
         EXPRARRAY_CURRENT(arg_node) = TRAVdo(EXPRARRAY_CURRENT(arg_node), arg_info);
     }
@@ -676,7 +644,6 @@ node* GBCexprarray (node * arg_node, info * arg_info) {
  *
  * @fn GBCfor
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -704,8 +671,6 @@ node* GBCfor (node * arg_node, info * arg_info) {
     }
 
     if (FOR_VARSYMBOLTABLE(arg_node) != NULL) {
-        print_symbol_table(FOR_VARSYMBOLTABLE(arg_node));
-        fputc('\n', stderr);
     }
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
 
@@ -718,7 +683,6 @@ node* GBCfor (node * arg_node, info * arg_info) {
  *
  * @fn GBCwhile
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -746,7 +710,6 @@ node* GBCwhile (node * arg_node, info * arg_info) {
  *
  * @fn GBCdowhile
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -772,7 +735,6 @@ node* GBCdowhile(node * arg_node, info * arg_info) {
  *
  * @fn GBCglobal
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -816,9 +778,7 @@ node* GBCglobal(node * arg_node, info * arg_info) {
 
 
     if(GLOBAL_DIMENSIONS(arg_node) != NULL) {
-        fputc('[', stderr);
         GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
-        fputc(']', stderr);
     }
 
     if(GLOBAL_DEFINITION(arg_node) != NULL) {
@@ -832,7 +792,6 @@ node* GBCglobal(node * arg_node, info * arg_info) {
  *
  * @fn GBCglobaldefinition
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -855,7 +814,6 @@ node* GBCglobaldefinition (node * arg_node, info * arg_info) {
  *
  * @fn GBCfuncall
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -872,7 +830,6 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
     }
 
-    fputc(')', stderr);
 
     DBUG_RETURN (arg_node);
 }
@@ -881,7 +838,6 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
  *
  * @fn GBCfuncallparameter
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -906,7 +862,6 @@ node* GBCfuncallparameter(node * arg_node, info * arg_info) {
  *
  * @fn GBCreturn
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -920,7 +875,6 @@ node* GBCreturn(node * arg_node, info * arg_info) {
 
 
     if(RETURN_VALUE(arg_node) != NULL) {
-        fputc(' ', stderr);
         RETURN_VALUE(arg_node) = TRAVdo(RETURN_VALUE(arg_node), arg_info);
     }
 
@@ -931,7 +885,6 @@ node* GBCreturn(node * arg_node, info * arg_info) {
  *
  * @fn GBCbranch
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -969,7 +922,6 @@ node* GBCbranch(node * arg_node, info * arg_info) {
  *
  * @fn GBCexpr
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -990,7 +942,6 @@ node* GBCexpr(node * arg_node, info * arg_info) {
  *
  * @fn GBCmonop
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -1002,21 +953,8 @@ node* GBCexpr(node * arg_node, info * arg_info) {
 node* GBCmonop(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCmonop");
 
-    fputc('(', stderr);
-
-    switch (MONOP_TYPE(arg_node)) {
-        case MO_not:
-            fputc('!', stderr);
-            break;
-        case MO_neg:
-            fputc('-', stderr);
-            break;
-        default:
-    }
-
     MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
 
-    fputc(')', stderr);
     DBUG_RETURN (arg_node);
 }
 
@@ -1024,7 +962,6 @@ node* GBCmonop(node * arg_node, info * arg_info) {
  *
  * @fn GBCfunctionvardeclaration
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -1049,7 +986,6 @@ node* GBCfunctionvardeclaration(node * arg_node, info * arg_info) {
  *
  * @fn GBClocalfunction
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -1077,7 +1013,6 @@ node* GBClocalfunction(node * arg_node, info * arg_info) {
  *
  * @fn GBCprogram
  *
- * @brief Prints the node and its sons/attributes
  *
  * @param arg_node letrec node to process
  * @param arg_info pointer to info structure
@@ -1090,13 +1025,9 @@ node* GBCprogram(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBClocalfunction");
 
     if (PROGRAM_FUNSYMBOLTABLE(arg_node) != NULL) {
-        print_fun_symbol_table(PROGRAM_FUNSYMBOLTABLE(arg_node));
-        fputc('\n', stderr);
     }
 
     if (PROGRAM_VARSYMBOLTABLE(arg_node) != NULL) {
-        print_symbol_table(PROGRAM_VARSYMBOLTABLE(arg_node));
-        fputc('\n', stderr);
     }
 
     PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
