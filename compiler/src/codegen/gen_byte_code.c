@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 #include "gen_byte_code.h"
 
@@ -941,7 +943,7 @@ node *GBCdoGenByteCode(node *syntaxtree) {
 
 
     if(ofile == NULL) {
-        CTIabort("Error writing to output file: %s", global.outfile);
+        CTIabort("Error writing to output file \"%s\": %s", global.outfile, strerror(errno));
     }
 
     syntaxtree = TRAVdo(syntaxtree, arg_info);
