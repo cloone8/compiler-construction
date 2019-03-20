@@ -59,6 +59,13 @@ static info *CFSfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
+/**
+ * In this function we check if a function is called with the correct amount of parameters.
+ * 
+ * @params fun_entry: The entry in the function symbol table of the corresponding function.
+ * @params funcall_node: The functioncall node of which we check the parameter amount.
+ * @param arg_info: The INFO struct that contains additional information.
+ **/
 static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node* funcall_node, info* arg_info) {
     DBUG_ENTER("check_parameter_count");
 
@@ -70,9 +77,10 @@ static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node*
 
     node* param = FUNCALL_PARAMS(funcall_node);
 
+    /* Count the amount of given parameters. */
     while(param != NULL) {
         count_actual++;
-        // Scope any funcalls here as well
+        /* Scope any funcalls here as well. */
         TRAVdo(param, arg_info);
         param = FUNCALLPARAMETER_NEXT(param);
     }
@@ -85,9 +93,17 @@ static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node*
     DBUG_VOID_RETURN;
 }
 
+/**
+ * In this function we handle the scope depths of a function definition.
+ * 
+ * @params arg_node: The current functiondefinition node to be evaluated.
+ * @param arg_info: The INFO struct that contains additional information.
+ * 
+ **/
 node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
     DBUG_ENTER("CFSfuctiiondefinition");
 
+    /* Save the current symbol table. */
     fun_symbol_table* old = CURRENT_SYMBOL_TABLE(arg_info);
     CURRENT_SYMBOL_TABLE(arg_info) = FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node);
     CURRENT_SCOPE(arg_info)++;
@@ -95,11 +111,19 @@ node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
     CURRENT_SCOPE(arg_info)--;
+    /* Reset the previous symbol table. */
     CURRENT_SYMBOL_TABLE(arg_info) = old;
 
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * This function checks if a functioncall is valid, by checking if the called function is in scope.
+ * 
+ * @params arg_node: The current functioncall node to be evaluated.
+ * @param arg_info: The INFO struct that contains additional information.
+ * 
+ **/
 node *CFSfuncall(node *arg_node, info *arg_info) {
     DBUG_ENTER("CFSfuncall");
 
@@ -118,12 +142,18 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * The start of the traversal to check if fucntions are in scope.
+ * 
+ * @params syntaxtree: The current syntaxtree of the current program.
+ **/
 node *CFSdo(node *syntaxtree) {
     DBUG_ENTER("CFSdo");
 
     TRAVpush(TR_cfs);
     info *arg_info = CFSmakeInfo();
 
+    /* Retreive the global symbol table, since we start there. */
     fun_symbol_table *global_fun_table = PROGRAM_FUNSYMBOLTABLE(syntaxtree);
     CURRENT_SYMBOL_TABLE(arg_info) = global_fun_table;
 
