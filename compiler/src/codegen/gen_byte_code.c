@@ -5,6 +5,8 @@
 #include "traverse.h"
 #include "dbug.h"
 #include "memory.h"
+#include "globals.h"
+#include "ctinfo.h"
 
 #include "util.h"
 
@@ -12,11 +14,14 @@
  * INFO structure
  */
 struct INFO {
+    FILE* fd;
 };
 
 /*
  * INFO macros
  */
+
+#define OFILE(__arg_info_struct__) ((__arg_info_struct__)->fd)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -25,6 +30,7 @@ static info *GBCmakeInfo(void) {
     DBUG_ENTER("GBCmakeInfo");
 
     info *result = (info *)MEMmalloc(sizeof(info));
+    result->fd = NULL;
 
     DBUG_RETURN(result);
 }
@@ -921,7 +927,17 @@ node *GBCdoGenByteCode(node *syntaxtree) {
 
     TRAVpush(TR_gbc);
 
+    FILE* output_file = fopen(global.outfile, "w");
+
+    if(output_file == NULL) {
+        CTIabort("Error writing to output file: %s", global.outfile);
+    }
+
+    OFILE(arg_info) = output_file;
+
     syntaxtree = TRAVdo(syntaxtree, arg_info);
+
+    fclose(output_file);
 
     TRAVpop();
 
