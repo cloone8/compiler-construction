@@ -233,6 +233,7 @@ node *TCarrayvarread(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+
 node* TCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCfuncall");
     if (FUNCALL_PARAMS(arg_node) != NULL) {
@@ -267,17 +268,24 @@ node* TCfuncall(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * In this function we check for the correct types for the unary operators.
+ * params arg_node: The current monop to be evaluated.
+ * params arg_info: The struct that contains information about the operand.
+ **/
 node* TCmonop(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCmonop");
 
     MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
 
     switch (MONOP_TYPE(arg_node)) {
+        /* The unary minus can only be an integer or a float, not a bool. */
         case MO_neg:
             if (TYPE(arg_info) == TP_bool) {
                 CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Monop type \"-\" can only be float or int.");
             }
             break;
+        /* The negation operator can only be of type bool. */
         case MO_not:
             if (TYPE(arg_info) != TP_bool) {
                 CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Monop type \"!\" can only be bool.");
@@ -290,15 +298,21 @@ node* TCmonop(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/** In this function we check for the correct types for binary operators. 
+ * param arg_node: The current binary operator node to be evaluated.
+ * param arg_info: The info structure for the current node.
+ **/
 node *TCbinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCbinop");
 
     info* left_info = TCmakeInfo();
     info *right_info = TCmakeInfo();
 
+    /* We need to  store types of the left and right operands.*/
     TRAVdo(BINOP_LEFT(arg_node), left_info);
     TRAVdo(BINOP_RIGHT(arg_node), right_info);
 
+    /* The type of both operands has to be equal, no implicit casts are performed. */
     if (TYPE(left_info) == TYPE(right_info)) {
         switch(BINOP_BINOPERATORS(arg_node)) {
             case BO_mod:
@@ -368,6 +382,11 @@ node *TCbinop(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * In this function we set the type of the intconst node in the info struct.
+ * param arg_node: The current integer constant to be evaluated.
+ * param arg_info: The info struct from which we set the type attribute.
+ **/
 node* TCintconst(node* arg_node, info* arg_info) {
     DBUG_ENTER("TCintconst");
 
@@ -376,6 +395,11 @@ node* TCintconst(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * In this function we set the type of the floatconst node in the info struct.
+ * param arg_node: The current float constant to be evaluated.
+ * param arg_info: The info struct from which we set the type attribute.
+ **/
 node *TCfloatconst(node *arg_node, info *arg_info) {
     DBUG_ENTER("TCfloatconst");
 
@@ -384,6 +408,11 @@ node *TCfloatconst(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * In this function we set the type of the boolconst node in the info struct.
+ * param arg_node: The current boolean constant to be evaluated.
+ * param arg_info: The info struct from which we set the type attribute.
+ **/
 node *TCboolconst(node *arg_node, info *arg_info) {
     DBUG_ENTER("TCboolconst");
 
@@ -392,6 +421,11 @@ node *TCboolconst(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * In this function we set the type of the cast node in the info struct.
+ * params arg_node: The current castnode to be evaluated.
+ * params arg_info: The info struct of which we set the type.
+ **/
 node *TCcast(node *arg_node, info *arg_info) {
     DBUG_ENTER("TCcast");
 
