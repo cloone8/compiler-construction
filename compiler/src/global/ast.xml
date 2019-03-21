@@ -186,6 +186,13 @@
                 </travuser>
             </traversal>
 
+            <traversal id="WTDW" name="Transform while-loop to do-while" default="sons" include="whiletodowhile.h">
+                <travuser>
+                    <node name="While" />
+                    <node name="Expr" />
+                </travuser>
+            </traversal>
+
             <traversal id="GBC" name="Generate byte code" default="user" include="gen_byte_code.h" />
         </general>
     </phases>

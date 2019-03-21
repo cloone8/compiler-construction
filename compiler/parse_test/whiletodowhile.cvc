@@ -1,0 +1,21 @@
+int foo(int a) {
+    if (true && false) {
+        a = 1;
+    }
+
+    return a*a;
+}
+
+export int main() {
+    int i = 1;
+    bool q = false;
+    int a = 50;
+    while(i < 50) {
+        i = i + 1;
+        i = foo(i);
+        while(i < 50 && i > 50) {
+            q = true;
+        }
+    }
+    return 0;
+}

@@ -93,14 +93,14 @@ node* BDCbinop(node* arg_node, info* arg_info) {
 
     /* Create the conditional expression node for the '&&' operator. */
     if (CURR_BINOP(arg_info) == BO_and) {
-        if (CURR_BOOL(left) == TP_bool && CURR_BOOL(right) == TP_bool) {
+        if (NODE_TYPE(BINOP_LEFT(arg_node)) == N_expr && NODE_TYPE(BINOP_RIGHT(arg_node)) == N_expr) {
             cond_expr = TBmakeConditionalexpr(BINOP_LEFT(arg_node), BINOP_RIGHT(arg_node), TBmakeExpr(TBmakeConstant((TBmakeBoolconst(FALSE)))));
         }
     }
 
     /* Create the conditional expression node for the '||' operator. */
     if (CURR_BINOP(arg_info) == BO_or) {
-        if (CURR_BOOL(left) == TP_bool && CURR_BOOL(right) == TP_bool) {
+        if (NODE_TYPE(BINOP_LEFT(arg_node)) == N_expr && NODE_TYPE(BINOP_RIGHT(arg_node)) == N_expr) {
             cond_expr = TBmakeConditionalexpr(BINOP_LEFT(arg_node), TBmakeExpr(TBmakeConstant((TBmakeBoolconst(TRUE)))), BINOP_RIGHT(arg_node));
         }
     }
