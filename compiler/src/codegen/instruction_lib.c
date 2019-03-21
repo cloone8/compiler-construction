@@ -10,7 +10,7 @@
 #include "memory.h"
 #include "ctinfo.h"
 
-#include "opcode_lib.h"
+#include "instruction_lib.h"
 
 FILE* ofile = NULL;
 

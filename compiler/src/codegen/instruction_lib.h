@@ -1,5 +1,5 @@
-#ifndef __OPCODE_LIB_H__
-#define __OPCODE_LIB_H__
+#ifndef __INSTRUCTION_LIB_H__
+#define __INSTRUCTION_LIB_H__
 
 #include <stdlib.h>
 #include <stdio.h>

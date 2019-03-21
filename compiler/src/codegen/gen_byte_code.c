@@ -13,7 +13,7 @@
 #include "globals.h"
 #include "ctinfo.h"
 
-#include "opcode_lib.h"
+#include "instruction_lib.h"
 #include "util.h"
 
 /*
