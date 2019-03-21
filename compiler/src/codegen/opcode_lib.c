@@ -46,7 +46,7 @@ static void prt_inst(const char* instruction) {
 
 /**
  * Prints the given label to assembly.
- * @param name: The label name WITHOUT the leading dot
+ * @param name: The label name WITHOUT the trailing :
  */
 void label(const char* name) {
     DBUG_ENTER("label");
@@ -371,5 +371,197 @@ void branch_f(char* branch_to) {
     sprintf(instruction, "branch_f %s", branch_to);
     prt_inst(instruction);
     MEMfree(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void iload(uint8_t to_load) {
+    DBUG_ENTER("iload");
+    char instruction[15];
+    switch(to_load) {
+        case 0:
+            prt_inst("iload_0");
+            break;
+        case 1:
+            prt_inst("iload_1");
+            break;
+        case 2:
+            prt_inst("iload_2");
+            break;
+        case 3:
+            prt_inst("iload_3");
+            break;
+        default:
+            sprintf(instruction, "iload %" PRIu8, to_load);
+            prt_inst(instruction);
+            break;
+    }
+    DBUG_VOID_RETURN;
+}
+
+void fload(uint8_t to_load) {
+    DBUG_ENTER("fload");
+    char instruction[15];
+    switch(to_load) {
+        case 0:
+            prt_inst("fload_0");
+            break;
+        case 1:
+            prt_inst("fload_1");
+            break;
+        case 2:
+            prt_inst("fload_2");
+            break;
+        case 3:
+            prt_inst("fload_3");
+            break;
+        default:
+            sprintf(instruction, "fload %" PRIu8, to_load);
+            prt_inst(instruction);
+            break;
+    }
+    DBUG_VOID_RETURN;
+}
+
+void bload(uint8_t to_load) {
+    DBUG_ENTER("bload");
+    char instruction[15];
+    switch(to_load) {
+        case 0:
+            prt_inst("bload_0");
+            break;
+        case 1:
+            prt_inst("bload_1");
+            break;
+        case 2:
+            prt_inst("bload_2");
+            break;
+        case 3:
+            prt_inst("bload_3");
+            break;
+        default:
+            sprintf(instruction, "bload %" PRIu8, to_load);
+            prt_inst(instruction);
+            break;
+    }
+    DBUG_VOID_RETURN;
+}
+
+void aload(uint8_t to_load) {
+    DBUG_ENTER("aload");
+    char instruction[15];
+    switch(to_load) {
+        case 0:
+            prt_inst("aload_0");
+            break;
+        case 1:
+            prt_inst("aload_1");
+            break;
+        case 2:
+            prt_inst("aload_2");
+            break;
+        case 3:
+            prt_inst("aload_3");
+            break;
+        default:
+            sprintf(instruction, "aload %" PRIu8, to_load);
+            prt_inst(instruction);
+            break;
+    }
+    DBUG_VOID_RETURN;
+}
+
+void iloadn(uint8_t scopes_above, uint8_t to_load) {
+    DBUG_ENTER("iloadn");
+    char instruction[25];
+    sprintf(instruction, "iloadn %" PRIu8 " %" PRIu8, scopes_above, to_load);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void floadn(uint8_t scopes_above, uint8_t to_load) {
+    DBUG_ENTER("floadn");
+    char instruction[25];
+    sprintf(instruction, "floadn %" PRIu8 " %" PRIu8, scopes_above, to_load);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bloadn(uint8_t scopes_above, uint8_t to_load) {
+    DBUG_ENTER("bloadn");
+    char instruction[25];
+    sprintf(instruction, "bloadn %" PRIu8 " %" PRIu8, scopes_above, to_load);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void aloadn(uint8_t scopes_above, uint8_t to_load) {
+    DBUG_ENTER("aloadn");
+    char instruction[25];
+    sprintf(instruction, "aloadn %" PRIu8 " %" PRIu8, scopes_above, to_load);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void iloadg(uint16_t global_index) {
+    DBUG_ENTER("iloadg");
+    char instruction[25];
+    sprintf(instruction, "iloadg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void floadg(uint16_t global_index) {
+    DBUG_ENTER("floadg");
+    char instruction[25];
+    sprintf(instruction, "floadg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bloadg(uint16_t global_index) {
+    DBUG_ENTER("bloadg");
+    char instruction[25];
+    sprintf(instruction, "bloadg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void aloadg(uint16_t global_index) {
+    DBUG_ENTER("aloadg");
+    char instruction[25];
+    sprintf(instruction, "aloadg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void iloade(uint16_t import_table_index) {
+    DBUG_ENTER("iloade");
+    char instruction[25];
+    sprintf(instruction, "iloade %" PRIu16, import_table_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void floade(uint16_t import_table_index) {
+    DBUG_ENTER("floade");
+    char instruction[25];
+    sprintf(instruction, "floade %" PRIu16, import_table_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bloade(uint16_t import_table_index) {
+    DBUG_ENTER("bloade");
+    char instruction[25];
+    sprintf(instruction, "bloade %" PRIu16, import_table_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void aloade(uint16_t import_table_index) {
+    DBUG_ENTER("aloade");
+    char instruction[25];
+    sprintf(instruction, "aloade %" PRIu16, import_table_index);
+    prt_inst(instruction);
     DBUG_VOID_RETURN;
 }
