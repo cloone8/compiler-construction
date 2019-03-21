@@ -131,5 +131,39 @@ extern void floade(uint16_t import_table_index);
 extern void bloade(uint16_t import_table_index);
 extern void aloade(uint16_t import_table_index);
 
+extern void iloadc(uint16_t constant_index);
+extern void floadc(uint16_t constant_index);
+extern void bloadc(uint16_t constant_index);
+
+extern void iloadc_0(void);
+extern void iloadc_1(void);
+extern void iloadc_m1(void);
+
+extern void floadc_0(void);
+extern void floadc_1(void);
+
+extern void bloadc_t(void);
+extern void bloadc_f(void);
+
+extern void istore(uint8_t to_store);
+extern void fstore(uint8_t to_store);
+extern void bstore(uint8_t to_store);
+extern void astore(uint8_t to_store);
+
+extern void istoren(uint8_t scopes_above, uint8_t to_load);
+extern void fstoren(uint8_t scopes_above, uint8_t to_load);
+extern void bstoren(uint8_t scopes_above, uint8_t to_load);
+
+// No astoren???
+
+extern void istoreg(uint16_t global_index);
+extern void fstoreg(uint16_t global_index);
+extern void bstoreg(uint16_t global_index);
+extern void astoreg(uint16_t global_index);
+
+extern void istoree(uint16_t import_table_index);
+extern void fstoree(uint16_t import_table_index);
+extern void bstoree(uint16_t import_table_index);
+extern void astoree(uint16_t import_table_index);
 
 #endif

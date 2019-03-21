@@ -565,3 +565,191 @@ void aloade(uint16_t import_table_index) {
     prt_inst(instruction);
     DBUG_VOID_RETURN;
 }
+
+void iloadc(uint16_t constant_index) {
+    DBUG_ENTER("iloadc");
+    char instruction[25];
+    sprintf(instruction, "iloadc %" PRIu16, constant_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void floadc(uint16_t constant_index) {
+    DBUG_ENTER("floadc");
+    char instruction[25];
+    sprintf(instruction, "floadc %" PRIu16, constant_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bloadc(uint16_t constant_index) {
+    DBUG_ENTER("bloadc");
+    char instruction[25];
+    sprintf(instruction, "bloadc %" PRIu16, constant_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void iloadc_0(void) {
+    DBUG_ENTER("iloadc_0");
+    prt_inst("iloadc_0");
+    DBUG_VOID_RETURN;
+}
+
+void iloadc_1(void) {
+    DBUG_ENTER("iloadc_1");
+    prt_inst("iloadc_1");
+    DBUG_VOID_RETURN;
+}
+
+void iloadc_m1(void) {
+    DBUG_ENTER("iloadc_m1");
+    prt_inst("iloadc_m1");
+    DBUG_VOID_RETURN;
+}
+
+void floadc_0(void) {
+    DBUG_ENTER("floadc_0");
+    prt_inst("floadc_0");
+    DBUG_VOID_RETURN;
+}
+
+void floadc_1(void) {
+    DBUG_ENTER("floadc_1");
+    prt_inst("floadc_1");
+    DBUG_VOID_RETURN;
+}
+
+void bloadc_t(void) {
+    DBUG_ENTER("bloadc_t");
+    prt_inst("bloadc_t");
+    DBUG_VOID_RETURN;
+}
+
+void bloadc_f(void) {
+    DBUG_ENTER("bloadc_f");
+    prt_inst("bloadc_f");
+    DBUG_VOID_RETURN;
+}
+
+void istore(uint8_t to_store) {
+    DBUG_ENTER("istore");
+    char instruction[15];
+    sprintf(instruction, "istore %" PRIu8, to_store);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void fstore(uint8_t to_store) {
+    DBUG_ENTER("fstore");
+    char instruction[15];
+    sprintf(instruction, "fstore %" PRIu8, to_store);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bstore(uint8_t to_store) {
+    DBUG_ENTER("bstore");
+    char instruction[15];
+    sprintf(instruction, "bstore %" PRIu8, to_store);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void astore(uint8_t to_store) {
+    DBUG_ENTER("astore");
+    char instruction[15];
+    sprintf(instruction, "astore %" PRIu8, to_store);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void istoren(uint8_t scopes_above, uint8_t to_load) {
+    DBUG_ENTER("istoren");
+    char instruction[25];
+    sprintf(instruction, "istoren %" PRIu8 " %" PRIu8, scopes_above, to_load);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void fstoren(uint8_t scopes_above, uint8_t to_load) {
+    DBUG_ENTER("fstoren");
+    char instruction[25];
+    sprintf(instruction, "fstoren %" PRIu8 " %" PRIu8, scopes_above, to_load);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bstoren(uint8_t scopes_above, uint8_t to_load) {
+    DBUG_ENTER("bstoren");
+    char instruction[25];
+    sprintf(instruction, "bstoren %" PRIu8 " %" PRIu8, scopes_above, to_load);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+// No astoren???
+
+void istoreg(uint16_t global_index) {
+    DBUG_ENTER("istoreg");
+    char instruction[25];
+    sprintf(instruction, "istoreg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void fstoreg(uint16_t global_index) {
+    DBUG_ENTER("fstoreg");
+    char instruction[25];
+    sprintf(instruction, "fstoreg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bstoreg(uint16_t global_index) {
+    DBUG_ENTER("bstoreg");
+    char instruction[25];
+    sprintf(instruction, "bstoreg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void astoreg(uint16_t global_index) {
+    DBUG_ENTER("astoreg");
+    char instruction[25];
+    sprintf(instruction, "astoreg %" PRIu16, global_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void istoree(uint16_t import_table_index) {
+    DBUG_ENTER("istoree");
+    char instruction[25];
+    sprintf(instruction, "istoree %" PRIu16, import_table_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void fstoree(uint16_t import_table_index) {
+    DBUG_ENTER("fstoree");
+    char instruction[25];
+    sprintf(instruction, "fstoree %" PRIu16, import_table_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void bstoree(uint16_t import_table_index) {
+    DBUG_ENTER("bstoree");
+    char instruction[25];
+    sprintf(instruction, "bstoree %" PRIu16, import_table_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
+
+void astoree(uint16_t import_table_index) {
+    DBUG_ENTER("astoree");
+    char instruction[25];
+    sprintf(instruction, "astoree %" PRIu16, import_table_index);
+    prt_inst(instruction);
+    DBUG_VOID_RETURN;
+}
