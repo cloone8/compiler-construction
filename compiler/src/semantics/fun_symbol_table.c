@@ -10,7 +10,7 @@
 
 /**
  * This function creates a new fun_symbol_table. Most struct members are set to standard values.
- * 
+ *
  * @params parent: The parent function symboltable, we need to store this connection.
  * @params table_depth: The scoping depth of the new fun_symbol_table.
  **/
@@ -53,7 +53,7 @@ int fun_symbol_table_free(fun_symbol_table* tofree) {
 
 /**
  * Increase the size of the given fun_symbol_table.
- * 
+ *
  * @params toincrease: The symbol table that needs more memory.
  **/
 static void increase_table_size(fun_symbol_table* toincrease) {
@@ -81,7 +81,7 @@ static void increase_table_size(fun_symbol_table* toincrease) {
 
 /**
  * This function adds an entry to the given fun_symbol_table.
- * 
+ *
  * @params table: The table to which we want to add an entry.
  * @param name: The name of the function to add.
  * @param return_type: The return type of the function.
@@ -206,38 +206,14 @@ void print_fun_symbol_table(fun_symbol_table *table) {
     fun_symbol_table_entry *current;
     for (size_t i = 0; i < table->current_entries; i++) {
         current = table->entries[i];
-        char *type;
-
-        switch (current->returntype) {
-        case TP_void:
-            type = "VOID";
-            break;
-        case TP_bool:
-            type = "BOOL";
-            break;
-        case TP_bool_array:
-            type = "BOOL_ARRAY";
-            break;
-        case TP_int:
-            type = "INT";
-            break;
-        case TP_int_array:
-            type = "INT_ARRAY";
-            break;
-        case TP_float:
-            type = "FLOAT";
-            break;
-        case TP_float_array:
-            type = "FLOAT_ARRAY";
-            break;
-        default:
-            type = "UNKNOWN TYPE";
-        }
+        char *type = get_type_str(current->returntype);
 
         for (size_t i = 0; i < table->table_depth; i++) {
             fprintf(stderr, "    ");
         }
         fprintf(stderr, "**** ID: %zu name: %s returntype: %s parameters: %zu ****\n", current->idx, current->name, type, current->paramamount);
+
+        MEMfree(type);
     }
 
     DBUG_VOID_RETURN;

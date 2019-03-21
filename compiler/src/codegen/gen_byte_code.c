@@ -13,7 +13,7 @@
 #include "globals.h"
 #include "ctinfo.h"
 
-#include "opcode_lib.h"
+#include "instruction_lib.h"
 #include "util.h"
 
 /*
@@ -929,12 +929,10 @@ node *GBCdoGenByteCode(node *syntaxtree) {
 
     TRAVpush(TR_gbc);
 
-
-
-    // If there is no output file supplies, just use stdout
+    // If there is no output file supplied, just use stdout
     DBUG_PRINT("GBC", ("Opening output stream"));
     if(global.outfile == NULL) {
-        DBUG_PRINT("GBC", ("No output file supplies, using STDOUT"));
+        DBUG_PRINT("GBC", ("No output file supplied, using STDOUT"));
         ofile = stdout;
     } else {
         DBUG_PRINT("GBC", ("Opening file %s", global.outfile));
@@ -949,7 +947,7 @@ node *GBCdoGenByteCode(node *syntaxtree) {
     syntaxtree = TRAVdo(syntaxtree, arg_info);
 
     // Only close non-stdout output streams
-    if(global.outfile == NULL) {
+    if(global.outfile != NULL) {
         DBUG_PRINT("GBC", ("Closing output stream"));
         fclose(ofile);
     } else {
