@@ -753,3 +753,87 @@ void astoree(uint16_t import_table_index) {
     prt_inst(instruction);
     DBUG_VOID_RETURN;
 }
+
+void inewa(void) {
+    DBUG_ENTER("inewa");
+    prt_inst("inewa");
+    DBUG_VOID_RETURN;
+}
+
+void fnewa(void) {
+    DBUG_ENTER("fnewa");
+    prt_inst("fnewa");
+    DBUG_VOID_RETURN;
+}
+
+void bnewa(void) {
+    DBUG_ENTER("bnewa");
+    prt_inst("bnewa");
+    DBUG_VOID_RETURN;
+}
+
+void iloada(void) {
+    DBUG_ENTER("iloada");
+    prt_inst("iloada");
+    DBUG_VOID_RETURN;
+}
+
+void floada(void) {
+    DBUG_ENTER("floada");
+    prt_inst("floada");
+    DBUG_VOID_RETURN;
+}
+
+void bloada(void) {
+    DBUG_ENTER("bloada");
+    prt_inst("bloada");
+    DBUG_VOID_RETURN;
+}
+
+void istorea(void) {
+    DBUG_ENTER("istorea");
+    prt_inst("istorea");
+    DBUG_VOID_RETURN;
+}
+
+void fstorea(void) {
+    DBUG_ENTER("fstorea");
+    prt_inst("fstorea");
+    DBUG_VOID_RETURN;
+}
+
+void bstorea(void) {
+    DBUG_ENTER("bstorea");
+    prt_inst("bstorea");
+    DBUG_VOID_RETURN;
+}
+
+void i2f(void){
+    DBUG_ENTER("i2f");
+    prt_inst("i2f");
+    DBUG_VOID_RETURN;
+}
+
+void f2i(void){
+    DBUG_ENTER("f2i");
+    prt_inst("f2i");
+    DBUG_VOID_RETURN;
+}
+
+void ipop(void) {
+    DBUG_ENTER("ipop");
+    prt_inst("ipop");
+    DBUG_VOID_RETURN;
+}
+
+void fpop(void) {
+    DBUG_ENTER("fpop");
+    prt_inst("fpop");
+    DBUG_VOID_RETURN;
+}
+
+void bpop(void) {
+    DBUG_ENTER("bpop");
+    prt_inst("bpop");
+    DBUG_VOID_RETURN;
+}

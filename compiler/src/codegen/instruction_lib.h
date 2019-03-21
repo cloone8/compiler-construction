@@ -166,4 +166,23 @@ extern void fstoree(uint16_t import_table_index);
 extern void bstoree(uint16_t import_table_index);
 extern void astoree(uint16_t import_table_index);
 
+extern void inewa(void);
+extern void fnewa(void);
+extern void bnewa(void);
+
+extern void iloada(void);
+extern void floada(void);
+extern void bloada(void);
+
+extern void istorea(void);
+extern void fstorea(void);
+extern void bstorea(void);
+
+extern void i2f(void);
+extern void f2i(void);
+
+extern void ipop(void);
+extern void fpop(void);
+extern void bpop(void);
+
 #endif
