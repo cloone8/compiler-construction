@@ -132,38 +132,31 @@ void bnot(void) {
 
 void iinc(uint8_t local, const_t constant) {
     DBUG_ENTER("iinc");
-
-    if(constant == 1) {
-        DBUG_PRINT("GBC", ("Picking iinc_1"));
-        char instruction[15];
-        sprintf(instruction, "iinc_1 %" PRIu8, local);
-        prt_inst(instruction);
-    } else {
-        DBUG_PRINT("GBC", ("Picking iinc"));
-        char instruction[15];
-        sprintf(instruction, "iinc %" PRIu8 " " PRIcon, local, constant);
-        prt_inst(instruction);
-    }
-
+    char instruction[15];
+    sprintf(instruction, "iinc %" PRIu8 " " PRIcon, local, constant);
+    prt_inst(instruction);
     DBUG_VOID_RETURN;
 }
 
 void idec(uint8_t local, const_t constant) {
     DBUG_ENTER("idec");
-
-    if(constant == 1) {
-        DBUG_PRINT("GBC", ("Picking idec_1"));
-        char instruction[15];
-        sprintf(instruction, "idec_1 %" PRIu8, local);
-        prt_inst(instruction);
-    } else {
-        DBUG_PRINT("GBC", ("Picking idec"));
-        char instruction[15];
-        sprintf(instruction, "idec %" PRIu8 " " PRIcon, local, constant);
-        prt_inst(instruction);
-    }
-
+    char instruction[15];
+    sprintf(instruction, "idec %" PRIu8 " " PRIcon, local, constant);
+    prt_inst(instruction);
     DBUG_VOID_RETURN;
+}
+
+void iinc_1(uint8_t local) {
+    DBUG_ENTER("iinc_1");
+    char instruction[15];
+    sprintf(instruction, "iinc_1 %" PRIu8, local);
+    prt_inst(instruction);
+}
+void idec_1(uint8_t local) {
+    DBUG_ENTER("idec_1");
+    char instruction[15];
+    sprintf(instruction, "idec_1 %" PRIu8, local);
+    prt_inst(instruction);
 }
 
 void badd(void) {
