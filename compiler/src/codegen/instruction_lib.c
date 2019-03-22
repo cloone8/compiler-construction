@@ -351,7 +351,7 @@ void jump(char* jump_to) {
 
 void branch_t(char* branch_to) {
     DBUG_ENTER("branch_t");
-    char* instruction = MEMmalloc((10 + STRlen(branch_to)) * sizeof(char));
+    char* instruction = MEMmalloc((11 + STRlen(branch_to)) * sizeof(char));
     sprintf(instruction, "branch_t %s", branch_to);
     prt_inst(instruction);
     MEMfree(instruction);
@@ -360,7 +360,7 @@ void branch_t(char* branch_to) {
 
 void branch_f(char* branch_to) {
     DBUG_ENTER("branch_f");
-    char* instruction = MEMmalloc((10 + STRlen(branch_to)) * sizeof(char));
+    char* instruction = MEMmalloc((11 + STRlen(branch_to)) * sizeof(char));
     sprintf(instruction, "branch_f %s", branch_to);
     prt_inst(instruction);
     MEMfree(instruction);
