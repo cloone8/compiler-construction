@@ -189,7 +189,6 @@
             <traversal id="WTDW" name="Transform while-loop to do-while" default="sons" include="whiletodowhile.h">
                 <travuser>
                     <node name="While" />
-                    <node name="Expr" />
                 </travuser>
             </traversal>
 

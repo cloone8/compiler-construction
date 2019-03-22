@@ -56,14 +56,6 @@ static info *WTDWfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-node* WTDWexpr(node* arg_node, info* arg_info) {
-    DBUG_ENTER("WTDWexpr");
-
-    EXPR_CURRENT(arg_node) = TRAVdo(EXPR_CURRENT(arg_node), arg_info);
-
-    DBUG_RETURN(arg_node);
-}
-
 /**
  * This function trasnforms a while-loop to a do-while-loop. To make sure the conditon from the original while is checked the first time,
  * we wrap the new do-while-loop inside an if-statement.

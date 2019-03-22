@@ -4,6 +4,5 @@
 
 extern node* WTDWwhile(node* arg_node, info* arg_info);
 extern node *WTDWdo(node *syntaxtree);
-extern node* WTDWexpr(node* arg_node, info* arg_info);
 
 #endif
