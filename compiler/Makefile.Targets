@@ -86,8 +86,8 @@ TEST_CIVCC := bin/civicc
 #
 
 
-src = global scanparse print codegen framework counters finalisation semantics \
-      util declsplitting typechecking codetransform
+src = global scanparse print codegen framework finalisation semantics \
+      util declsplitting typechecking codetransform unused
 
 
 
@@ -113,8 +113,6 @@ print       = print.o
 
 codegen     = gen_byte_code.o instruction_lib.o
 
-counters    = count_map.o
-
 finalisation = finalise.o strlist.o
 
 semantics = symbol_table.o build_symbol_table.o fun_symbol_table.o \
@@ -128,3 +126,5 @@ typechecking = typecheck.o
 
 codetransform = arrayparams.o boolcomp.o boolcast.o arraylower.o \
 				fortowhile.o whiletodowhile.o
+
+unused		  = unusedfuns.o count_map.o

@@ -165,7 +165,17 @@ SUBPHASE(wtdw,
 SUBPHASE(prt_ict_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), ict)
 
 ENDPHASE(ict)
+/******************************************************************************/
 
+PHASE(su,
+       "Stripping unused code",
+       ALWAYS)
+
+SUBPHASE(suf, "Stripping unused functions", SUFdo, ALWAYS, su)
+
+SUBPHASE(prt_su, "Printing stripped AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), su)
+
+ENDPHASE(su)
 /******************************************************************************/
 
 PHASE(cg,

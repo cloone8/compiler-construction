@@ -1,4 +1,8 @@
-int main() {
+int test() {
+    return 1;
+}
+
+export int main() {
     int[3] a = [1,2,3];
     int[3, 3] b = [[1,2,3],
                    [4,5,6],

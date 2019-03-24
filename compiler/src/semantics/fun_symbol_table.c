@@ -51,6 +51,16 @@ int fun_symbol_table_free(fun_symbol_table* tofree) {
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
+void fun_symbol_table_remove(fun_symbol_table* table, size_t idx_to_delete) {
+    DBUG_ENTER("fun_symbol_table_remove");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
+    DBUG_ASSERT((idx_to_delete < table->__next_id), "idx too high!");
+
+    fun_symbol_table_entry* entry = fun_symbol_table_get_idx(table, idx_to_delete);
+
+    DBUG_VOID_RETURN;
+}
+
 /**
  * Increase the size of the given fun_symbol_table.
  *

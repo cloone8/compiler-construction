@@ -192,6 +192,15 @@
                 </travuser>
             </traversal>
 
+            <traversal id="SUF" name="Stripping unused functions" default="sons" include="unusedfuns.h">
+                <travuser>
+                    <node name="Function" />
+                    <node name="FunCall" />
+                    <node name="Declaration" />
+                    <node name="LocalFunction" />
+                </travuser>
+            </traversal>
+
             <traversal id="GBC" name="Generate byte code" default="user" include="gen_byte_code.h" />
         </general>
     </phases>

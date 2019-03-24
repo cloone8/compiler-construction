@@ -52,6 +52,16 @@ int symbol_table_free_no_entries(symbol_table* tofree) {
     DBUG_RETURN(EXIT_SUCCESS);
 }
 
+void symbol_table_remove(symbol_table* table, size_t idx_to_delete) {
+    DBUG_ENTER("symbol_table_remove");
+    DBUG_ASSERT((table != NULL), "Table was NULL!");
+    DBUG_ASSERT((idx_to_delete < table->__next_id), "idx too high!");
+
+    symbol_table_entry* entry = symbol_table_get_idx(table, idx_to_delete);
+
+    DBUG_VOID_RETURN;
+}
+
 static void increase_table_size(symbol_table* toincrease) {
     DBUG_ENTER("increase_table_size");
 
