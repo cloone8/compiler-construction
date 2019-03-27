@@ -64,6 +64,7 @@ void PSI_free(ps_in* tofree) {
     }
 
     MEMfree(tofree->entries);
+    MEMfree(tofree);
 
     DBUG_VOID_RETURN;
 }

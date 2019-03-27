@@ -771,9 +771,9 @@ node* PRTarrayvardeclaration (node * arg_node, info * arg_info) {
     }
 
     fprintf(stderr, "%s [", type);
-
-    ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
-
+    if(ARRAYVARDECLARATION_DIMENSIONS(arg_node) != NULL) {
+        ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
+    }
     fprintf(stderr, "] %s", ARRAYVARDECLARATION_VARNAME(arg_node));
 
 

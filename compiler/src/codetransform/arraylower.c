@@ -227,6 +227,48 @@ node* LADarrayvarassign(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node* LADarrayinit(node* arg_node, info* arg_info) {
+    DBUG_ENTER("LADarrayinit");
+
+    node* dimension_binop = NULL;
+
+    ARRAYINIT_SIZE(arg_node) = TRAVdo(ARRAYINIT_SIZE(arg_node), arg_info);
+
+    node* malloc_size = ARRAYINIT_SIZE(arg_node);
+    ARRAYINIT_SIZE(arg_node) = NULL;
+
+    while(malloc_size != NULL) {
+        if(dimension_binop == NULL) {
+            dimension_binop = EXPRARRAY_CURRENT(malloc_size);
+        } else {
+            dimension_binop = TBmakeExpr(TBmakeBinop(BO_mul, dimension_binop, EXPRARRAY_CURRENT(malloc_size)));
+        }
+
+        node* tofree = malloc_size;
+        malloc_size = EXPRARRAY_NEXT(malloc_size);
+
+        EXPRARRAY_CURRENT(tofree) = NULL;
+        EXPRARRAY_NEXT(tofree) = NULL;
+        FREEexprarray(tofree, NULL);
+    }
+
+    node* flattened_size = TBmakeExprarray(NULL, dimension_binop);
+    ARRAYINIT_SIZE(arg_node) = flattened_size;
+
+    DBUG_RETURN(arg_node);
+}
+
+node* LADarrayvardeclaration(node* arg_node, info* arg_info) {
+    DBUG_ENTER("LADarrayvardeclaration");
+    UNUSED_VAR(arg_info);
+
+    TRAVpush(TR_free);
+    ARRAYVARDECLARATION_DIMENSIONS(arg_node) = FREEexprarray(ARRAYVARDECLARATION_DIMENSIONS(arg_node), NULL);
+    TRAVpop();
+
+    DBUG_RETURN(arg_node);
+}
+
 node* LADdo(node* syntaxtree) {
     DBUG_ENTER("LADdo");
 

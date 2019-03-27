@@ -176,6 +176,8 @@
                 <travuser>
                     <node name="ArrayVarRead" />
                     <node name="ArrayVarAssign" />
+                    <node name="ArrayInit" />
+                    <node name="ArrayVarDeclaration" />
                 </travuser>
             </traversal>
 
@@ -884,7 +886,7 @@
                 </son>
                 <son name="dimensions">
                     <targets>
-                        <target mandatory="yes">
+                        <target mandatory="no">
                         <node name="ExprArray" />
                             <phases>
                                 <all />

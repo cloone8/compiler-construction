@@ -256,9 +256,17 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
     size_t dimension_count = count_dims(dims);
 
     fun_convert_dims_to_vars(ARRAYVARDECLARATION_VARNAME(arg_node), dims, arg_info);
-    symbol_table_entry* varentry = symbol_table_get_name(CURRENT_SYMBOL_TABLE(arg_info), ARRAYVARDECLARATION_VARNAME(arg_node));
+    symbol_table_entry* varentry = ARRAYVARDECLARATION_VARPOINTER(arg_node);
 
-    DBUG_ASSERT((varentry != NULL), "Could not find arrayvardeclaration in symbol table!");
+    DBUG_ASSERT((varentry != NULL), "NULL varpointer!");
+
+    node* array_malloc = get_function_array_malloc(varentry, dimension_count);
+
+    if(ASSIGNS(arg_info) != NULL) {
+        append_statement_to_tail(ASSIGNS(arg_info), array_malloc);
+    } else {
+        ASSIGNS(arg_info) = array_malloc;
+    }
 
     // Now the the initial value
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {

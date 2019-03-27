@@ -1038,8 +1038,6 @@ node* GBCbasicvardeclaration (node * arg_node, info * arg_info) {
 node* GBCarrayvardeclaration (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCarrayvardeclaration");
 
-    ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
-
     if(ARRAYVARDECLARATION_INITVAL(arg_node) != NULL) {
         ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
     }
@@ -1144,6 +1142,8 @@ node* GBCdowhile(node * arg_node, info * arg_info) {
 
     DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
     branch_t(loop_start_label);
+
+    MEMfree(loop_start_label);
 
     DBUG_RETURN (arg_node);
 }

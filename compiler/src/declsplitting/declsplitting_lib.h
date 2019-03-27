@@ -81,4 +81,6 @@ void rename_extern_global_dims(char* var_name, node* dims);
 
 void global_add_array_alloc(symbol_table_entry* entry, size_t dimcount, info* arg_info);
 
+node* get_function_array_malloc(symbol_table_entry* entry, size_t dimcount);
+
 #endif
