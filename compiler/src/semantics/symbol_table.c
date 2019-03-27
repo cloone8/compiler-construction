@@ -59,6 +59,18 @@ void symbol_table_remove(symbol_table* table, size_t idx_to_delete) {
 
     symbol_table_entry* entry = symbol_table_get_idx(table, idx_to_delete);
 
+    table->current_entries--;
+    table->__next_id--;
+    entry->name = MEMfree(entry->name);
+
+    if(entry->idx != table->current_entries) {
+        // Take entry from the top and add it in the middle
+        table->entries[entry->idx] = table->entries[table->current_entries];
+        table->entries[entry->idx]->idx = entry->idx;
+        table->entries[table->current_entries] = NULL;
+    }
+
+    MEMfree(entry);
     DBUG_VOID_RETURN;
 }
 
