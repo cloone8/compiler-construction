@@ -1,3 +1,8 @@
+#include "civic.h"
+
+extern int globaltest;
+export int globalexport = 5;
+
 export float main() {
     float a = 1.0;
     float b = 2.0;

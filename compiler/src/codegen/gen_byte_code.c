@@ -691,7 +691,6 @@ node* GBCfunction (node * arg_node, info * arg_info) {
     if (FUNCTION_PARAMETERS(arg_node) != NULL)
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
 
-
     if (FUNCTION_DEFINITION(arg_node) != NULL) {
 
         if(FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node))) {
@@ -713,6 +712,14 @@ node* GBCfunction (node * arg_node, info * arg_info) {
         RETURNTYPE(arg_info) = old_returntype;
 
         fputc('\n', ofile);
+    } else {
+        fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(arg_node);
+
+        instruction* to_add = PSI_make_importfun(FUNCTION_NAME(arg_node),
+                                                     entry->returntype,
+                                                     entry->paramamount,
+                                                     entry->paramtypes);
+        PSI_add(IMPORTFUNS(arg_info), to_add);
     }
 
 
@@ -1051,6 +1058,10 @@ node* GBCglobal(node * arg_node, info * arg_info) {
 
     if(GLOBAL_DEFINITION(arg_node) != NULL) {
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
+    } else {
+        instruction* to_add = PSI_make_importvar(GLOBAL_NAME(arg_node),
+                                                 GLOBAL_TYPE(arg_node));
+        PSI_add(IMPORTVARS(arg_info), to_add);
     }
 
     DBUG_RETURN (arg_node);
@@ -1070,6 +1081,15 @@ node* GBCglobal(node * arg_node, info * arg_info) {
 
 node* GBCglobaldefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCglobaldefinition");
+    symbol_table_entry* entry = GLOBALDEFINITION_VARPOINTER(arg_node);
+
+    instruction* to_add = PSI_make_global(entry->vartype);
+    PSI_add(GLOBALS(arg_info), to_add);
+
+    if(GLOBALDEFINITION_ISEXPORT(arg_node)) {
+        instruction* export_to_add = PSI_make_exportvar(entry->name, (uint16_t) to_add->index);
+        PSI_add(EXPORTVARS(arg_info), export_to_add);
+    }
 
     if(GLOBALDEFINITION_VALUES(arg_node) != NULL) {
         GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
