@@ -511,6 +511,23 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
                 bstoren(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
             }
             break;
+        case TP_int_array:
+        case TP_float_array:
+        case TP_bool_array:
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    astoree((uint16_t) entry->idx);
+                } else {
+                    astoreg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                astore((uint8_t) entry->idx);
+            } else {
+                DBUG_ASSERT((FALSE), "Can't read array reference from higher scope!");
+                CTIabort("Internal compiler error!");
+            }
+
+            break;
         default:
             DBUG_ASSERT((FALSE), "Invalid varassign type");
             break;
@@ -576,6 +593,21 @@ node* GBCvarread (node * arg_node, info * arg_info) {
                 bload((uint8_t) entry->idx);
             } else {
                 bloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+            }
+            break;
+        case TP_int_array:
+        case TP_float_array:
+        case TP_bool_array:
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    aloade((uint16_t) entry->idx);
+                } else {
+                    aloadg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                aload((uint8_t) entry->idx);
+            } else {
+                aloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
             }
             break;
         default:
