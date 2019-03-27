@@ -25,7 +25,7 @@ typedef struct {
 
 typedef struct {
     char* name;
-    uint64_t global_index;
+    uint16_t global_index;
 } exportvar_t;
 
 typedef struct {

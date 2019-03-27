@@ -14,6 +14,7 @@
 #include "ctinfo.h"
 
 #include "instruction_lib.h"
+#include "pseudo_instructions.h"
 #include "util.h"
 
 /*
@@ -22,6 +23,12 @@
 struct INFO {
     type final_type;
     type returntype;
+    pseudo_instructions* exportfuns;
+    pseudo_instructions* exportvars;
+    pseudo_instructions* importfuns;
+    pseudo_instructions* importvars;
+    pseudo_instructions* constants;
+    pseudo_instructions* globals;
 };
 
 /*
@@ -29,7 +36,12 @@ struct INFO {
  */
 #define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
 #define RETURNTYPE(__arg_info_struct__) ((__arg_info_struct__)->returntype)
-
+#define EXPORTFUNS(__arg_info_struct__) ((__arg_info_struct__)->exportfuns)
+#define EXPORTVARS(__arg_info_struct__) ((__arg_info_struct__)->exportvars)
+#define IMPORTFUNS(__arg_info_struct__) ((__arg_info_struct__)->importfuns)
+#define IMPORTVARS(__arg_info_struct__) ((__arg_info_struct__)->importvars)
+#define CONSTANTS(__arg_info_struct__) ((__arg_info_struct__)->constants)
+#define GLOBALS(__arg_info_struct__) ((__arg_info_struct__)->globals)
 /**
  * Creates a new info struct and sets the initial values
  */
@@ -40,18 +52,123 @@ static info *GBCmakeInfo(void) {
     TYPE(result) = TP_unknown;
     RETURNTYPE(result) = TP_unknown;
 
+    EXPORTFUNS(result) = PSI_make(INSTR_exportfun);
+    EXPORTVARS(result) = PSI_make(INSTR_exportvar);
+    IMPORTFUNS(result) = PSI_make(INSTR_importfun);
+    IMPORTVARS(result) = PSI_make(INSTR_importvar);
+    CONSTANTS(result) = PSI_make(INSTR_const);
+    GLOBALS(result) = PSI_make(INSTR_global);
+
     DBUG_RETURN(result);
 }
 
 /**
  * Frees the memory of an info struct
  */
-static info *GBCfreeInfo(info *info) {
+static info *GBCfreeInfo(info* arg_info) {
     DBUG_ENTER("GBCfreeInfo");
 
-    info = MEMfree(info);
+    PSI_free(EXPORTFUNS(arg_info));
+    PSI_free(EXPORTVARS(arg_info));
+    PSI_free(IMPORTFUNS(arg_info));
+    PSI_free(IMPORTVARS(arg_info));
+    PSI_free(CONSTANTS(arg_info));
+    PSI_free(GLOBALS(arg_info));
 
-    DBUG_RETURN(info);
+    arg_info = MEMfree(arg_info);
+
+    DBUG_RETURN(arg_info);
+}
+
+static void print_pseudo_instructions(info* arg_info) {
+    DBUG_ENTER("print_pseudo_instructions");
+
+    // Print constants
+    for(size_t i = 0; i < CONSTANTS(arg_info)->itemcount; i++) {
+        instruction* item = CONSTANTS(arg_info)->entries[i];
+        char* const_type_str = get_type_str(item->constant->consttype);
+        fprintf(ofile, ".const %s ", const_type_str);
+        MEMfree(const_type_str);
+
+        switch(item->constant->consttype) {
+            case TP_bool:
+                if(item->constant->val.boolval == TRUE) {
+                    fprintf(ofile, "true\n");
+                } else {
+                    fprintf(ofile, "false\n");
+                }
+                break;
+            case TP_int:
+                fprintf(ofile, "%d\n", item->constant->val.intval);
+                break;
+            case TP_float:
+                fprintf(ofile, "%.5f\n", item->constant->val.fltval);
+                break;
+            default:
+                DBUG_ASSERT((FALSE), "Invalid type!");
+        }
+    }
+
+    // Print globals
+    for(size_t i = 0; i < GLOBALS(arg_info)->itemcount; i++) {
+        instruction* item = GLOBALS(arg_info)->entries[i];
+        char* global_type_str = get_type_str(item->global->globaltype);
+        fprintf(ofile, ".global %s\n", global_type_str);
+        MEMfree(global_type_str);
+    }
+
+    // Print imported functions
+    for(size_t i = 0; i < IMPORTFUNS(arg_info)->itemcount; i++) {
+        instruction* item = IMPORTFUNS(arg_info)->entries[i];
+        char* ret_type_str = get_type_str(item->importfun->ret_type);
+        fprintf(ofile, ".importfun \"%s\" %s", item->importfun->name, ret_type_str);
+        MEMfree(ret_type_str);
+
+        // Print parameters
+        for(size_t j = 0; j < item->importfun->paramcount; j++) {
+            char* param_type_str = get_type_str(item->importfun->paramtypes[j]);
+            fprintf(ofile, " %s", param_type_str);
+            MEMfree(param_type_str);
+        }
+
+        fputc('\n', ofile);
+    }
+
+    // Print imported variables
+    for(size_t i = 0; i < IMPORTVARS(arg_info)->itemcount; i++) {
+        instruction* item = IMPORTVARS(arg_info)->entries[i];
+        char* var_type_str = get_type_str(item->importvar->vartype);
+
+        fprintf(ofile, ".importvar \"%s\" %s\n", item->importvar->name, var_type_str);
+        MEMfree(var_type_str);
+    }
+
+    // Print exported functions
+    for(size_t i = 0; i < EXPORTFUNS(arg_info)->itemcount; i++) {
+        instruction* item = EXPORTFUNS(arg_info)->entries[i];
+        char* ret_type_str = get_type_str(item->exportfun->ret_type);
+        fprintf(ofile, ".exportfun \"%s\" %s", item->exportfun->name, ret_type_str);
+        MEMfree(ret_type_str);
+
+        // Print parameters
+        for(size_t j = 0; j < item->exportfun->paramcount; j++) {
+            char* param_type_str = get_type_str(item->exportfun->paramtypes[j]);
+            fprintf(ofile, " %s", param_type_str);
+            MEMfree(param_type_str);
+        }
+
+        // Print label
+        fprintf(ofile, " %s\n", item->exportfun->fun_label);
+    }
+
+    // Print exported variables. Must come after constants
+    for(size_t i = 0; i < EXPORTVARS(arg_info)->itemcount; i++) {
+        instruction* item = EXPORTVARS(arg_info)->entries[i];
+
+        fprintf(ofile, ".exportvar \"%s\" %" PRIu16 "\n", item->exportvar->name, item->exportvar->global_index);
+    }
+
+    DBUG_VOID_RETURN;
 }
 
 /** <!--******************************************************************-->
@@ -74,7 +191,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
 
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), left);
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), right);
-    
+
     binop operator = BINOP_BINOPERATORS(arg_node);
     type to_process = TYPE(left);
 
@@ -501,7 +618,7 @@ node* GBCfunction (node * arg_node, info * arg_info) {
         RETURNTYPE(new) = FUNCTION_TYPE(arg_node);
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), new);
         GBCfreeInfo(new);
-    } 
+    }
     else {
     }
 
@@ -953,6 +1070,9 @@ node* GBCreturn(node * arg_node, info * arg_info) {
     type to_return = RETURNTYPE(arg_info);
 
     switch (to_return) {
+        case TP_void:
+            ret();
+            break;
         case TP_bool:
             bret();
             break;
@@ -1170,6 +1290,8 @@ node *GBCdoGenByteCode(node *syntaxtree) {
     }
 
     syntaxtree = TRAVdo(syntaxtree, arg_info);
+
+    print_pseudo_instructions(arg_info);
 
     // Only close non-stdout output streams
     if(global.outfile != NULL) {
