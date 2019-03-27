@@ -6,10 +6,14 @@
 #include "util.h"
 #include "tree_basic.h"
 #include "traverse.h"
+#include "free_node.h"
 
 #include "str.h"
 #include "memory.h"
 #include "ctinfo.h"
+
+#include "fun_symbol_table.h"
+
 /*
  * INFO structure
  */
@@ -64,6 +68,12 @@ node *SUFfunction(node *arg_node, info *arg_info) {
             // Add an occurence of this item, so exported functions are never deleted
             CMaddOccurence(COUNTS(arg_info), FUNCTION_NAME(arg_node));
         }
+
+        if(STReq(FUNCTION_NAME(arg_node), "__init")) {
+            if(FUNCTIONBODY_STATEMENTS(FUNCTIONDEFINITION_FUNCTIONBODY(FUNCTION_DEFINITION(arg_node))) != NULL) {
+                CMaddOccurence((COUNTS(arg_info)), FUNCTION_NAME(arg_node));
+            }
+        }
     }
 
     if(FUNCTION_PARAMETERS(arg_node) != NULL) {
@@ -91,6 +101,8 @@ node *SUFfuncall(node* arg_node, info* arg_info) {
 
 node *SUFdeclaration(node *arg_node, info *arg_info) {
     DBUG_ENTER("SUFdeclaration");
+    node* toreturn = arg_node;
+
     if(!DELETE(arg_info)) {
         DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
 
@@ -102,9 +114,28 @@ node *SUFdeclaration(node *arg_node, info *arg_info) {
         if(NODE_TYPE(DECLARATION_CURRENT(arg_node)) == N_function) {
             countMapItem* item = CMgetItem(COUNTS(arg_info), FUNCTION_NAME(DECLARATION_CURRENT(arg_node)));
 
-            // Don't warn for internal __init() function
-            if(item == NULL && !STReq(FUNCTION_NAME(DECLARATION_CURRENT(arg_node)), "__init")) {
-                CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unused non-export function \"%s\"", FUNCTION_NAME(DECLARATION_CURRENT(arg_node)));
+            if(item == NULL) {
+                char* fun_name = FUNCTION_NAME(DECLARATION_CURRENT(arg_node));
+                DBUG_PRINT("SUFfree", ("Deleting function %s", fun_name));
+                // Don't warn for internal __init() function
+                if(!STReq(fun_name, "__init")) {
+                    CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unused non-export function \"%s\"", fun_name);
+                }
+
+                fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(DECLARATION_CURRENT(arg_node));
+                fun_symbol_table* table = entry->table;
+                fun_symbol_table_remove(table, entry->idx);
+                entry = NULL;
+
+                toreturn = DECLARATION_NEXT(arg_node);
+
+                DECLARATION_NEXT(arg_node) = NULL;
+
+                TRAVpush(TR_free);
+                FREEdeclaration(arg_node, NULL);
+                TRAVpop();
+
+                DBUG_RETURN(toreturn);
             }
         }
 
@@ -112,7 +143,8 @@ node *SUFdeclaration(node *arg_node, info *arg_info) {
             DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
         }
     }
-    DBUG_RETURN(arg_node);
+
+    DBUG_RETURN(toreturn);
 }
 node *SUFlocalfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("SUFlocalfunction");
