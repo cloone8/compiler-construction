@@ -14,6 +14,7 @@
 #include "ctinfo.h"
 
 #include "instruction_lib.h"
+#include "pseudo_instructions.h"
 #include "util.h"
 
 /*
@@ -22,6 +23,12 @@
 struct INFO {
     type final_type;
     type returntype;
+    pseudo_instructions* exportfuns;
+    pseudo_instructions* exportvars;
+    pseudo_instructions* importfuns;
+    pseudo_instructions* importvars;
+    pseudo_instructions* constants;
+    pseudo_instructions* globals;
 };
 
 /*
@@ -29,7 +36,12 @@ struct INFO {
  */
 #define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
 #define RETURNTYPE(__arg_info_struct__) ((__arg_info_struct__)->returntype)
-
+#define EXPORTFUNS(__arg_info_struct__) ((__arg_info_struct__)->exportfuns)
+#define EXPORTVARS(__arg_info_struct__) ((__arg_info_struct__)->exportvars)
+#define IMPORTFUNS(__arg_info_struct__) ((__arg_info_struct__)->importfuns)
+#define IMPORTVARS(__arg_info_struct__) ((__arg_info_struct__)->importvars)
+#define CONSTANTS(__arg_info_struct__) ((__arg_info_struct__)->constants)
+#define GLOBALS(__arg_info_struct__) ((__arg_info_struct__)->globals)
 /**
  * Creates a new info struct and sets the initial values
  */
@@ -40,18 +52,32 @@ static info *GBCmakeInfo(void) {
     TYPE(result) = TP_unknown;
     RETURNTYPE(result) = TP_unknown;
 
+    EXPORTFUNS(result) = PSI_make(INSTR_exportfun);
+    EXPORTVARS(result) = PSI_make(INSTR_exportvar);
+    IMPORTFUNS(result) = PSI_make(INSTR_importfun);
+    IMPORTVARS(result) = PSI_make(INSTR_importvar);
+    CONSTANTS(result) = PSI_make(INSTR_const);
+    GLOBALS(result) = PSI_make(INSTR_global);
+
     DBUG_RETURN(result);
 }
 
 /**
  * Frees the memory of an info struct
  */
-static info *GBCfreeInfo(info *info) {
+static info *GBCfreeInfo(info* arg_info) {
     DBUG_ENTER("GBCfreeInfo");
 
-    info = MEMfree(info);
+    PSI_free(EXPORTFUNS(arg_info));
+    PSI_free(EXPORTVARS(arg_info));
+    PSI_free(IMPORTFUNS(arg_info));
+    PSI_free(IMPORTVARS(arg_info));
+    PSI_free(CONSTANTS(arg_info));
+    PSI_free(GLOBALS(arg_info));
 
-    DBUG_RETURN(info);
+    arg_info = MEMfree(arg_info);
+
+    DBUG_RETURN(arg_info);
 }
 
 /** <!--******************************************************************-->
@@ -74,7 +100,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
 
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), left);
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), right);
-    
+
     binop operator = BINOP_BINOPERATORS(arg_node);
     type to_process = TYPE(left);
 
@@ -489,7 +515,7 @@ node* GBCfunction (node * arg_node, info * arg_info) {
         RETURNTYPE(new) = FUNCTION_TYPE(arg_node);
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), new);
         GBCfreeInfo(new);
-    } 
+    }
     else {
     }
 
@@ -941,6 +967,9 @@ node* GBCreturn(node * arg_node, info * arg_info) {
     type to_return = RETURNTYPE(arg_info);
 
     switch (to_return) {
+        case TP_void:
+            ret();
+            break;
         case TP_bool:
             bret();
             break;
