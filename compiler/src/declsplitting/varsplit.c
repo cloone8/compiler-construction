@@ -57,7 +57,7 @@ node* VSPprogram(node* arg_node, info* arg_info) {
     // Creates a new function called __init() to initialise global variables and
     // makes it the first declaration
     node* init_body = TBmakeFunctionbody(NULL, NULL, NULL);
-    node* init_definition = TBmakeFunctiondefinition(FALSE, init_body);
+    node* init_definition = TBmakeFunctiondefinition(TRUE, init_body);
     FUNCTIONDEFINITION_FUNSYMBOLTABLE(init_definition) = fun_symbol_table_make(PROGRAM_FUNSYMBOLTABLE(arg_node), 1);
     FUNCTIONDEFINITION_VARSYMBOLTABLE(init_definition) = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), 1);
     char* funname = STRcpy("__init");
@@ -153,7 +153,7 @@ static node* global_array(node* arg_node, info* arg_info) {
 
                 // Add this variable to the symbol table
                 symbol_table* global_sym_table = PROGRAM_VARSYMBOLTABLE(PROGRAM_NODE(arg_info));
-                symbol_table_entry* init_entry = symbol_table_add(global_sym_table, init_name, init_type, FALSE);
+                symbol_table_entry* init_entry = symbol_table_add(global_sym_table, init_name, init_type, FALSE, FALSE);
 
                 // Create a new global definition holding the value
                 node* new_def = TBmakeGlobaldefinition(FALSE, initval);
@@ -297,7 +297,7 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
 
             // Add this variable to the symbol table
             symbol_table* sym_table = CURRENT_SYMBOL_TABLE(arg_info);
-            symbol_table_entry* init_entry = symbol_table_add(sym_table, init_name, init_type, FALSE);
+            symbol_table_entry* init_entry = symbol_table_add(sym_table, init_name, init_type, FALSE, FALSE);
 
             // Create a new basicvardeclaration holding the value
             node* new_dec = TBmakeBasicvardeclaration(STRcpy(init_name), init_type, EXPRARRAY_CURRENT(initval));

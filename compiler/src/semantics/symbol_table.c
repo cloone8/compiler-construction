@@ -94,7 +94,7 @@ static void increase_table_size(symbol_table* toincrease) {
     DBUG_VOID_RETURN;
 }
 
-symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_type, bool isimport) {
+symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_type, bool isimport, bool isexport) {
     DBUG_ENTER("symbol_table_add");
     DBUG_ASSERT((table != NULL), "table was NULL!");
     DBUG_ASSERT((name != NULL), "name is NULL!");
@@ -110,6 +110,7 @@ symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_t
     new_entry->vartype = var_type;
     new_entry->table = table;
     new_entry->isimport = isimport;
+    new_entry->isexport = isexport;
 
     table->current_entries++;
 

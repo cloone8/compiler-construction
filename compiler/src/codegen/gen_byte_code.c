@@ -187,7 +187,7 @@ static void print_pseudo_instructions(info* arg_info) {
     DBUG_VOID_RETURN;
 }
 
-static void set_globalvar_idx(symbol_table* table) {
+static void set_globalvar_idx(symbol_table* table, info* arg_info) {
     DBUG_ENTER("set_globalvar_idx");
     size_t importcount = 0;
     size_t nonimportcount = 0;
@@ -196,13 +196,27 @@ static void set_globalvar_idx(symbol_table* table) {
         symbol_table_entry* curr = table->entries[i];
         if(curr->isimport) {
             curr->idx = importcount++;
+
             if(importcount > UINT16_MAX) {
                 CTIabort("Too many imported variables for the VM to handle!");
             }
+
+            instruction* to_add = PSI_make_importvar(curr->name,
+                                                    curr->vartype);
+            PSI_add(IMPORTVARS(arg_info), to_add);
         } else {
             curr->idx = nonimportcount++;
+
             if(nonimportcount > UINT16_MAX) {
                 CTIabort("Too many global definitions in this module for the VM to handle!");
+            }
+
+            instruction* to_add = PSI_make_global(curr->vartype);
+            PSI_add(GLOBALS(arg_info), to_add);
+
+            if(curr->isexport) {
+                instruction* export_to_add = PSI_make_exportvar(curr->name, (uint16_t) to_add->index);
+                PSI_add(EXPORTVARS(arg_info), export_to_add);
             }
         }
     }
@@ -1224,10 +1238,6 @@ node* GBCglobal(node * arg_node, info * arg_info) {
 
     if(GLOBAL_DEFINITION(arg_node) != NULL) {
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
-    } else {
-        instruction* to_add = PSI_make_importvar(GLOBAL_NAME(arg_node),
-                                                 GLOBAL_TYPE(arg_node));
-        PSI_add(IMPORTVARS(arg_info), to_add);
     }
 
     DBUG_RETURN (arg_node);
@@ -1247,15 +1257,6 @@ node* GBCglobal(node * arg_node, info * arg_info) {
 
 node* GBCglobaldefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCglobaldefinition");
-    symbol_table_entry* entry = GLOBALDEFINITION_VARPOINTER(arg_node);
-
-    instruction* to_add = PSI_make_global(entry->vartype);
-    PSI_add(GLOBALS(arg_info), to_add);
-
-    if(GLOBALDEFINITION_ISEXPORT(arg_node)) {
-        instruction* export_to_add = PSI_make_exportvar(entry->name, (uint16_t) to_add->index);
-        PSI_add(EXPORTVARS(arg_info), export_to_add);
-    }
 
     if(GLOBALDEFINITION_VALUES(arg_node) != NULL) {
         GLOBALDEFINITION_VALUES(arg_node) = TRAVdo(GLOBALDEFINITION_VALUES(arg_node), arg_info);
@@ -1590,7 +1591,7 @@ node *GBCdoGenByteCode(node *syntaxtree) {
     info* arg_info = GBCmakeInfo();
 
     TRAVpush(TR_gbc);
-    set_globalvar_idx(PROGRAM_VARSYMBOLTABLE(syntaxtree));
+    set_globalvar_idx(PROGRAM_VARSYMBOLTABLE(syntaxtree), arg_info);
 
     // If there is no output file supplied, just use stdout
     DBUG_PRINT("GBC", ("Opening output stream"));

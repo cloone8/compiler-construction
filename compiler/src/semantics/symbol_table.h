@@ -13,6 +13,8 @@ struct __symbol_table_entry {
     size_t idx;
     // Only for globals
     bool isimport;
+    // Only for globals
+    bool isexport;
     char* name;
     type vartype;
     symbol_table* table;
@@ -32,7 +34,7 @@ symbol_table* symbol_table_make(symbol_table* parent, size_t table_depth);
 int symbol_table_free(symbol_table* tofree);
 int symbol_table_free_no_entries(symbol_table* tofree);
 void symbol_table_remove(symbol_table* table, size_t idx_to_delete);
-symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_type, bool isimport);
+symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_type, bool isimport, bool isexport);
 void symbol_table_insert(symbol_table* table, symbol_table_entry* to_insert);
 symbol_table_entry* symbol_table_get_name(symbol_table* table, char* name);
 symbol_table_entry* symbol_table_get_idx(symbol_table* table, size_t idx);
