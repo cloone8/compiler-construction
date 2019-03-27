@@ -422,11 +422,39 @@ node* GBCdeclaration (node * arg_node, info * arg_info) {
 node* GBCarrayvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCarrayvarassign");
 
+    symbol_table_entry* entry = ARRAYVARASSIGN_VARPOINTER(arg_node);
 
+    if(entry->table->table_depth == 0) {
+        if(entry->isimport) {
+            aloade((uint16_t) entry->idx);
+        } else {
+            aloadg((uint16_t) entry->idx);
+        }
+    } else if(entry->table->table_depth == DEPTH(arg_info)) {
+        aload((uint8_t) entry->idx);
+    } else {
+        aloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+    }
 
     ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
 
     ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
+
+    switch(entry->vartype) {
+        case TP_int_array:
+            istorea();
+            break;
+        case TP_float_array:
+            fstorea();
+            break;
+        case TP_bool_array:
+            bstorea();
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Invalid array type!");
+            CTIabort("Internal compiler error!");
+            break;
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -444,9 +472,37 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCarrayvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCarrayvarread");
+    symbol_table_entry* entry = ARRAYVARREAD_VARPOINTER(arg_node);
+
+    if(entry->table->table_depth == 0) {
+        if(entry->isimport) {
+            aloade((uint16_t) entry->idx);
+        } else {
+            aloadg((uint16_t) entry->idx);
+        }
+    } else if(entry->table->table_depth == DEPTH(arg_info)) {
+        aload((uint8_t) entry->idx);
+    } else {
+        aloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+    }
 
     ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
 
+    switch(entry->vartype) {
+        case TP_int_array:
+            iloada();
+            break;
+        case TP_float_array:
+            floada();
+            break;
+        case TP_bool_array:
+            bloada();
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Invalid array type!");
+            CTIabort("Internal compiler error!");
+            break;
+    }
 
     DBUG_RETURN(arg_node);
 }
