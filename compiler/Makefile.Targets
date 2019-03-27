@@ -111,7 +111,7 @@ scanparse   = civic.tab.o civic.lex.o parsehelper.o
 
 print       = print.o
 
-codegen     = gen_byte_code.o instruction_lib.o
+codegen     = gen_byte_code.o instruction_lib.o pseudo_instructions.o
 
 finalisation = finalise.o strlist.o
 
