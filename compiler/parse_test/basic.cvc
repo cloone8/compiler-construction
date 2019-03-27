@@ -1,6 +1,11 @@
 export float main() {
     float a = 1.0;
     float b = 2.0;
+    int c = 5;
+    int q = 0;
+    if (c < q) {
+        b = b + 1.0;
+    }
 
     b = b + 1.5;
 

@@ -17,6 +17,7 @@
 
 #include "symbol_table.h"
 #include "fun_symbol_table.h"
+#include "str.h"
 
 #include "instruction_lib.h"
 #include "pseudo_instructions.h"
@@ -34,6 +35,7 @@ struct INFO {
     pseudo_instructions* importvars;
     pseudo_instructions* constants;
     pseudo_instructions* globals;
+    size_t branch_amount;
 };
 
 /*
@@ -47,6 +49,8 @@ struct INFO {
 #define IMPORTVARS(__arg_info_struct__) ((__arg_info_struct__)->importvars)
 #define CONSTANTS(__arg_info_struct__) ((__arg_info_struct__)->constants)
 #define GLOBALS(__arg_info_struct__) ((__arg_info_struct__)->globals)
+#define BRANCH_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->branch_amount)
+
 /**
  * Creates a new info struct and sets the initial values
  */
@@ -63,6 +67,7 @@ static info *GBCmakeInfo(void) {
     IMPORTVARS(result) = PSI_make(INSTR_importvar);
     CONSTANTS(result) = PSI_make(INSTR_const);
     GLOBALS(result) = PSI_make(INSTR_global);
+    BRANCH_AMOUNT(result) = 0;
 
     DBUG_RETURN(result);
 }
@@ -1178,9 +1183,13 @@ node* GBCreturn(node * arg_node, info * arg_info) {
 node* GBCbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbranch");
 
+    BRANCH_AMOUNT(arg_info)++;
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
 
     BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+
+    get_size_t_str(count, BRANCH_AMOUNT(arg_info));
+    label(STRcat(count, "_end"));
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
