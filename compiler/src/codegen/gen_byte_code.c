@@ -445,7 +445,6 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
 node* GBCarrayvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCarrayvarread");
 
-
     ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
 
 
@@ -1490,6 +1489,7 @@ node* GBCconditionalexpr(node* arg_node, info* arg_info) {
 node *GBCarrayinit(node *arg_node, info *arg_info) {
     DBUG_ENTER("GBCarrayinit");
     symbol_table_entry* entry = ARRAYINIT_VARPOINTER(arg_node);
+
     ARRAYINIT_SIZE(arg_node) = TRAVdo(ARRAYINIT_SIZE(arg_node), arg_info);
 
     switch(entry->vartype) {
