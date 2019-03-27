@@ -1018,7 +1018,30 @@ node* GBCexpr(node * arg_node, info * arg_info) {
 node* GBCmonop(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCmonop");
 
-    MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
+    info* new = GBCmakeInfo();
+    MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), new);
+    switch(MONOP_TYPE(arg_node)) {
+        case MO_neg:
+            switch (TYPE(new)) {
+                case TP_int:
+                    ineg();
+                    break;
+                case TP_float:
+                    fneg();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case MO_not:
+            bnot();
+            break;
+        default:
+            break;
+
+    }
+
+    GBCfreeInfo(new);
 
     DBUG_RETURN (arg_node);
 }
