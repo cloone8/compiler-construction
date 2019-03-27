@@ -1184,12 +1184,17 @@ node* GBCbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbranch");
 
     BRANCH_AMOUNT(arg_info)++;
+
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
+
+    get_size_t_str(count, BRANCH_AMOUNT(arg_info));
+    char* end_label = STRcat(count, "_end");
+    branch_f(end_label);
 
     BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
 
-    get_size_t_str(count, BRANCH_AMOUNT(arg_info));
-    label(STRcat(count, "_end"));
+    label(end_label);
+    MEMfree(end_label);
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
