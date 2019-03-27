@@ -101,7 +101,9 @@ node *SUFdeclaration(node *arg_node, info *arg_info) {
         DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
         if(NODE_TYPE(DECLARATION_CURRENT(arg_node)) == N_function) {
             countMapItem* item = CMgetItem(COUNTS(arg_info), FUNCTION_NAME(DECLARATION_CURRENT(arg_node)));
-            if(item == NULL) {
+
+            // Don't warn for internal __init() function
+            if(item == NULL && !STReq(FUNCTION_NAME(DECLARATION_CURRENT(arg_node)), "__init")) {
                 CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unused non-export function \"%s\"", FUNCTION_NAME(DECLARATION_CURRENT(arg_node)));
             }
         }
