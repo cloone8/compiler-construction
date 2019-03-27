@@ -36,6 +36,7 @@ struct INFO {
     pseudo_instructions* constants;
     pseudo_instructions* globals;
     size_t branch_amount;
+    size_t loop_amount;
 };
 
 /*
@@ -50,6 +51,7 @@ struct INFO {
 #define CONSTANTS(__arg_info_struct__) ((__arg_info_struct__)->constants)
 #define GLOBALS(__arg_info_struct__) ((__arg_info_struct__)->globals)
 #define BRANCH_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->branch_amount)
+#define LOOP_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->loop_amount)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -68,6 +70,7 @@ static info *GBCmakeInfo(void) {
     CONSTANTS(result) = PSI_make(INSTR_const);
     GLOBALS(result) = PSI_make(INSTR_global);
     BRANCH_AMOUNT(result) = 0;
+    LOOP_AMOUNT(result) = 0;
 
     DBUG_RETURN(result);
 }
@@ -967,27 +970,10 @@ node* GBCexprarray (node * arg_node, info * arg_info) {
 
 node* GBCfor (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfor");
+    UNUSED_VAR(arg_info);
 
-
-    if(FOR_COUNTER(arg_node) != NULL) {
-        BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)) =
-            TRAVdo(BASICVARDECLARATION_INITVAL(FOR_COUNTER(arg_node)), arg_info);
-
-    } else {
-    }
-
-
-    FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
-
-    if (FOR_STEP(arg_node) != NULL) {
-        FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
-    }
-
-    if (FOR_VARSYMBOLTABLE(arg_node) != NULL) {
-    }
-    FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
-
-
+    DBUG_ASSERT((FALSE), "For loop should have been converted to do while loop!");
+    CTIabort("Critical compiler error");
 
     DBUG_RETURN (arg_node);
 }
@@ -1006,11 +992,10 @@ node* GBCfor (node * arg_node, info * arg_info) {
 
 node* GBCwhile (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCwhile");
+    UNUSED_VAR(arg_info);
 
-    WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
-
-
-    WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
+    DBUG_ASSERT((FALSE), "While loop should have been converted to do while loop!");
+    CTIabort("Critical compiler error");
 
     DBUG_RETURN (arg_node);
 }
@@ -1030,9 +1015,15 @@ node* GBCwhile (node * arg_node, info * arg_info) {
 node* GBCdowhile(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCdowhile");
 
+    get_size_t_str(buf, LOOP_AMOUNT(arg_info)++);
+    char* loop_start_label = STRcat("loop_", buf);
+
+    label(loop_start_label);
+
     DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
 
     DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
+    branch_t(loop_start_label);
 
     DBUG_RETURN (arg_node);
 }
@@ -1203,11 +1194,9 @@ node* GBCreturn(node * arg_node, info * arg_info) {
 node* GBCbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbranch");
 
-    BRANCH_AMOUNT(arg_info)++;
-
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
 
-    get_size_t_str(count, BRANCH_AMOUNT(arg_info));
+    get_size_t_str(count, BRANCH_AMOUNT(arg_info)++);
     char* end_label = STRcat(count, "_end");
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
