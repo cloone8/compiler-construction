@@ -130,18 +130,18 @@ void bnot(void) {
     DBUG_VOID_RETURN;
 }
 
-void iinc(uint8_t local, const_t constant) {
+void iinc(uint8_t local, uint16_t constant) {
     DBUG_ENTER("iinc");
     char instruction[15];
-    sprintf(instruction, "iinc %" PRIu8 " " PRIcon, local, constant);
+    sprintf(instruction, "iinc %" PRIu8 " " PRIu16, local, constant);
     prt_inst(instruction);
     DBUG_VOID_RETURN;
 }
 
-void idec(uint8_t local, const_t constant) {
+void idec(uint8_t local, uint16_t constant) {
     DBUG_ENTER("idec");
     char instruction[15];
-    sprintf(instruction, "idec %" PRIu8 " " PRIcon, local, constant);
+    sprintf(instruction, "idec %" PRIu8 " " PRIu16, local, constant);
     prt_inst(instruction);
     DBUG_VOID_RETURN;
 }
