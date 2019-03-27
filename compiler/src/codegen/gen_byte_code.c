@@ -83,10 +83,12 @@ static info *GBCfreeInfo(info* arg_info) {
 static void print_pseudo_instructions(info* arg_info) {
     DBUG_ENTER("print_pseudo_instructions");
 
+    // Print constants
     for(size_t i = 0; i < CONSTANTS(arg_info)->itemcount; i++) {
         instruction* item = CONSTANTS(arg_info)->entries[i];
         char* const_type_str = get_type_str(item->constant->consttype);
         fprintf(ofile, ".const %s ", const_type_str);
+        MEMfree(const_type_str);
 
         switch(item->constant->consttype) {
             case TP_bool:
@@ -107,24 +109,63 @@ static void print_pseudo_instructions(info* arg_info) {
         }
     }
 
+    // Print globals
     for(size_t i = 0; i < GLOBALS(arg_info)->itemcount; i++) {
         instruction* item = GLOBALS(arg_info)->entries[i];
+        char* global_type_str = get_type_str(item->global->globaltype);
+        fprintf(ofile, ".global %s\n", global_type_str);
+        MEMfree(global_type_str);
     }
 
+    // Print imported functions
     for(size_t i = 0; i < IMPORTFUNS(arg_info)->itemcount; i++) {
+        instruction* item = IMPORTFUNS(arg_info)->entries[i];
+        char* ret_type_str = get_type_str(item->importfun->ret_type);
+        fprintf(ofile, ".importfun \"%s\" %s", item->importfun->name, ret_type_str);
+        MEMfree(ret_type_str);
 
+        // Print parameters
+        for(size_t j = 0; j < item->importfun->paramcount; j++) {
+            char* param_type_str = get_type_str(item->importfun->paramtypes[j]);
+            fprintf(ofile, " %s", param_type_str);
+            MEMfree(param_type_str);
+        }
+
+        fputc('\n', ofile);
     }
 
+    // Print imported variables
     for(size_t i = 0; i < IMPORTVARS(arg_info)->itemcount; i++) {
+        instruction* item = IMPORTVARS(arg_info)->entries[i];
+        char* var_type_str = get_type_str(item->importvar->vartype);
 
+        fprintf(ofile, ".importvar \"%s\" %s\n", item->importvar->name, var_type_str);
+        MEMfree(var_type_str);
     }
 
+    // Print exported functions
     for(size_t i = 0; i < EXPORTFUNS(arg_info)->itemcount; i++) {
+        instruction* item = EXPORTFUNS(arg_info)->entries[i];
+        char* ret_type_str = get_type_str(item->exportfun->ret_type);
+        fprintf(ofile, ".exportfun \"%s\" %s", item->exportfun->name, ret_type_str);
+        MEMfree(ret_type_str);
 
+        // Print parameters
+        for(size_t j = 0; j < item->exportfun->paramcount; j++) {
+            char* param_type_str = get_type_str(item->exportfun->paramtypes[j]);
+            fprintf(ofile, " %s", param_type_str);
+            MEMfree(param_type_str);
+        }
+
+        // Print label
+        fprintf(ofile, " %s\n", item->exportfun->fun_label);
     }
 
+    // Print exported variables. Must come after constants
     for(size_t i = 0; i < EXPORTVARS(arg_info)->itemcount; i++) {
+        instruction* item = EXPORTVARS(arg_info)->entries[i];
 
+        fprintf(ofile, ".exportvar \"%s\" %" PRIu16 "\n", item->exportvar->name, item->exportvar->global_index);
     }
 
     DBUG_VOID_RETURN;
