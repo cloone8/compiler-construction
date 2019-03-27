@@ -358,8 +358,20 @@ node* GBCvarread (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCcast (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCcast");
+    printf("%s", get_type_str(CAST_CASTTO(arg_node)));
+    printf("kasjhdf");
 
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
+    switch (CAST_CASTTO(arg_node)) {
+        case TP_int:
+            i2f();
+            break;
+        case TP_float:
+            f2i();
+            break;
+        default:
+            break;
+    }
 
     DBUG_RETURN(arg_node);
 }
