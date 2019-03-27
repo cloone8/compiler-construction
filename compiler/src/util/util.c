@@ -190,6 +190,8 @@ char* get_type_str(type to_print) {
             DBUG_RETURN(STRcpy("float"));
         case TP_float_array:
             DBUG_RETURN(STRcpy("float[]"));
+        case TP_void:
+            DBUG_RETURN(STRcpy("void"));
         default:
             DBUG_RETURN(STRcpy("UNKNOWN"));
     }
