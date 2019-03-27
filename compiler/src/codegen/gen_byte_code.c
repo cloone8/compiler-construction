@@ -424,6 +424,10 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
 
     symbol_table_entry* entry = ARRAYVARASSIGN_VARPOINTER(arg_node);
 
+    ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
+
+    ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
+
     if(entry->table->table_depth == 0) {
         if(entry->isimport) {
             aloade((uint16_t) entry->idx);
@@ -435,10 +439,6 @@ node* GBCarrayvarassign (node * arg_node, info * arg_info) {
     } else {
         aloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
     }
-
-    ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
-
-    ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
 
     switch(entry->vartype) {
         case TP_int_array:
@@ -474,6 +474,8 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCarrayvarread");
     symbol_table_entry* entry = ARRAYVARREAD_VARPOINTER(arg_node);
 
+    ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
+
     if(entry->table->table_depth == 0) {
         if(entry->isimport) {
             aloade((uint16_t) entry->idx);
@@ -485,8 +487,6 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
     } else {
         aloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
     }
-
-    ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
 
     switch(entry->vartype) {
         case TP_int_array:
