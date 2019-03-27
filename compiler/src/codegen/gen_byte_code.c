@@ -191,14 +191,11 @@ static void print_pseudo_instructions(info* arg_info) {
 node* GBCbinop (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbinop");
 
-    info* left = GBCmakeInfo();
-    info* right = GBCmakeInfo();
-
-    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), left);
-    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), right);
+    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
+    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
 
     binop operator = BINOP_BINOPERATORS(arg_node);
-    type to_process = TYPE(left);
+    type to_process = TYPE(arg_info);
 
     switch (operator) {
         case BO_add:
@@ -351,9 +348,6 @@ node* GBCbinop (node * arg_node, info * arg_info) {
         default:
             break;
     }
-
-    GBCfreeInfo(left);
-    GBCfreeInfo(right);
 
     DBUG_RETURN (arg_node);
 }
@@ -1214,11 +1208,11 @@ node* GBCexpr(node * arg_node, info * arg_info) {
 node* GBCmonop(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCmonop");
 
-    info* new = GBCmakeInfo();
-    MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), new);
+    MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
+
     switch(MONOP_TYPE(arg_node)) {
         case MO_neg:
-            switch (TYPE(new)) {
+            switch (TYPE(arg_info)) {
                 case TP_int:
                     ineg();
                     break;
@@ -1234,10 +1228,7 @@ node* GBCmonop(node * arg_node, info * arg_info) {
             break;
         default:
             break;
-
     }
-
-    GBCfreeInfo(new);
 
     DBUG_RETURN (arg_node);
 }
