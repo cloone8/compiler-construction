@@ -3,5 +3,5 @@ export int[2,2] g = [[1,2],[3,4]];
 export int main() {
     int[2,2] c = [[1,2],[3,4]];
 
-    return g[1, 1];
+    return c[1, 1];
 }
