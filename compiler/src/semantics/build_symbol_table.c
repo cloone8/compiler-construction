@@ -19,6 +19,7 @@ struct INFO {
     symbol_table* current_table;
     node* function_parent_node;
     size_t current_scope;
+    bool global_isimport;
 };
 
 /*
@@ -28,6 +29,7 @@ struct INFO {
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_table)
 #define PARENT_FUNCTION(__arg_info_struct__) ((__arg_info_struct__)->function_parent_node)
 #define CURRENT_SCOPE(__arg_info_struct__) ((__arg_info_struct__)->current_scope)
+#define ISIMPORT(__arg_info_struct__) ((__arg_info_struct__)->global_isimport)
 
 /*
  * INFO functions
@@ -43,6 +45,7 @@ static info *STBmakeInfo(void) {
     CURRENT_SYMBOL_TABLE(result) = NULL;
     PARENT_FUNCTION(result) = NULL;
     CURRENT_SCOPE(result) = 0;
+    ISIMPORT(result) = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -77,7 +80,11 @@ node *STBglobal(node *arg_node, info *arg_info) {
         GLOBAL_TYPE(arg_node) = globaltype;
         entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), globaltype, isimport, isexport);
 
+        bool prev_isimport = ISIMPORT(arg_info);
+        ISIMPORT(arg_info) = isimport;
         GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
+        ISIMPORT(arg_info) = prev_isimport;
+
     } else {
         entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), GLOBAL_TYPE(arg_node), isimport, isexport);
     }
@@ -388,7 +395,7 @@ node *STBarraydimensionvars(node *arg_node, info *arg_info) {
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
-    symbol_table_entry* entry = symbol_table_add(current, ARRAYDIMENSIONVARS_NAME(arg_node), TP_int, FALSE, FALSE);
+    symbol_table_entry* entry = symbol_table_add(current, ARRAYDIMENSIONVARS_NAME(arg_node), TP_int, ISIMPORT(arg_info), FALSE);
     ARRAYDIMENSIONVARS_VARPOINTER(arg_node) = entry;
 
     if(ARRAYDIMENSIONVARS_NEXT(arg_node) != NULL)
