@@ -1209,16 +1209,26 @@ node* GBCbranch(node * arg_node, info * arg_info) {
 
     get_size_t_str(count, BRANCH_AMOUNT(arg_info));
     char* end_label = STRcat(count, "_end");
-    branch_f(end_label);
 
-    BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+    if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
+        char* else_label = STRcat(count, "_else");
+        branch_f(else_label);
+
+        BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+
+        jump(end_label);
+
+        label(else_label);
+        MEMfree(else_label);
+        BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
+    } else {
+        branch_f(end_label);
+
+        BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+    }
 
     label(end_label);
     MEMfree(end_label);
-
-    if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
-        BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
-    }
 
     DBUG_RETURN (arg_node);
 }
