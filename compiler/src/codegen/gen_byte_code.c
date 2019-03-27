@@ -80,6 +80,56 @@ static info *GBCfreeInfo(info* arg_info) {
     DBUG_RETURN(arg_info);
 }
 
+static void print_pseudo_instructions(info* arg_info) {
+    DBUG_ENTER("print_pseudo_instructions");
+
+    for(size_t i = 0; i < CONSTANTS(arg_info)->itemcount; i++) {
+        instruction* item = CONSTANTS(arg_info)->entries[i];
+        char* const_type_str = get_type_str(item->constant->consttype);
+        fprintf(ofile, ".const %s ", const_type_str);
+
+        switch(item->constant->consttype) {
+            case TP_bool:
+                if(item->constant->val.boolval == TRUE) {
+                    fprintf(ofile, "true\n");
+                } else {
+                    fprintf(ofile, "false\n");
+                }
+                break;
+            case TP_int:
+                fprintf(ofile, "%d\n", item->constant->val.intval);
+                break;
+            case TP_float:
+                fprintf(ofile, "%.5f\n", item->constant->val.fltval);
+                break;
+            default:
+                DBUG_ASSERT((FALSE), "Invalid type!");
+        }
+    }
+
+    for(size_t i = 0; i < GLOBALS(arg_info)->itemcount; i++) {
+        instruction* item = GLOBALS(arg_info)->entries[i];
+    }
+
+    for(size_t i = 0; i < IMPORTFUNS(arg_info)->itemcount; i++) {
+
+    }
+
+    for(size_t i = 0; i < IMPORTVARS(arg_info)->itemcount; i++) {
+
+    }
+
+    for(size_t i = 0; i < EXPORTFUNS(arg_info)->itemcount; i++) {
+
+    }
+
+    for(size_t i = 0; i < EXPORTVARS(arg_info)->itemcount; i++) {
+
+    }
+
+    DBUG_VOID_RETURN;
+}
+
 /** <!--******************************************************************-->
  *
  * @fn GBCbinop
@@ -1187,6 +1237,8 @@ node *GBCdoGenByteCode(node *syntaxtree) {
     }
 
     syntaxtree = TRAVdo(syntaxtree, arg_info);
+
+    print_pseudo_instructions(arg_info);
 
     // Only close non-stdout output streams
     if(global.outfile != NULL) {
