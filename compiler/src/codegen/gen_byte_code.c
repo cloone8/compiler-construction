@@ -20,11 +20,13 @@
  * INFO structure
  */
 struct INFO {
+    type final_type;
 };
 
 /*
  * INFO macros
  */
+#define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -33,6 +35,7 @@ static info *GBCmakeInfo(void) {
     DBUG_ENTER("GBCmakeInfo");
 
     info *result = (info *)MEMmalloc(sizeof(info));
+    TYPE(result) = TP_unknown;
 
     DBUG_RETURN(result);
 }
@@ -63,10 +66,169 @@ static info *GBCfreeInfo(info *info) {
 node* GBCbinop (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbinop");
 
-    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
+    info* left = GBCmakeInfo();
+    info* right = GBCmakeInfo();
 
+    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), left);
+    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), right);
+    
+    binop operator = BINOP_BINOPERATORS(arg_node);
+    type to_process = TYPE(left);
 
-    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
+    switch (operator) {
+        case BO_add:
+            switch (to_process) {
+                case TP_bool:
+                    badd();
+                    break;
+                case TP_int:
+                    iadd();
+                    break;
+                case TP_float:
+                    fadd();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_sub:
+            switch (to_process) {
+                case TP_int:
+                    isub();
+                    break;
+                case TP_float:
+                    fsub();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_mul:
+            switch (to_process) {
+                case TP_bool:
+                    bmul();
+                    break;
+                case TP_int:
+                    imul();
+                    break;
+                case TP_float:
+                    fmul();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_div:
+            switch (to_process) {
+                case TP_int:
+                    idiv();
+                    break;
+                case TP_float:
+                    fdiv();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_mod:
+            switch (to_process) {
+                case TP_int:
+                    irem();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_eq:
+            switch (to_process) {
+                case TP_int:
+                    ieq();
+                    break;
+                case TP_float:
+                    feq();
+                    break;
+                case TP_bool:
+                    beq();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_ne:
+            switch (to_process) {
+                case TP_int:
+                    ine();
+                    break;
+                case TP_float:
+                    fne();
+                    break;
+                case TP_bool:
+                    bne();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_ge:
+            switch (to_process) {
+                case TP_int:
+                    ige();
+                    break;
+                case TP_float:
+                    fge();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_gt:
+            switch (to_process) {
+                case TP_int:
+                    igt();
+                    break;
+                case TP_float:
+                    fgt();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_le:
+            switch (to_process) {
+                case TP_int:
+                    ile();
+                    break;
+                case TP_float:
+                    fle();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_lt:
+            switch (to_process) {
+                case TP_int:
+                    ilt();
+                    break;
+                case TP_float:
+                    flt();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case BO_and:
+            CTIerror("CiviCVM cannot handle \'&&\'");
+            break;
+        case BO_or:
+            CTIerror("CiviCVM cannot handle \'||\'");
+            break;
+        default:
+            break;
+    }
+
+    GBCfreeInfo(left);
+    GBCfreeInfo(right);
 
     DBUG_RETURN (arg_node);
 }
@@ -213,7 +375,7 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCboolconst");
     UNUSED_VAR(arg_info);
 
-
+    TYPE(arg_info) = TP_bool;
 
     DBUG_RETURN(arg_node);
 }
@@ -234,6 +396,8 @@ node* GBCintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCintconst");
     UNUSED_VAR(arg_info);
 
+    TYPE(arg_info) = TP_int;
+
     DBUG_RETURN(arg_node);
 }
 
@@ -252,6 +416,8 @@ node* GBCintconst (node * arg_node, info * arg_info) {
 node* GBCfloatconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCfloatconst");
     UNUSED_VAR(arg_info);
+
+    TYPE(arg_info) = TP_float;
 
     DBUG_RETURN(arg_node);
 }
