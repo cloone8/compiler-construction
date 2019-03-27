@@ -37,6 +37,7 @@ struct INFO {
     pseudo_instructions* globals;
     size_t branch_amount;
     size_t loop_amount;
+    size_t current_depth;
 };
 
 /*
@@ -52,6 +53,7 @@ struct INFO {
 #define GLOBALS(__arg_info_struct__) ((__arg_info_struct__)->globals)
 #define BRANCH_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->branch_amount)
 #define LOOP_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->loop_amount)
+#define DEPTH(__arg_info_struct__) ((__arg_info_struct__)->current_depth)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -71,6 +73,7 @@ static info *GBCmakeInfo(void) {
     GLOBALS(result) = PSI_make(INSTR_global);
     BRANCH_AMOUNT(result) = 0;
     LOOP_AMOUNT(result) = 0;
+    DEPTH(result) = 0;
 
     DBUG_RETURN(result);
 }
@@ -179,6 +182,29 @@ static void print_pseudo_instructions(info* arg_info) {
         instruction* item = EXPORTVARS(arg_info)->entries[i];
 
         fprintf(ofile, ".exportvar \"%s\" %" PRIu16 "\n", item->exportvar->name, item->exportvar->global_index);
+    }
+
+    DBUG_VOID_RETURN;
+}
+
+static void set_globalvar_idx(symbol_table* table) {
+    DBUG_ENTER("set_globalvar_idx");
+    size_t importcount = 0;
+    size_t nonimportcount = 0;
+
+    for(size_t i = 0; i < table->current_entries; i++) {
+        symbol_table_entry* curr = table->entries[i];
+        if(curr->isimport) {
+            curr->idx = importcount++;
+            if(importcount > UINT16_MAX) {
+                CTIabort("Too many imported variables for the VM to handle!");
+            }
+        } else {
+            curr->idx = nonimportcount++;
+            if(nonimportcount > UINT16_MAX) {
+                CTIabort("Too many global definitions in this module for the VM to handle!");
+            }
+        }
     }
 
     DBUG_VOID_RETURN;
@@ -447,13 +473,43 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
 
     switch(entry->vartype) {
         case TP_int:
-            istore((uint8_t) entry->idx);
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    istoree((uint16_t) entry->idx);
+                } else {
+                    istoreg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                istore((uint8_t) entry->idx);
+            } else {
+                istoren(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+            }
             break;
         case TP_float:
-            fstore((uint8_t) entry->idx);
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    fstoree((uint16_t) entry->idx);
+                } else {
+                    fstoreg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                fstore((uint8_t) entry->idx);
+            } else {
+                fstoren(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+            }
             break;
         case TP_bool:
-            fstore((uint8_t) entry->idx);
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    bstoree((uint16_t) entry->idx);
+                } else {
+                    bstoreg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                bstore((uint8_t) entry->idx);
+            } else {
+                bstoren(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+            }
             break;
         default:
             DBUG_ASSERT((FALSE), "Invalid varassign type");
@@ -484,16 +540,46 @@ node* GBCvarread (node * arg_node, info * arg_info) {
 
     switch(entry->vartype) {
         case TP_int:
-            iload((uint8_t) entry->idx);
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    iloade((uint16_t) entry->idx);
+                } else {
+                    iloadg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                iload((uint8_t) entry->idx);
+            } else {
+                iloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+            }
             break;
         case TP_float:
-            fload((uint8_t) entry->idx);
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    floade((uint16_t) entry->idx);
+                } else {
+                    floadg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                fload((uint8_t) entry->idx);
+            } else {
+                floadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+            }
             break;
         case TP_bool:
-            fload((uint8_t) entry->idx);
+            if(entry->table->table_depth == 0) {
+                if(entry->isimport) {
+                    bloade((uint16_t) entry->idx);
+                } else {
+                    bloadg((uint16_t) entry->idx);
+                }
+            } else if(entry->table->table_depth == DEPTH(arg_info)) {
+                bload((uint8_t) entry->idx);
+            } else {
+                bloadn(DEPTH(arg_info) - entry->table->table_depth, entry->idx);
+            }
             break;
         default:
-            DBUG_ASSERT((FALSE), "Invalid varassign type");
+            DBUG_ASSERT((FALSE), "Invalid varread type");
             break;
     }
 
@@ -812,6 +898,7 @@ node* GBCarraydimensionvars (node * arg_node, info * arg_info) {
 
 node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfunctiondefinition");
+    DEPTH(arg_info)++;
 
     size_t varcount = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node)->current_entries;
     if(varcount > UINT8_MAX) {
@@ -822,6 +909,7 @@ node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
+    DEPTH(arg_info)--;
     DBUG_RETURN (arg_node);
 }
 
@@ -1173,6 +1261,7 @@ node* GBCreturn(node * arg_node, info * arg_info) {
             fret();
             break;
         default:
+            DBUG_ASSERT((FALSE), "Invalid return type");
             break;
     }
 
@@ -1377,6 +1466,7 @@ node *GBCdoGenByteCode(node *syntaxtree) {
     info* arg_info = GBCmakeInfo();
 
     TRAVpush(TR_gbc);
+    set_globalvar_idx(PROGRAM_VARSYMBOLTABLE(syntaxtree));
 
     // If there is no output file supplied, just use stdout
     DBUG_PRINT("GBC", ("Opening output stream"));

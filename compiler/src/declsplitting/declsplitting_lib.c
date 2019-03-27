@@ -247,7 +247,7 @@ node* global_convert_dims_to_vars(char* global_name, symbol_table* symtable, nod
         char *new_global_name = STRcatn(4, "tmp-", name_buffer, "-", global_name);
 
         // Add the new variable to the symbol table
-        symbol_table_entry* var_entry = symbol_table_add(symtable, new_global_name, TP_int);
+        symbol_table_entry* var_entry = symbol_table_add(symtable, new_global_name, TP_int, FALSE);
         GLOBALDEFINITION_VARPOINTER(new_definition) = var_entry;
 
         // Put the newly created definition into a new global declaration
@@ -308,7 +308,7 @@ void fun_convert_dims_to_vars(char* var_name, node* dims, info* arg_info) {
         node* new_decl = TBmakeFunctionvardeclaration(new_var, NULL);
 
         // Add the new variable to the symbol table
-        symbol_table_entry* new_entry = symbol_table_add(cur_table, new_var_name, TP_int);
+        symbol_table_entry* new_entry = symbol_table_add(cur_table, new_var_name, TP_int, FALSE);
         BASICVARDECLARATION_VARPOINTER(new_var) = new_entry;
 
         // Append it to the current list of new declarations
@@ -423,7 +423,7 @@ static node* array_init_loop_iter(char* var_name, symbol_table_entry* array_entr
 
         // Create new symbol table for the forloop and add the new counter to it
         symbol_table* new_forloop_table = symbol_table_make(CURRENT_SYMBOL_TABLE(arg_info), CURRENT_SYMBOL_TABLE(arg_info)->table_depth + 1);
-        symbol_table_entry* new_counter_entry = symbol_table_add(new_forloop_table, new_counter_name, TP_int);
+        symbol_table_entry* new_counter_entry = symbol_table_add(new_forloop_table, new_counter_name, TP_int, FALSE);
         BASICVARDECLARATION_VARPOINTER(counterdec) = new_counter_entry;
         MEMfree(new_counter_name);
 

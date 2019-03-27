@@ -1,22 +1,24 @@
 #include "civic.h"
 
-extern int globaltest;
-export int globalexport = 5;
+extern int ae;
+extern int be;
+extern int ce;
+extern int de;
+int a = 1;
+int b = 1;
+int c = 1;
+int d = 1;
 
 export int main() {
-    int a = 0;
-
-    for(int i = 0, 10, 1) {
-        a = a + i;
-    }
-
-    while(a < 100) {
-        a = a + 1;
-    }
-
-    do {
-        a = a + 2;
-    } while(a < 100);
-
-    return a;
+    int la = 0;
+    ae = ae + 1;
+    be = be + 1;
+    ce = ce + 1;
+    de = de + 1;
+    a = a + 1;
+    b = b + 1;
+    c = c + 1;
+    d = d + 1;
+    la = a + b + c + d;
+    return 0;
 }

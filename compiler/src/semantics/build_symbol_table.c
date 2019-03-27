@@ -69,18 +69,19 @@ node *STBglobal(node *arg_node, info *arg_info) {
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
     symbol_table_entry* entrypointer;
+    bool isimport = (GLOBAL_DEFINITION(arg_node) == NULL);
 
     if (GLOBAL_DIMENSIONS(arg_node) != NULL) {
         type globaltype = type_to_array_type(GLOBAL_TYPE(arg_node));
         GLOBAL_TYPE(arg_node) = globaltype;
-        entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), globaltype);
+        entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), globaltype, isimport);
 
         GLOBAL_DIMENSIONS(arg_node) = TRAVdo(GLOBAL_DIMENSIONS(arg_node), arg_info);
     } else {
-        entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), GLOBAL_TYPE(arg_node));
+        entrypointer = symbol_table_add(current, GLOBAL_NAME(arg_node), GLOBAL_TYPE(arg_node), isimport);
     }
 
-    if (GLOBAL_DEFINITION(arg_node) != NULL) {
+    if (!isimport) {
         GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node)) = entrypointer;
         GLOBAL_DEFINITION(arg_node) = TRAVdo(GLOBAL_DEFINITION(arg_node), arg_info);
     }
@@ -90,9 +91,9 @@ node *STBglobal(node *arg_node, info *arg_info) {
 
 /**
  * In this function we store the parent function node in the INFO struct.
- * 
+ *
  * @param arg_node: The current function node.
- * @param arg_info: The INFO struct which contains various information. * 
+ * @param arg_info: The INFO struct which contains various information. *
  **/
 node *STBfunction(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBfunction");
@@ -107,7 +108,7 @@ node *STBfunction(node *arg_node, info *arg_info) {
 
 /**
  * In this function we create the variable symbol table for the current function.
- * 
+ *
  * @param arg_node: The current functiondefinition to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
  **/
@@ -140,16 +141,16 @@ node *STBfunctiondefinition(node *arg_node, info *arg_info) {
 /**
  * In this function we add basic parameters to their corresponding function table. When more parameters are present
  * we need to traverse these as well.
- * 
+ *
  * @param arg_node: The current basic parameter node to be eveluated.
- * @param arg_info: The INFO struct that contains additional information. * 
+ * @param arg_info: The INFO struct that contains additional information. *
  **/
 node *STBbasicparameter(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBbasicparameter");
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
-    symbol_table_entry* entry = symbol_table_add(current, BASICPARAMETER_NAME(arg_node), BASICPARAMETER_TYPE(arg_node));
+    symbol_table_entry* entry = symbol_table_add(current, BASICPARAMETER_NAME(arg_node), BASICPARAMETER_TYPE(arg_node), FALSE);
     BASICPARAMETER_VARPOINTER(arg_node) = entry;
 
     if (BASICPARAMETER_NEXT(arg_node) != NULL) {
@@ -161,10 +162,10 @@ node *STBbasicparameter(node *arg_node, info *arg_info) {
 
 /**
  * In this function we add the symbol table for array parameters to their corresponding symboltable.
- * 
+ *
  * @params arg_node: the current array parameter node to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
- * 
+ *
  */
 node *STBarrayparameter(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarrayparameter");
@@ -173,7 +174,7 @@ node *STBarrayparameter(node *arg_node, info *arg_info) {
     type atype = type_to_array_type(ARRAYPARAMETER_TYPE(arg_node));
     ARRAYPARAMETER_TYPE(arg_node) = atype;
 
-    symbol_table_entry* entry = symbol_table_add(current, ARRAYPARAMETER_NAME(arg_node), atype);
+    symbol_table_entry* entry = symbol_table_add(current, ARRAYPARAMETER_NAME(arg_node), atype, FALSE);
     ARRAYPARAMETER_VARPOINTER(arg_node) = entry;
 
     ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
@@ -187,10 +188,10 @@ node *STBarrayparameter(node *arg_node, info *arg_info) {
 
 /**
  * This function handles the symbol table for the for-loop. Note the special case for the counter.
- * 
+ *
  * @params arg_node: The current for-loop node to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
- * 
+ *
  **/
 node *STBfor(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBfor");
@@ -223,10 +224,10 @@ node *STBfor(node *arg_node, info *arg_info) {
 /**
  * In this function we do not add something to the symbol table. Instead we check if the assignment
  * is valid, based on the scoping rules (we leave types for later).
- * 
+ *
  * @params arg_node: The current array variable assignment to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
- * 
+ *
  **/
 node *STBarrayvarassign(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBvarassign");
@@ -252,10 +253,10 @@ node *STBarrayvarassign(node *arg_node, info *arg_info) {
 /**
  * In this function we do not add something to the symbol table. Instead we check if the assignment
  * is valid, based on the scoping rules (we leave types for later).
- * 
+ *
  * @params arg_node: The current variable assignment to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
- * 
+ *
  **/
 node *STBvarassign(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarrayvarassign");
@@ -278,7 +279,7 @@ node *STBvarassign(node *arg_node, info *arg_info) {
 
 /**
  * In this function we add a basic variable declaration to the symbol table.
- * 
+ *
  * @params arg_node the current basic variable declaration to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
  **/
@@ -287,7 +288,7 @@ node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
-    symbol_table_entry* entry = symbol_table_add(current, BASICVARDECLARATION_VARNAME(arg_node), BASICVARDECLARATION_TYPE(arg_node));
+    symbol_table_entry* entry = symbol_table_add(current, BASICVARDECLARATION_VARNAME(arg_node), BASICVARDECLARATION_TYPE(arg_node), FALSE);
     BASICVARDECLARATION_VARPOINTER(arg_node) = entry;
 
     /* If the variable is also initialized, we need to traverse this. */
@@ -299,7 +300,7 @@ node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
 
 /**
  * In this function we add an array variable declaration to the symbol table.
- * 
+ *
  * @params arg_node the current arrat variable declaration to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
  **/
@@ -310,7 +311,7 @@ node *STBarrayvardeclaration(node *arg_node, info *arg_info) {
     type atype = type_to_array_type(ARRAYVARDECLARATION_TYPE(arg_node));
     ARRAYVARDECLARATION_TYPE(arg_node) = atype;
 
-    symbol_table_entry* entry = symbol_table_add(current, ARRAYVARDECLARATION_VARNAME(arg_node), atype);
+    symbol_table_entry* entry = symbol_table_add(current, ARRAYVARDECLARATION_VARNAME(arg_node), atype, FALSE);
     ARRAYVARDECLARATION_VARPOINTER(arg_node) = entry;
 
     /* Traverse dimensions. */
@@ -326,7 +327,7 @@ node *STBarrayvardeclaration(node *arg_node, info *arg_info) {
 /**
  * In this function we do not add something to the symboltable. Instead we check if the variable to be read
  * is in scope. If this is the case we set the entrypointer attribute to its corresponding declaration.
- * 
+ *
  * @params arg_node: The current variable read to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
  **/
@@ -350,7 +351,7 @@ node *STBvarread(node *arg_node, info *arg_info) {
 /**
  * In this function we do not add something to the symboltable. Instead we check if the arrayvariable to be read
  * is in scope. If this is the case we set the entrypointer attribute to its corresponding declaration.
- * 
+ *
  * @params arg_node: The current arrayvariable read to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
  **/
@@ -377,16 +378,16 @@ node *STBarrayvarread(node *arg_node, info *arg_info) {
 
 /**
  * This traversal is to save the dimentions of an array into the symbol table.
- * 
- * @params arg_node: The current array dimension node to be evaluated. 
- * @param arg_info: The INFO struct that contains additional information. 
+ *
+ * @params arg_node: The current array dimension node to be evaluated.
+ * @param arg_info: The INFO struct that contains additional information.
  **/
 node *STBarraydimensionvars(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarraydimensionvars");
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
-    symbol_table_entry* entry = symbol_table_add(current, ARRAYDIMENSIONVARS_NAME(arg_node), TP_int);
+    symbol_table_entry* entry = symbol_table_add(current, ARRAYDIMENSIONVARS_NAME(arg_node), TP_int, FALSE);
     ARRAYDIMENSIONVARS_VARPOINTER(arg_node) = entry;
 
     if(ARRAYDIMENSIONVARS_NEXT(arg_node) != NULL)
@@ -397,7 +398,7 @@ node *STBarraydimensionvars(node *arg_node, info *arg_info) {
 
 /**
  * The start traversal function.
- * 
+ *
  * @params syntaxtree: The current syntaxtree of the program.
  **/
 node *STBdo(node *syntaxtree) {

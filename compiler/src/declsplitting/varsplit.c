@@ -153,7 +153,7 @@ static node* global_array(node* arg_node, info* arg_info) {
 
                 // Add this variable to the symbol table
                 symbol_table* global_sym_table = PROGRAM_VARSYMBOLTABLE(PROGRAM_NODE(arg_info));
-                symbol_table_entry* init_entry = symbol_table_add(global_sym_table, init_name, init_type);
+                symbol_table_entry* init_entry = symbol_table_add(global_sym_table, init_name, init_type, FALSE);
 
                 // Create a new global definition holding the value
                 node* new_def = TBmakeGlobaldefinition(FALSE, initval);
@@ -287,7 +287,7 @@ node* VSParrayvardeclaration(node* arg_node, info* arg_info) {
 
             // Add this variable to the symbol table
             symbol_table* sym_table = CURRENT_SYMBOL_TABLE(arg_info);
-            symbol_table_entry* init_entry = symbol_table_add(sym_table, init_name, init_type);
+            symbol_table_entry* init_entry = symbol_table_add(sym_table, init_name, init_type, FALSE);
 
             // Create a new basicvardeclaration holding the value
             node* new_dec = TBmakeBasicvardeclaration(STRcpy(init_name), init_type, EXPRARRAY_CURRENT(initval));
