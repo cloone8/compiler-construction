@@ -510,10 +510,10 @@ node* GBCcast (node * arg_node, info * arg_info) {
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
     switch (CAST_CASTTO(arg_node)) {
         case TP_int:
-            i2f();
+            f2i();
             break;
         case TP_float:
-            f2i();
+            i2f();
             break;
         default:
             break;
