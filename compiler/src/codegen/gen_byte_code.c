@@ -536,7 +536,6 @@ node* GBCcast (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCboolconst");
-    UNUSED_VAR(arg_info);
 
     if(BOOLCONST_VALUE(arg_node) == TRUE) {
         bloadc_t();
@@ -606,7 +605,24 @@ node* GBCintconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCfloatconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCfloatconst");
-    UNUSED_VAR(arg_info);
+    constval_t val;
+    instruction* const_entry = NULL;
+
+    if (FLOATCONST_VALUE(arg_node) == 1.0) {
+        floadc_1();
+    }
+    else if (FLOATCONST_VALUE(arg_node) == 0.0) {
+        floadc_0();
+    }
+    else {
+        val.fltval = FLOATCONST_VALUE(arg_node);
+        const_entry = PSI_find_constant(CONSTANTS(arg_info), TP_float, val);
+        if (const_entry == NULL) {
+            const_entry = PSI_make_const(TP_float, val);
+            PSI_add(CONSTANTS(arg_info), const_entry);
+        }
+        floadc((uint16_t) const_entry->index);
+    }
 
     TYPE(arg_info) = TP_float;
 
