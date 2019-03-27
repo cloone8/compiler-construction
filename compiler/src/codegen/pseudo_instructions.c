@@ -76,7 +76,11 @@ void PSI_add(ps_in* table, instruction* to_add) {
     DBUG_ASSERT((table->pseudo_instruction_type == to_add->type), "Non-matching PSI types!");
 
     table->itemcount++;
-    table->entries = MEMrealloc(table->entries, table->itemcount * sizeof(instruction*));
+    if(table->entries != NULL) {
+        table->entries = MEMrealloc(table->entries, table->itemcount * sizeof(instruction*));
+    } else {
+         table->entries = MEMmalloc(table->itemcount * sizeof(instruction*));
+    }
     table->entries[table->itemcount - 1] = to_add;
     to_add->index = table->itemcount - 1;
 

@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <inttypes.h>
+#include <limits.h>
 
 #include "gen_byte_code.h"
 
@@ -12,6 +14,9 @@
 #include "memory.h"
 #include "globals.h"
 #include "ctinfo.h"
+
+#include "symbol_table.h"
+#include "fun_symbol_table.h"
 
 #include "instruction_lib.h"
 #include "pseudo_instructions.h"
@@ -434,8 +439,24 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
 node* GBCvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCvarassign");
 
-
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
+
+    symbol_table_entry* entry = VARASSIGN_VARPOINTER(arg_node);
+
+    switch(entry->vartype) {
+        case TP_int:
+            istore((uint8_t) entry->idx);
+            break;
+        case TP_float:
+            fstore((uint8_t) entry->idx);
+            break;
+        case TP_bool:
+            fstore((uint8_t) entry->idx);
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Invalid varassign type");
+            break;
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -454,9 +475,25 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCvarread");
-    UNUSED_VAR(arg_info);
 
-    TYPE(arg_info) = VARREAD_VARPOINTER(arg_node)->vartype;
+    symbol_table_entry* entry = VARREAD_VARPOINTER(arg_node);
+
+    TYPE(arg_info) = entry->vartype;
+
+    switch(entry->vartype) {
+        case TP_int:
+            iload((uint8_t) entry->idx);
+            break;
+        case TP_float:
+            fload((uint8_t) entry->idx);
+            break;
+        case TP_bool:
+            fload((uint8_t) entry->idx);
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Invalid varassign type");
+            break;
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -475,8 +512,6 @@ node* GBCvarread (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCcast (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCcast");
-    printf("%s", get_type_str(CAST_CASTTO(arg_node)));
-    printf("kasjhdf");
 
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
     switch (CAST_CASTTO(arg_node)) {
@@ -509,6 +544,12 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCboolconst");
     UNUSED_VAR(arg_info);
 
+    if(BOOLCONST_VALUE(arg_node) == TRUE) {
+        bloadc_t();
+    } else {
+        bloadc_f();
+    }
+
     TYPE(arg_info) = TP_bool;
 
     DBUG_RETURN(arg_node);
@@ -528,6 +569,34 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCintconst");
+    constval_t val;
+    instruction* const_entry = NULL;
+
+    switch(INTCONST_VALUE(arg_node)) {
+        case 1:
+            iloadc_1();
+            break;
+        case 0:
+            iloadc_0();
+            break;
+        case -1:
+            iloadc_m1();
+            break;
+        default:
+            val.intval = INTCONST_VALUE(arg_node);
+            const_entry = PSI_find_constant(CONSTANTS(arg_info), TP_int, val);
+            if(const_entry == NULL) {
+                const_entry = PSI_make_const(TP_int, val);
+                PSI_add(CONSTANTS(arg_info), const_entry);
+            }
+            iloadc((uint16_t) const_entry->index);
+            break;
+    }
+    if(INTCONST_VALUE(arg_node) == 1) {
+        iloadc_1();
+    } else {
+
+    }
 
     TYPE(arg_info) = TP_int;
 
@@ -614,12 +683,26 @@ node* GBCfunction (node * arg_node, info * arg_info) {
 
 
     if (FUNCTION_DEFINITION(arg_node) != NULL) {
-        info* new = GBCmakeInfo();
-        RETURNTYPE(new) = FUNCTION_TYPE(arg_node);
-        FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), new);
-        GBCfreeInfo(new);
-    }
-    else {
+
+        if(FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node))) {
+            fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(arg_node);
+
+            instruction* to_add = PSI_make_exportfun(FUNCTION_NAME(arg_node),
+                                                     entry->returntype,
+                                                     entry->paramamount,
+                                                     entry->paramtypes,
+                                                     FUNCTION_NAME(arg_node));
+            PSI_add(EXPORTFUNS(arg_info), to_add);
+        }
+
+        label(FUNCTION_NAME(arg_node));
+        type old_returntype = RETURNTYPE(arg_info);
+        RETURNTYPE(arg_info) = FUNCTION_TYPE(arg_node);
+
+        FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
+        RETURNTYPE(arg_info) = old_returntype;
+
+        fputc('\n', ofile);
     }
 
 
@@ -710,11 +793,12 @@ node* GBCarraydimensionvars (node * arg_node, info * arg_info) {
 node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfunctiondefinition");
 
-    if (FUNCTIONDEFINITION_FUNSYMBOLTABLE(arg_node) != NULL) {
+    size_t varcount = FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node)->current_entries;
+    if(varcount > UINT8_MAX) {
+        CTIabort("Too many variables in function!");
     }
 
-    if (FUNCTIONDEFINITION_VARSYMBOLTABLE(arg_node) != NULL) {
-    }
+    esr((uint8_t) varcount);
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
@@ -766,22 +850,7 @@ node* GBCfunctionbody (node * arg_node, info * arg_info) {
 node* GBCstatements (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCstatements");
 
-    switch(NODE_TYPE(STATEMENTS_CURRENT(arg_node))) {
-        case N_funcall:
-        case N_varassign:
-
-            break;
-        default:
-            break;
-    }
-
     STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
-
-    if (NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_for &&
-        NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_branch &&
-        NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_while &&
-        NODE_TYPE(STATEMENTS_CURRENT(arg_node)) != N_dowhile) {
-    }
 
     if(STATEMENTS_NEXT(arg_node) != NULL) {
         STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);

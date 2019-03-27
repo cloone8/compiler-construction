@@ -1,6 +1,4 @@
 export int main() {
-    float a = 5.5;
-    int b = 6;
-    bool q = !false;
-    return (int)a + -b;
+    int a = 5;
+    return a;
 }
