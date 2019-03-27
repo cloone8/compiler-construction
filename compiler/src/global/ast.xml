@@ -226,6 +226,7 @@
                 <node name="DoWhile" />
                 <node name="VarAssign" />
                 <node name="ArrayVarAssign" />
+                <node name="ArrayInit" />
             </target>
         </nodeset>
         <nodeset name="ExprTypes">
@@ -1822,6 +1823,41 @@
                     </targets>
                 </son>
             </sons>
+        </node>
+
+        <!--
+         Node ArrayInit
+         -->
+
+        <node name="ArrayInit">
+            <description>
+                An array memory initialisation
+            </description>
+            <sons>
+                <son name="size">
+                    <targets>
+                        <target mandatory="yes" >
+                            <node name="ExprArray" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
+            <attributes>
+                <attribute name="varpointer">
+                    <type name="SymbolPointer">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
         </node>
 
     </syntaxtree>

@@ -177,6 +177,8 @@ static node* global_array(node* arg_node, info* arg_info) {
             }
         }
 
+        global_add_array_alloc(GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node)), dimension_count, arg_info);
+
         dims_decls = TRAVdo(dims_decls, arg_info);
         append_declaration_to_tail(dims_decls, old_first);
 

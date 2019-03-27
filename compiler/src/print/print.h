@@ -41,6 +41,7 @@ extern node *PRTrelop (node * arg_node, info * arg_info);
 extern node *PRTarithop (node * arg_node, info * arg_info);
 extern node *PRTarrayvarassign (node * arg_node, info * arg_info);
 extern node *PRTarrayvarread (node * arg_node, info * arg_info);
+extern node *PRTarrayinit (node * arg_node, info * arg_info);
 extern node *PRTvarassign (node * arg_node, info * arg_info);
 extern node *PRTvarread (node * arg_node, info * arg_info);
 extern node *PRTcast (node * arg_node, info * arg_info);

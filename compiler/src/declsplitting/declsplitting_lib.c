@@ -487,3 +487,35 @@ void rename_extern_global_dims(char* var_name, node* dims) {
 
     DBUG_VOID_RETURN;
 }
+
+
+void global_add_array_alloc(symbol_table_entry* entry, size_t dimcount, info* arg_info) {
+    DBUG_ENTER("global_add_array_alloc");
+    symbol_table* array_table = entry->table;
+
+    node* dims_exprarray = NULL;
+
+    for(size_t i = 0; i < dimcount; i++) {
+        get_size_t_str(buf, i);
+        char* dim_name = STRcatn(4, "tmp-", buf, "-", entry->name);
+
+        symbol_table_entry* dim_entry = symbol_table_get_name(array_table, dim_name);
+
+        MEMfree(dim_name);
+
+        node* dim_varread = TBmakeVarread(dim_entry->name);
+        VARREAD_VARPOINTER(dim_varread) = dim_entry;
+        node* next_dim = TBmakeExprarray(NULL, TBmakeExpr(dim_varread));
+
+        if(dims_exprarray == NULL) {
+            dims_exprarray = next_dim;
+        } else {
+            append_exprarray_to_tail(dims_exprarray, next_dim);
+        }
+    }
+
+    node* malloc_statement = TBmakeArrayinit(entry, dims_exprarray);
+    prepend_to_initialiser(TBmakeStatements(malloc_statement, NULL), arg_info);
+
+    DBUG_VOID_RETURN;
+}

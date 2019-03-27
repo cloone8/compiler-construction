@@ -24,6 +24,7 @@
 #include "ctinfo.h"
 #include "str.h"
 #include "util.h"
+#include "node_basic.h"
 
 /*
  * INFO structure
@@ -1291,6 +1292,18 @@ node* PRTconditionalexpr(node* arg_node, info* arg_info) {
     fprintf(stderr, " : ");
     CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), arg_info);
 
+
+    DBUG_RETURN(arg_node);
+}
+
+node *PRTarrayinit (node * arg_node, info * arg_info) {
+    DBUG_ENTER("PRTarrayinit");
+    symbol_table_entry* entry = ARRAYINIT_VARPOINTER(arg_node);
+
+    print_indents(arg_info);
+    fprintf(stderr, "%s = __MALLOC__(", entry->name);
+    ARRAYINIT_SIZE(arg_node) = TRAVdo(ARRAYINIT_SIZE(arg_node), arg_info);
+    fputc(')', stderr);
 
     DBUG_RETURN(arg_node);
 }

@@ -1,24 +1,12 @@
-#include "civic.h"
-
-extern int ae;
-extern int be;
-extern int ce;
-extern int de;
-int a = 1;
-int b = 1;
-int c = 1;
-int d = 1;
+int[2] g = [0,1];
+int[2, 2] g2 = [[0,1], [1,2]];
 
 export int main() {
-    int la = 0;
-    ae = ae + 1;
-    be = be + 1;
-    ce = ce + 1;
-    de = de + 1;
-    a = a + 1;
-    b = b + 1;
-    c = c + 1;
-    d = d + 1;
-    la = a + b + c + d;
+    int[2] a = [1, 2];
+    // int[2] b = 3;
+
+    // int[2,2] c = [[1,2],[3,4]];
+    // int[2,2] d = 5;
+
     return 0;
 }

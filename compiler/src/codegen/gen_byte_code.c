@@ -1487,6 +1487,42 @@ node* GBCconditionalexpr(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node *GBCarrayinit(node *arg_node, info *arg_info) {
+    DBUG_ENTER("GBCarrayinit");
+    symbol_table_entry* entry = ARRAYINIT_VARPOINTER(arg_node);
+    ARRAYINIT_SIZE(arg_node) = TRAVdo(ARRAYINIT_SIZE(arg_node), arg_info);
+
+    switch(entry->vartype) {
+        case TP_int_array:
+            inewa();
+            break;
+        case TP_float_array:
+            fnewa();
+            break;
+        case TP_bool_array:
+            bnewa();
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Invalid array type");
+            CTIabort("Internal compiler error!");
+            break;
+    }
+
+    if(entry->table->table_depth == 0) {
+        if(entry->isimport) {
+            astoree((uint16_t) entry->idx);
+        } else {
+            astoreg((uint16_t) entry->idx);
+        }
+    } else if(entry->table->table_depth == DEPTH(arg_info)) {
+        astore((uint8_t) entry->idx);
+    } else {
+        DBUG_ASSERT((FALSE), "Can't init an array from upper scope!");
+        CTIabort("Internal compiler error!");
+    }
+
+    DBUG_RETURN(arg_node);
+}
 
 /*
  * Traversal start function

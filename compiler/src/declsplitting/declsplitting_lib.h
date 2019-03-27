@@ -79,4 +79,6 @@ node* create_array_init_loops(char* var_name, symbol_table_entry* array_entry, n
 
 void rename_extern_global_dims(char* var_name, node* dims);
 
+void global_add_array_alloc(symbol_table_entry* entry, size_t dimcount, info* arg_info);
+
 #endif
