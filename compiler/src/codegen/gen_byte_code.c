@@ -592,11 +592,6 @@ node* GBCintconst (node * arg_node, info * arg_info) {
             iloadc((uint16_t) const_entry->index);
             break;
     }
-    if(INTCONST_VALUE(arg_node) == 1) {
-        iloadc_1();
-    } else {
-
-    }
 
     TYPE(arg_info) = TP_int;
 
