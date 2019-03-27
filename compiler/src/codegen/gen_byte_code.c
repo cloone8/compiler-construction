@@ -21,12 +21,14 @@
  */
 struct INFO {
     type final_type;
+    type returntype;
 };
 
 /*
  * INFO macros
  */
 #define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
+#define RETURNTYPE(__arg_info_struct__) ((__arg_info_struct__)->returntype)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -36,6 +38,7 @@ static info *GBCmakeInfo(void) {
 
     info *result = (info *)MEMmalloc(sizeof(info));
     TYPE(result) = TP_unknown;
+    RETURNTYPE(result) = TP_unknown;
 
     DBUG_RETURN(result);
 }
@@ -336,6 +339,8 @@ node* GBCvarread (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCvarread");
     UNUSED_VAR(arg_info);
 
+    TYPE(arg_info) = VARREAD_VARPOINTER(arg_node)->vartype;
+
     DBUG_RETURN(arg_node);
 }
 
@@ -394,7 +399,6 @@ node* GBCboolconst (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCintconst (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCintconst");
-    UNUSED_VAR(arg_info);
 
     TYPE(arg_info) = TP_int;
 
@@ -476,15 +480,19 @@ node* GBCerror (node * arg_node, info * arg_info) {
 node* GBCfunction (node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfunction");
 
-    if(FUNCTION_PARAMETERS(arg_node) != NULL)
+    if (FUNCTION_PARAMETERS(arg_node) != NULL)
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
 
 
-    if(FUNCTION_DEFINITION(arg_node) != NULL) {
-        FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
-
-    } else {
+    if (FUNCTION_DEFINITION(arg_node) != NULL) {
+        info* new = GBCmakeInfo();
+        RETURNTYPE(new) = FUNCTION_TYPE(arg_node);
+        FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), new);
+        GBCfreeInfo(new);
+    } 
+    else {
     }
+
 
     DBUG_RETURN (arg_node);
 }
@@ -928,6 +936,22 @@ node* GBCreturn(node * arg_node, info * arg_info) {
 
     if(RETURN_VALUE(arg_node) != NULL) {
         RETURN_VALUE(arg_node) = TRAVdo(RETURN_VALUE(arg_node), arg_info);
+    }
+
+    type to_return = RETURNTYPE(arg_info);
+
+    switch (to_return) {
+        case TP_bool:
+            bret();
+            break;
+        case TP_int:
+            iret();
+            break;
+        case TP_float:
+            fret();
+            break;
+        default:
+            break;
     }
 
     DBUG_RETURN (arg_node);
