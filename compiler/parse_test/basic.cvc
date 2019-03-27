@@ -10,5 +10,13 @@ export int main() {
         a = a + i;
     }
 
+    while(a < 100) {
+        a = a + 1;
+    }
+
+    do {
+        a = a + 2;
+    } while(a < 100);
+
     return a;
 }
