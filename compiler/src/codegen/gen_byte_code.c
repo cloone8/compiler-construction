@@ -1319,7 +1319,7 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
     } else if((entry->table->table_depth + 1) == DEPTH(arg_info)) {
         isr();
     } else {
-        isrn(DEPTH(arg_info) - curr_depth);
+        isrn(DEPTH(arg_info) - (curr_depth + 1));
     }
 
     if(FUNCALL_PARAMS(arg_node) != NULL) {

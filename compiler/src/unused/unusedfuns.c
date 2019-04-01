@@ -161,7 +161,11 @@ node *SUFdeclaration(node *arg_node, info *arg_info) {
 node *SUFlocalfunction(node* arg_node, info* arg_info) {
     DBUG_ENTER("SUFlocalfunction");
     if(!DELETE(arg_info)) {
+        LOCALFUNCTION_CURRENT(arg_node) = TRAVdo(LOCALFUNCTION_CURRENT(arg_node), arg_info);
 
+        if(LOCALFUNCTION_NEXT(arg_node) != NULL) {
+            LOCALFUNCTION_NEXT(arg_node) = TRAVdo(LOCALFUNCTION_NEXT(arg_node), arg_info);
+        }
     } else {
 
     }

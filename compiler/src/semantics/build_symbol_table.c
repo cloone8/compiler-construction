@@ -178,14 +178,14 @@ node *STBbasicparameter(node *arg_node, info *arg_info) {
 node *STBarrayparameter(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarrayparameter");
 
+    ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
+
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
     type atype = type_to_array_type(ARRAYPARAMETER_TYPE(arg_node));
     ARRAYPARAMETER_TYPE(arg_node) = atype;
 
     symbol_table_entry* entry = symbol_table_add(current, ARRAYPARAMETER_NAME(arg_node), atype, FALSE, FALSE);
     ARRAYPARAMETER_VARPOINTER(arg_node) = entry;
-
-    ARRAYPARAMETER_DIMENSIONS(arg_node) = TRAVdo(ARRAYPARAMETER_DIMENSIONS(arg_node), arg_info);
 
     /* Traverse further if we have more parameters. */
     if (ARRAYPARAMETER_NEXT(arg_node) != NULL)

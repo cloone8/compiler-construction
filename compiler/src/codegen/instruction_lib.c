@@ -312,9 +312,10 @@ void isrg(void) {
 
 void jsr(uint8_t num_arguments, char* jump_to) {
     DBUG_ENTER("jsr");
-    char instruction[20];
+    char* instruction = MEMmalloc((20 + STRlen(jump_to)) * sizeof(char));
     sprintf(instruction, "jsr %" PRIu8 " %s", num_arguments, jump_to);
     prt_inst(instruction);
+    MEMfree(instruction);
     DBUG_VOID_RETURN;
 }
 
