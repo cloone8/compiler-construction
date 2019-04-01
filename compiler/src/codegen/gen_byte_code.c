@@ -1470,9 +1470,10 @@ node* GBCexpr(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCexpr");
 
     /*This flag is used to check if the return value from a funcall needs to be stored or popped.*/
+    bool prev_isexpr = IS_EXPR(arg_info);
     IS_EXPR(arg_info) = TRUE;
     EXPR_CURRENT(arg_node) = TRAVdo(EXPR_CURRENT(arg_node), arg_info);
-    IS_EXPR(arg_info) = FALSE;
+    IS_EXPR(arg_info) = prev_isexpr;
 
     DBUG_RETURN (arg_node);
 }
@@ -1579,12 +1580,6 @@ node* GBClocalfunction(node * arg_node, info * arg_info) {
 
 node* GBCprogram(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBClocalfunction");
-
-    if (PROGRAM_FUNSYMBOLTABLE(arg_node) != NULL) {
-    }
-
-    if (PROGRAM_VARSYMBOLTABLE(arg_node) != NULL) {
-    }
 
     PROGRAM_FIRST(arg_node) = TRAVdo(PROGRAM_FIRST(arg_node), arg_info);
 
