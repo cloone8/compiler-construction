@@ -7,6 +7,7 @@
 #include "symbol_table.h"
 #include "str.h"
 #include "ctinfo.h"
+#include "copy.h"
 #include "memory.h"
 
 #include "util.h"
@@ -83,11 +84,16 @@ node* FTWfor(node* arg_node, info* arg_info) {
     node* counter_varread = TBmakeVarread(STRcpy(counter_entry->name));
     VARREAD_VARPOINTER(counter_varread) = counter_entry;
 
-    node* condition = TBmakeBinop(BO_lt, TBmakeExpr(counter_varread), FOR_CONDITION(arg_node));
+    node* count_up_condition = TBmakeExpr(TBmakeBinop(BO_lt, TBmakeExpr(counter_varread), FOR_CONDITION(arg_node)));
+    node* count_down_condition = TBmakeExpr(TBmakeBinop(BO_gt, TBmakeExpr(COPYdoCopy(counter_varread)), COPYdoCopy(FOR_CONDITION(arg_node))));
+    node* condition_picker = TBmakeExpr(TBmakeBinop(BO_gt, FOR_STEP(arg_node), TBmakeExpr(TBmakeConstant(TBmakeIntconst(0)))));
+    node* condition = TBmakeConditionalexpr(condition_picker, count_up_condition, count_down_condition);
+
     toreturn = TBmakeWhile(TBmakeExpr(condition), FOR_CODE(arg_node));
 
     FOR_CONDITION(arg_node) = NULL;
     FOR_CODE(arg_node) = NULL;
+    FOR_STEP(arg_node) = NULL;
     FREEfor(arg_node, NULL);
 
     DBUG_RETURN(toreturn);

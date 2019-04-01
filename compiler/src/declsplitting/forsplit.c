@@ -4,6 +4,7 @@
 #include "types.h"
 #include "tree_basic.h"
 #include "traverse.h"
+#include "copy.h"
 #include "dbug.h"
 
 #include "str.h"
@@ -136,10 +137,11 @@ node* FSPfor(node* arg_node, info* arg_info) {
     node* counter_inc_step;
     if(FOR_STEP(arg_node) != NULL) {
         FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
-        counter_inc_step = FOR_STEP(arg_node);
-        FOR_STEP(arg_node) = NULL;
+        counter_inc_step = COPYdoCopy(FOR_STEP(arg_node));
+        // FOR_STEP(arg_node) = NULL;
     } else {
         counter_inc_step = TBmakeExpr(TBmakeConstant(TBmakeIntconst(1)));
+        FOR_STEP(arg_node) = COPYdoCopy(counter_inc_step);
     }
 
     node* incr_binop = TBmakeBinop(BO_add, TBmakeExpr(counter_inc_varread), counter_inc_step);
