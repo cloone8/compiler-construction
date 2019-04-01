@@ -1323,6 +1323,9 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
         MEMfree(fun_label);
     }
 
+    if(entry->returntype == TP_void) {
+        DBUG_RETURN(arg_node);
+    }
 
     /* Pop top of stack if return value is not used by calee. */
     if (!IS_EXPR(arg_info)) {
