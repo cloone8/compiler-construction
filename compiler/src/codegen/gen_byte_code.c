@@ -36,6 +36,7 @@ struct INFO {
     pseudo_instructions* constants;
     pseudo_instructions* globals;
     size_t branch_amount;
+    size_t condexpr_amount;
     size_t loop_amount;
     size_t current_depth;
     bool is_expr;
@@ -53,6 +54,7 @@ struct INFO {
 #define CONSTANTS(__arg_info_struct__) ((__arg_info_struct__)->constants)
 #define GLOBALS(__arg_info_struct__) ((__arg_info_struct__)->globals)
 #define BRANCH_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->branch_amount)
+#define CONDEXPR_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->condexpr_amount)
 #define LOOP_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->loop_amount)
 #define DEPTH(__arg_info_struct__) ((__arg_info_struct__)->current_depth)
 #define IS_EXPR(__arg_info_struct__) ((__arg_info_struct__)->is_expr)
@@ -74,6 +76,7 @@ static info *GBCmakeInfo(void) {
     CONSTANTS(result) = PSI_make(INSTR_const);
     GLOBALS(result) = PSI_make(INSTR_global);
     BRANCH_AMOUNT(result) = 0;
+    CONDEXPR_AMOUNT(result) = 0;
     LOOP_AMOUNT(result) = 0;
     DEPTH(result) = 0;
     IS_EXPR(result) = FALSE;
@@ -750,9 +753,11 @@ node* GBCcast (node * arg_node, info * arg_info) {
     switch (CAST_CASTTO(arg_node)) {
         case TP_int:
             f2i();
+            TYPE(arg_info) = TP_int;
             break;
         case TP_float:
             i2f();
+            TYPE(arg_info) = TP_float;
             break;
         default:
             break;
@@ -1440,10 +1445,10 @@ node* GBCbranch(node * arg_node, info * arg_info) {
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
 
     get_size_t_str(count, BRANCH_AMOUNT(arg_info)++);
-    char* end_label = STRcat(count, "_end");
+    char* end_label = STRcatn(3, "branch_", count, "_end");
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {
-        char* else_label = STRcat(count, "_else");
+        char* else_label = STRcatn(3, "branch_", count, "_else");
         branch_f(else_label);
 
         BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
@@ -1602,10 +1607,10 @@ node* GBCconditionalexpr(node* arg_node, info* arg_info) {
 
     CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
 
-    get_size_t_str(count, BRANCH_AMOUNT(arg_info)++);
-    char* end_label = STRcat(count, "_end");
+    get_size_t_str(count, CONDEXPR_AMOUNT(arg_info)++);
+    char* end_label = STRcatn(3, "condexpr_", count, "_end");
 
-    char* else_label = STRcat(count, "_else");
+    char* else_label = STRcatn(3, "condexpr_", count, "_else");
     branch_f(else_label);
 
     CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), arg_info);

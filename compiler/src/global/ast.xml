@@ -178,7 +178,7 @@
                     <node name="IntConst" />
                     <node name="FloatConst" />
                     <node name="BoolConst" />
-                    <node name="Binop" />
+                    <node name="BinOp" />
                     <node name="VarRead" />
                 </travuser>
             </traversal>

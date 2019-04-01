@@ -83,13 +83,11 @@ node* CBCvarread(node* arg_node, info* arg_info) {
 node* CBCbinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("CBCbinop");
 
-    symbol_table_entry *entry = VARREAD_VARPOINTER(arg_node);
-    TO_CAST(arg_info) = entry->vartype;
-
-    info* left_info = CBCmakeInfo();
+    info* exprs_info = CBCmakeInfo();
 
     /* We need to  store types of the left and right operands.*/
-    TRAVdo(BINOP_LEFT(arg_node), left_info);
+    TRAVdo(BINOP_LEFT(arg_node), exprs_info);
+    TRAVdo(BINOP_RIGHT(arg_node), exprs_info);
 
     switch(BINOP_BINOPERATORS(arg_node)) {
         case BO_lt:
@@ -101,11 +99,11 @@ node* CBCbinop(node* arg_node, info* arg_info) {
             TO_CAST(arg_info) = TP_bool;
             break;
         default:
-            TO_CAST(arg_info) = TO_CAST(left_info);
+            TO_CAST(arg_info) = TO_CAST(exprs_info);
             break;
     }
 
-    CBCfreeInfo(left_info);
+    CBCfreeInfo(exprs_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -138,6 +136,7 @@ node* handle_boolcast(node* arg_node, info* arg_info) {
 /* Handle the conversion from a bool towards an int or towards a float. */
 node* handle_from_boolcast(node* arg_node, info* arg_info) {
     DBUG_ENTER("handle_from_boolcast");
+    UNUSED_VAR(arg_info);
 
     if(CAST_CASTTO(arg_node) == TP_float) {
         /*We have a float.*/
@@ -162,7 +161,7 @@ node* handle_from_boolcast(node* arg_node, info* arg_info) {
 
 node* CBCcast(node* arg_node, info* arg_info) {
     DBUG_ENTER("CBCcast");
-
+    DBUG_PRINT("CBC", ("Compiling cast in file \"%s\" on line %d", NODE_FILE(arg_node), NODE_LINE(arg_node)));
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
 
     if (TO_CAST(arg_info) == TP_bool || CAST_CASTTO(arg_node) == TP_bool) {

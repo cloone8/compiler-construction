@@ -127,7 +127,7 @@ node *SUFdeclaration(node *arg_node, info *arg_info) {
                 DBUG_PRINT("SUFfree", ("Deleting function %s", fun_name));
 
                 if(STReq(NODE_FILE(arg_node), global.infile) && !STReq("__init", fun_name)) {
-                    CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unused non-export function %s", fun_name);
+                    CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unused non-export function \"%s\"", fun_name);
                 }
 
                 fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(DECLARATION_CURRENT(arg_node));
