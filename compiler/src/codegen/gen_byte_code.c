@@ -1302,24 +1302,27 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
     fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
     size_t curr_depth = entry->table->table_depth;
     if(entry->table->table_depth == 0) {
-        if(entry->isimport) {
-            isrg();
-        } else {
-            isrg();
-        }
+        isrg();
     } else if(entry->table->table_depth == DEPTH(arg_info)) {
         isrl();
+    } else if((entry->table->table_depth + 1) == DEPTH(arg_info)) {
+        isr();
     } else {
-        isrn(curr_depth);
+        isrn(DEPTH(arg_info) - curr_depth);
     }
 
     if(FUNCALL_PARAMS(arg_node) != NULL) {
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
     }
 
-    char* fun_label = get_fun_label(entry);
-    jsr(entry->paramamount, fun_label);
-    MEMfree(fun_label);
+    if(entry->isimport) {
+        jsre(entry->idx);
+    } else {
+        char* fun_label = get_fun_label(entry);
+        jsr(entry->paramamount, fun_label);
+        MEMfree(fun_label);
+    }
+
 
     /* Pop top of stack if return value is not used by calee. */
     if (!IS_EXPR(arg_info)) {
