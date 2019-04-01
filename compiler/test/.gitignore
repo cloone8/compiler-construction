@@ -1,1 +1,4 @@
 *.cvccpp
+tmp.o
+tmp.out
+tmp.s
