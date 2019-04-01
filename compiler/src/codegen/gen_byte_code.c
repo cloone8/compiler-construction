@@ -1309,7 +1309,9 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
     }
 
-    jsr(entry->paramamount, entry->name);
+    char* fun_label = get_fun_label(entry);
+    jsr(entry->paramamount, fun_label);
+    MEMfree(fun_label);
 
     /* Pop top of stack if return value is not used by calee. */
     if (!IS_EXPR(arg_info)) {
