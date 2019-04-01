@@ -918,6 +918,18 @@ node* GBCfunction (node * arg_node, info * arg_info) {
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
 
     if (FUNCTION_DEFINITION(arg_node) != NULL) {
+
+        if (FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node))) {
+            fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(arg_node);
+
+            instruction* to_add = PSI_make_exportfun(FUNCTION_NAME(arg_node),
+                                                     entry->returntype,
+                                                     entry->paramamount,
+                                                     entry->paramtypes,
+                                                     FUNCTION_NAME(arg_node));
+            PSI_add(EXPORTFUNS(arg_info), to_add);
+        }
+
         label(FUNCTION_NAME(arg_node));
         type old_returntype = RETURNTYPE(arg_info);
         RETURNTYPE(arg_info) = FUNCTION_TYPE(arg_node);
@@ -1298,9 +1310,17 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfuncall");
 
     fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
-
-    if (DEPTH(arg_info) == 1) {
-        isrg();
+    size_t curr_depth = entry->table->table_depth;
+    if(entry->table->table_depth == 0) {
+        if(entry->isimport) {
+            isrg();
+        } else {
+            isrg();
+        }
+    } else if(entry->table->table_depth == DEPTH(arg_info)) {
+        isrl();
+    } else {
+        isrn(curr_depth);
     }
 
     if(FUNCALL_PARAMS(arg_node) != NULL) {

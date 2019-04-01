@@ -7,13 +7,21 @@
 //     return c[1, 1];
 // }
 
+// bool bar() {
+//     return false;
+// }
+
 int foo() {
     int a = 4;
+    bool b = true;
     float c = bar();
 
     float bar() {
         return 14.0;
     }
+    // if (b == true) {
+    //     b = bar();
+    // }
     return 2;
 }
 
