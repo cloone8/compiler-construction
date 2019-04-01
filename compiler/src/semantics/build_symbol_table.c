@@ -246,7 +246,7 @@ node *STBarrayvarassign(node *arg_node, info *arg_info) {
     symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
-        CTIerror("Var %s not in scope", name);
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Var %s not in scope", name);
     } else {
         ARRAYVARASSIGN_VARPOINTER(arg_node) = entry_pointer;
     }
@@ -275,7 +275,7 @@ node *STBvarassign(node *arg_node, info *arg_info) {
     symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
-        CTIerror("Var %s not in scope", name);
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Var %s not in scope", name);
     } else {
         VARASSIGN_VARPOINTER(arg_node) = entry_pointer;
     }
@@ -348,7 +348,7 @@ node *STBvarread(node *arg_node, info *arg_info) {
     symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
-        CTIerror("Var %s not in scope", name);
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Var %s not in scope", name);
     } else {
         VARREAD_VARPOINTER(arg_node) = entry_pointer;
     }
@@ -372,7 +372,7 @@ node *STBarrayvarread(node *arg_node, info *arg_info) {
     symbol_table_entry *entry_pointer = var_is_in_scope(current, name);
 
     if (entry_pointer == NULL) {
-        CTIerror("Var %s not in scope", name);
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Var %s not in scope", name);
     }
     else {
         ARRAYVARREAD_VARPOINTER(arg_node) = entry_pointer;

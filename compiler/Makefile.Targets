@@ -122,7 +122,7 @@ util = util.o node_appends.o
 
 declsplitting = varsplit.o declsplitting_lib.o forsplit.o varrename.o
 
-typechecking = typecheck.o
+typechecking = typecheck.o returncheck.o
 
 codetransform = arrayparams.o boolcomp.o boolcast.o arraylower.o \
 				fortowhile.o whiletodowhile.o

@@ -1,0 +1,76 @@
+void a() {
+    int a = 1;
+}
+
+void b() {
+    return;
+}
+
+int c() {
+    return 1;
+}
+
+// int d() {
+//     int a = 1 + 4;
+// }
+
+int e() {
+    int a = 6;
+
+    if(a > 2) {
+        return a;
+    } else {
+        return 0;
+    }
+}
+
+int f() {
+    int a = 6;
+
+    if(a > 2) {
+        return a;
+    } else {
+        a = 2;
+    }
+    return 0;
+}
+
+// int g() {
+//     int a = 6;
+
+//     if(a > 2) {
+//         return a;
+//     } else {
+//         a = 2;
+//     }
+// }
+
+int h() {
+    int a = 6;
+
+    if(a > 2) {
+        if(1 > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 6;
+    }
+}
+
+int i() {
+    int a = 6;
+
+    if(a > 2) {
+        if(1 > 0) {
+            a = 1;
+        } else {
+            a = 2;
+        }
+    } else {
+        a = 3;
+    }
+
+    return 0;
+}

@@ -98,6 +98,14 @@ SUBPHASE( tc,
            ALWAYS,
            sac)
 
+SUBPHASE( rc,
+           "Return checking",
+           RCdo,
+           ALWAYS,
+           sac)
+
+SUBPHASE(prt_rc_ast, "Printing implicit return added AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), sac)
+
 ENDPHASE(sac)
 
 /******************************************************************************/

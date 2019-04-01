@@ -61,7 +61,7 @@ static info *CFSfreeInfo(info *info) {
 
 /**
  * In this function we check if a function is called with the correct amount of parameters.
- * 
+ *
  * @params fun_entry: The entry in the function symbol table of the corresponding function.
  * @params funcall_node: The functioncall node of which we check the parameter amount.
  * @param arg_info: The INFO struct that contains additional information.
@@ -95,10 +95,10 @@ static void check_valid_parameter_count(fun_symbol_table_entry* fun_entry, node*
 
 /**
  * In this function we handle the scope depths of a function definition.
- * 
+ *
  * @params arg_node: The current functiondefinition node to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
- * 
+ *
  **/
 node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
     DBUG_ENTER("CFSfuctiiondefinition");
@@ -119,10 +119,10 @@ node *CFSfunctiondefinition(node *arg_node, info *arg_info) {
 
 /**
  * This function checks if a functioncall is valid, by checking if the called function is in scope.
- * 
+ *
  * @params arg_node: The current functioncall node to be evaluated.
  * @param arg_info: The INFO struct that contains additional information.
- * 
+ *
  **/
 node *CFSfuncall(node *arg_node, info *arg_info) {
     DBUG_ENTER("CFSfuncall");
@@ -132,7 +132,7 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
     fun_symbol_table_entry* entry = fun_is_in_scope(CURRENT_SYMBOL_TABLE(arg_info), fun_name);
 
     if (entry == NULL) {
-        CTIerror("Fun %s not in scope", fun_name);
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Function %s not in scope", fun_name);
     } else {
         FUNCALL_FUNPOINTER(arg_node) = entry;
     }
@@ -144,7 +144,7 @@ node *CFSfuncall(node *arg_node, info *arg_info) {
 
 /**
  * The start of the traversal to check if fucntions are in scope.
- * 
+ *
  * @params syntaxtree: The current syntaxtree of the current program.
  **/
 node *CFSdo(node *syntaxtree) {
