@@ -1300,9 +1300,17 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfuncall");
 
     fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
-
-    if (DEPTH(arg_info) == 1) {
-        isrg();
+    size_t curr_depth = entry->table->table_depth;
+    if(entry->table->table_depth == 0) {
+        if(entry->isimport) {
+            isrg();
+        } else {
+            isrg();
+        }
+    } else if(entry->table->table_depth == DEPTH(arg_info)) {
+        isrl();
+    } else {
+        isrn(curr_depth);
     }
 
     if(FUNCALL_PARAMS(arg_node) != NULL) {
