@@ -5,7 +5,7 @@ int foo() {
     bool v = (bool)5.5;
     bool p = (bool)5.5;
     bool l = (bool)0;
-    bool wow = (bool)(1 + 2 + 3);
+    bool wow = (bool)(0 -2 -3);
     int test1 = 2;
     int test2 = 0;
     float test3 = 1.0;

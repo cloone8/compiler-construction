@@ -17,9 +17,6 @@
 struct INFO
 {
     type to_cast;
-    int intval;
-    float floatval;
-    bool boolval;
 };
 
 /*
@@ -35,9 +32,6 @@ static info* CBCmakeInfo(void) {
 
     info* result = (info*)MEMmalloc(sizeof(info));
     TO_CAST(result) = TP_unknown;
-    INT_VAL(result) = 0;
-    FLOAT_VAL(result) = 0;
-    BOOL_VAL(result) = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -56,7 +50,6 @@ static info *CBCfreeInfo(info *info) {
 node* CBCintconst(node* arg_node, info* arg_info) {
     DBUG_ENTER("CBCintconst");
 
-    INT_VAL(arg_info) = INTCONST_VALUE(arg_node);
     TO_CAST(arg_info) = TP_int;
 
     DBUG_RETURN(arg_node);
@@ -65,7 +58,6 @@ node* CBCintconst(node* arg_node, info* arg_info) {
 node* CBCboolconst(node* arg_node, info* arg_info) {
     DBUG_ENTER("CBCboolconst");
 
-    BOOL_VAL(arg_info) = BOOLCONST_VALUE(arg_node);
     TO_CAST(arg_info) = TP_bool;
 
     DBUG_RETURN(arg_node);
@@ -74,7 +66,6 @@ node* CBCboolconst(node* arg_node, info* arg_info) {
 node* CBCfloatconst(node* arg_node, info* arg_info) {
     DBUG_ENTER("CBCfloatconst");
 
-    FLOAT_VAL(arg_info) = FLOATCONST_VALUE(arg_node);
     TO_CAST(arg_info) = TP_float;
 
     DBUG_RETURN(arg_node);
@@ -95,21 +86,21 @@ node* handle_boolcast(node* arg_node, info* arg_info) {
 
     if(TO_CAST(arg_info) == TP_float) {
         /*We have a float.*/
-        if (FLOAT_VAL(arg_info) != 0) {
-            DBUG_RETURN(TBmakeBoolconst(TRUE));
-        } else {
-            DBUG_RETURN(TBmakeBoolconst(FALSE));
-        }
-    }
-    else {
-        /*We have an int.*/
-        if (INT_VAL(arg_info) != 0) {
-            DBUG_RETURN(TBmakeBoolconst(TRUE));
-        } else {
-            DBUG_RETURN(TBmakeBoolconst(FALSE));
-        }
-    }
 
+        node* condition = TBmakeBinop(BO_eq, CAST_TARGET(arg_node), TBmakeExpr(TBmakeConstant(TBmakeFloatconst(0.0))));
+        node* toreturn = TBmakeConditionalexpr(TBmakeExpr(condition),
+                            TBmakeExpr(TBmakeConstant(TBmakeBoolconst(FALSE))),
+                            TBmakeExpr(TBmakeConstant(TBmakeBoolconst(TRUE))));
+        DBUG_RETURN(toreturn);
+    } else {
+        /*We have an int.*/
+
+        node* condition = TBmakeBinop(BO_eq, CAST_TARGET(arg_node), TBmakeExpr(TBmakeConstant(TBmakeIntconst(0))));
+        node* toreturn = TBmakeConditionalexpr(TBmakeExpr(condition),
+                            TBmakeExpr(TBmakeConstant(TBmakeBoolconst(FALSE))),
+                            TBmakeExpr(TBmakeConstant(TBmakeBoolconst(TRUE))));
+        DBUG_RETURN(toreturn);
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -118,20 +109,22 @@ node* handle_boolcast(node* arg_node, info* arg_info) {
 node* handle_from_boolcast(node* arg_node, info* arg_info) {
     DBUG_ENTER("handle_from_boolcast");
 
-    if (CAST_CASTTO(arg_node) == TP_float) {
-        /*We need a float cast.*/
-        if (BOOL_VAL(arg_info) == TRUE) {
-            arg_node = TBmakeFloatconst(1.0);
-        } else {
-            arg_node = TBmakeFloatconst(0.0);
-        }
+    if(CAST_CASTTO(arg_node) == TP_float) {
+        /*We have a float.*/
+
+        node* condition = TBmakeBinop(BO_eq, CAST_TARGET(arg_node), TBmakeExpr(TBmakeConstant(TBmakeBoolconst(TRUE))));
+        node* toreturn = TBmakeConditionalexpr(TBmakeExpr(condition),
+                            TBmakeExpr(TBmakeConstant(TBmakeFloatconst(1.0))),
+                            TBmakeExpr(TBmakeConstant(TBmakeFloatconst(0.0))));
+        DBUG_RETURN(toreturn);
     } else {
-        /*We need an int cast*/
-        if (BOOL_VAL(arg_info) == TRUE) {
-            arg_node = TBmakeIntconst(1);
-        } else {
-            arg_node = TBmakeIntconst(0);
-        }
+        /*We have an int.*/
+
+        node* condition = TBmakeBinop(BO_eq, CAST_TARGET(arg_node), TBmakeExpr(TBmakeConstant(TBmakeBoolconst(TRUE))));
+        node* toreturn = TBmakeConditionalexpr(TBmakeExpr(condition),
+                            TBmakeExpr(TBmakeConstant(TBmakeIntconst(1))),
+                            TBmakeExpr(TBmakeConstant(TBmakeIntconst(0))));
+        DBUG_RETURN(toreturn);
     }
 
     DBUG_RETURN(arg_node);
@@ -146,15 +139,17 @@ node* CBCcast(node* arg_node, info* arg_info) {
         if (CAST_CASTTO(arg_node) == TP_bool) {
             /*casting towards bool*/
             node* old_cast = arg_node;
-            arg_node = TBmakeConstant(handle_boolcast(arg_node, arg_info));
+            arg_node = handle_boolcast(arg_node, arg_info);
             TRAVpush(TR_free);
+            CAST_TARGET(old_cast) = NULL;
             FREEcast(old_cast, NULL);
             TRAVpop();
         } else {
             /*casting towards non-bool*/
             node *old_cast = arg_node;
-            arg_node = TBmakeConstant(handle_from_boolcast(arg_node, arg_info));
+            arg_node = handle_from_boolcast(arg_node, arg_info);
             TRAVpush(TR_free);
+            CAST_TARGET(old_cast) = NULL;
             FREEcast(old_cast, NULL);
             TRAVpop();
         }

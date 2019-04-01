@@ -10,9 +10,9 @@ int c() {
     return 1;
 }
 
-// int d() {
-//     int a = 1 + 4;
-// }
+int d() {
+    int a = 1 + 4;
+}
 
 int e() {
     int a = 6;
@@ -35,15 +35,15 @@ int f() {
     return 0;
 }
 
-// int g() {
-//     int a = 6;
+int g() {
+    int a = 6;
 
-//     if(a > 2) {
-//         return a;
-//     } else {
-//         a = 2;
-//     }
-// }
+    if(a > 2) {
+        return a;
+    } else {
+        a = 2;
+    }
+}
 
 int h() {
     int a = 6;
