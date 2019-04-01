@@ -6,6 +6,16 @@ int foo() {
     bool p = (bool)5.5;
     bool l = (bool)0;
     bool wow = (bool)(1 + 2 + 3);
+    int test1 = 2;
+    int test2 = 0;
+    float test3 = 1.0;
+    float test4 = 0.0;
+    bool x = (bool) test1;
+    x = (bool) test1;
+    x = (bool) test2;
+    x = (bool) test3;
+    x = (bool) test4;
+
     return 1;
 }
 
