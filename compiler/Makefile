@@ -259,13 +259,25 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 # Testing
 #
 
-check: all
+check: clean
+	@echo "============================="
+	@echo "Compiling development version"
+	@echo "============================="
+	@echo ""
+	@make devel 1> /dev/null
 	@cd test; \
 		CIVAS=../$(TEST_CIVAS) \
 		CIVVM=../$(TEST_CIVVM) \
 		CIVCC=../$(TEST_CIVCC) \
 		RUN_FUNCTIONAL=$(TEST_RUN_FUNCTIONAL) \
 		bash run.bash $(TEST_DIRS)
+	@echo "============================="
+	@echo "  Compiling product version"
+	@echo "============================="
+	@echo ""
+	@make prod 1> /dev/null
+	@cd test_stephen; \
+		bash test.sh
 
 ###############################################################################
 #
