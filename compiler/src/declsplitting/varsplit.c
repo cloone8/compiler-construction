@@ -70,7 +70,7 @@ node* VSPprogram(node* arg_node, info* arg_info) {
 
     PROGRAM_FIRST(arg_node) = init_declaration;
 
-    fun_symbol_table_entry* entry = fun_symbol_table_add(PROGRAM_FUNSYMBOLTABLE(arg_node), funname, TP_void, 0, NULL);
+    fun_symbol_table_entry* entry = fun_symbol_table_add(PROGRAM_FUNSYMBOLTABLE(arg_node), funname, TP_void, 0, NULL, FALSE, TRUE);
 
     FUNCTION_FUNPOINTER(init_function) = entry;
 

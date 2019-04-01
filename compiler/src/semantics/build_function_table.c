@@ -89,6 +89,8 @@ node *FTBfunction(node *arg_node, info *arg_info) {
 
     type* parameters = PARAMS(arg_info);
     size_t paramcount = PARAMCOUNT(arg_info);
+    bool isimport = (FUNCTION_DEFINITION(arg_node) == NULL);
+    bool isexport = ((FUNCTION_DEFINITION(arg_node) != NULL) && (FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node))));
 
     // Assert that the function either has zero parameters, or the parameter
     // type array is not NULL
@@ -98,11 +100,11 @@ node *FTBfunction(node *arg_node, info *arg_info) {
     PARAMCOUNT(arg_info) = 0;
 
     fun_symbol_table_entry* entry = fun_symbol_table_add(CURRENT_SYMBOL_TABLE(arg_info), FUNCTION_NAME(arg_node),
-                                                         FUNCTION_TYPE(arg_node), paramcount, parameters);
+                                                         FUNCTION_TYPE(arg_node), paramcount, parameters, isimport, isexport);
     FUNCTION_FUNPOINTER(arg_node) = entry;
 
     // Go to the function definition, as this function might have local functions
-    if(FUNCTION_DEFINITION(arg_node) != NULL) {
+    if(!isimport) {
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), arg_info);
     }
 

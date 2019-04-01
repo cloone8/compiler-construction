@@ -228,6 +228,38 @@ static void set_globalvar_idx(symbol_table* table, info* arg_info) {
     DBUG_VOID_RETURN;
 }
 
+static void set_globalfun_idx(fun_symbol_table* table, info* arg_info) {
+    DBUG_ENTER("set_globalfun_idx");
+    size_t importcount = 0;
+
+    for(size_t i = 0; i < table->current_entries; i++) {
+        fun_symbol_table_entry* curr = table->entries[i];
+        if(curr->isimport) {
+            curr->idx = importcount++;
+
+            if(importcount > UINT16_MAX) {
+                CTIabort("Too many imported variables for the VM to handle!");
+            }
+
+            instruction* to_add = PSI_make_importfun(curr->name,
+                                                     curr->returntype,
+                                                     curr->paramamount,
+                                                     curr->paramtypes);
+            PSI_add(IMPORTFUNS(arg_info), to_add);
+
+        } else if(curr->isexport) {
+            instruction* to_add = PSI_make_exportfun(curr->name,
+                                                     curr->returntype,
+                                                     curr->paramamount,
+                                                     curr->paramtypes,
+                                                     curr->name);
+            PSI_add(EXPORTFUNS(arg_info), to_add);
+        }
+    }
+
+    DBUG_VOID_RETURN;
+}
+
 /** <!--******************************************************************-->
  *
  * @fn GBCbinop
@@ -886,18 +918,6 @@ node* GBCfunction (node * arg_node, info * arg_info) {
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
 
     if (FUNCTION_DEFINITION(arg_node) != NULL) {
-
-        if(FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node))) {
-            fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(arg_node);
-
-            instruction* to_add = PSI_make_exportfun(FUNCTION_NAME(arg_node),
-                                                     entry->returntype,
-                                                     entry->paramamount,
-                                                     entry->paramtypes,
-                                                     FUNCTION_NAME(arg_node));
-            PSI_add(EXPORTFUNS(arg_info), to_add);
-        }
-
         label(FUNCTION_NAME(arg_node));
         type old_returntype = RETURNTYPE(arg_info);
         RETURNTYPE(arg_info) = FUNCTION_TYPE(arg_node);
@@ -906,16 +926,7 @@ node* GBCfunction (node * arg_node, info * arg_info) {
         RETURNTYPE(arg_info) = old_returntype;
 
         fputc('\n', ofile);
-    } else {
-        fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(arg_node);
-
-        instruction* to_add = PSI_make_importfun(FUNCTION_NAME(arg_node),
-                                                     entry->returntype,
-                                                     entry->paramamount,
-                                                     entry->paramtypes);
-        PSI_add(IMPORTFUNS(arg_info), to_add);
     }
-
 
     DBUG_RETURN (arg_node);
 }
@@ -1624,6 +1635,7 @@ node *GBCdoGenByteCode(node *syntaxtree) {
 
     TRAVpush(TR_gbc);
     set_globalvar_idx(PROGRAM_VARSYMBOLTABLE(syntaxtree), arg_info);
+    set_globalfun_idx(PROGRAM_FUNSYMBOLTABLE(syntaxtree), arg_info);
 
     // If there is no output file supplied, just use stdout
     DBUG_PRINT("GBC", ("Opening output stream"));

@@ -112,7 +112,8 @@ static void increase_table_size(fun_symbol_table* toincrease) {
  * @param param_amount: The amount of parameters the function needs.
  * @param param_types: An array of types with the types the function needs.
  **/
-fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, size_t param_amount, type* param_types) {
+fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table* table, char* name, type return_type, size_t param_amount, type* param_types,
+                                             bool isimport, bool isexport) {
     DBUG_ENTER("fun_symbol_table_add");
     DBUG_ASSERT((table != NULL), "Table was NULL!");
 
@@ -128,6 +129,8 @@ fun_symbol_table_entry* fun_symbol_table_add(fun_symbol_table* table, char* name
     new_entry->paramamount = param_amount;
     new_entry->paramtypes = param_types;
     new_entry->table = table;
+    new_entry->isexport = isexport;
+    new_entry->isimport = isimport;
 
     table->current_entries++;
 
