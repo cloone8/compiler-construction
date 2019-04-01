@@ -12,6 +12,8 @@
 
 #include "instruction_lib.h"
 
+#include "util.h"
+
 FILE* ofile = NULL;
 
 static void prt_lbl(const char* label) {
@@ -56,6 +58,33 @@ void label(const char* name) {
     prt_lbl(name);
 
     DBUG_VOID_RETURN;
+}
+
+/**
+ * Takes the given function entry, and creates a label from that function.
+ * Then prints that label to assembly
+ * @param entry: The function symbol table entry
+ */
+void fun_label(fun_symbol_table_entry* entry) {
+    DBUG_ENTER("fun_label");
+    DBUG_ASSERT((entry != NULL), "entry was NULL!");
+
+    get_size_t_str(fun_table_buf, entry->table->id);
+    char* name = STRcatn(3, fun_table_buf, "-", entry->name);
+    prt_lbl(name);
+    MEMfree(name);
+
+    DBUG_VOID_RETURN;
+}
+
+char* get_fun_label(fun_symbol_table_entry* entry) {
+    DBUG_ENTER("get_fun_label");
+    DBUG_ASSERT((entry != NULL), "entry was NULL!");
+
+    get_size_t_str(fun_table_buf, entry->table->id);
+    char* name = STRcatn(3, fun_table_buf, "-", entry->name);
+
+    DBUG_RETURN(name);
 }
 
 void iadd(void) {

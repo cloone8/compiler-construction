@@ -18,6 +18,14 @@ extern FILE* ofile;
 extern void label(const char* name);
 
 /**
+ * Takes the given function entry, and creates a label from that function.
+ * Then prints that label to assembly
+ * @param entry: The function symbol table entry
+ */
+extern void fun_label(fun_symbol_table_entry* entry);
+extern char* get_fun_label(fun_symbol_table_entry* entry);
+
+/**
  * Pops two values from the top of the stack, adds them and pushes
  * the result onto the stack
  */
