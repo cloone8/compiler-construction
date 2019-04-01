@@ -1,8 +1,23 @@
-extern int[a,b] g;
-export int[2,2] h = [[1,2],[3,4]];
+// extern int[a,b] g;
+// export int[2,2] h = [[1,2],[3,4]];
+
+// export int main() {
+//     int[2,2] c = [[1,2],[3,4]];
+
+//     return c[1, 1];
+// }
+
+int foo() {
+    int a = 4;
+    float c = bar();
+
+    float bar() {
+        return 14.0;
+    }
+    return 2;
+}
 
 export int main() {
-    int[2,2] c = [[1,2],[3,4]];
-
-    return c[1, 1];
+    int a = foo();
+    return 1;
 }

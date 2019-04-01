@@ -38,6 +38,7 @@ struct INFO {
     size_t branch_amount;
     size_t loop_amount;
     size_t current_depth;
+    bool is_expr;
 };
 
 /*
@@ -54,6 +55,7 @@ struct INFO {
 #define BRANCH_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->branch_amount)
 #define LOOP_AMOUNT(__arg_info_struct__) ((__arg_info_struct__)->loop_amount)
 #define DEPTH(__arg_info_struct__) ((__arg_info_struct__)->current_depth)
+#define IS_EXPR(__arg_info_struct__) ((__arg_info_struct__)->is_expr)
 
 /**
  * Creates a new info struct and sets the initial values
@@ -74,6 +76,8 @@ static info *GBCmakeInfo(void) {
     BRANCH_AMOUNT(result) = 0;
     LOOP_AMOUNT(result) = 0;
     DEPTH(result) = 0;
+    IS_EXPR(result) = FALSE;
+
 
     DBUG_RETURN(result);
 }
@@ -1006,7 +1010,9 @@ node* GBCfunctiondefinition (node * arg_node, info * arg_info) {
         CTIabort("Too many variables in function!");
     }
 
-    esr((uint8_t) varcount);
+    if (varcount != 0) {
+        esr((uint8_t) varcount);
+    }
 
     FUNCTIONDEFINITION_FUNCTIONBODY(arg_node) = TRAVdo(FUNCTIONDEFINITION_FUNCTIONBODY(arg_node), arg_info);
 
@@ -1280,11 +1286,34 @@ node* GBCglobaldefinition (node * arg_node, info * arg_info) {
 node* GBCfuncall(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCfuncall");
 
+    fun_symbol_table_entry* entry = FUNCALL_FUNPOINTER(arg_node);
+
+    if (DEPTH(arg_info) == 1) {
+        isrg();
+    }
 
     if(FUNCALL_PARAMS(arg_node) != NULL) {
         FUNCALL_PARAMS(arg_node) = TRAVdo(FUNCALL_PARAMS(arg_node), arg_info);
     }
 
+    jsr(entry->paramamount, entry->name);
+
+    /* Pop top of stack if return value is not used by calee. */
+    if (!IS_EXPR(arg_info)) {
+        switch (entry->returntype) {
+            case TP_bool:
+                bpop();
+                break;
+            case TP_int:
+                ipop();
+                break;
+            case TP_float:
+                fpop();
+                break;
+            default:
+                break;
+        }
+    }
 
     DBUG_RETURN (arg_node);
 }
@@ -1414,7 +1443,10 @@ node* GBCbranch(node * arg_node, info * arg_info) {
 node* GBCexpr(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCexpr");
 
+    /*This flag is used to check if the return value from a funcall needs to be stored or popped.*/
+    IS_EXPR(arg_info) = TRUE;
     EXPR_CURRENT(arg_node) = TRAVdo(EXPR_CURRENT(arg_node), arg_info);
+    IS_EXPR(arg_info) = FALSE;
 
     DBUG_RETURN (arg_node);
 }
