@@ -248,11 +248,13 @@ static void set_globalfun_idx(fun_symbol_table* table, info* arg_info) {
             PSI_add(IMPORTFUNS(arg_info), to_add);
 
         } else if(curr->isexport) {
+            char* fun_label = get_fun_label(curr);
             instruction* to_add = PSI_make_exportfun(curr->name,
                                                      curr->returntype,
                                                      curr->paramamount,
                                                      curr->paramtypes,
-                                                     curr->name);
+                                                     fun_label);
+            MEMfree(fun_label);
             PSI_add(EXPORTFUNS(arg_info), to_add);
         }
     }
@@ -918,7 +920,7 @@ node* GBCfunction (node * arg_node, info * arg_info) {
         FUNCTION_PARAMETERS(arg_node) = TRAVdo(FUNCTION_PARAMETERS(arg_node), arg_info);
 
     if (FUNCTION_DEFINITION(arg_node) != NULL) {
-        label(FUNCTION_NAME(arg_node));
+        fun_label(FUNCTION_FUNPOINTER(arg_node));
         type old_returntype = RETURNTYPE(arg_info);
         RETURNTYPE(arg_info) = FUNCTION_TYPE(arg_node);
 
