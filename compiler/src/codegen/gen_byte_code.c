@@ -1052,12 +1052,12 @@ node* GBCfunctionbody (node * arg_node, info * arg_info) {
         FUNCTIONBODY_VARDECLARATIONS(arg_node) = TRAVdo(FUNCTIONBODY_VARDECLARATIONS(arg_node), arg_info);
     }
 
-    if(FUNCTIONBODY_LOCALFUNCTIONS(arg_node) != NULL) {
-        FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(arg_node), arg_info);
-    }
-
     if(FUNCTIONBODY_STATEMENTS(arg_node) != NULL) {
         FUNCTIONBODY_STATEMENTS(arg_node) = TRAVdo(FUNCTIONBODY_STATEMENTS(arg_node), arg_info);
+    }
+
+    if(FUNCTIONBODY_LOCALFUNCTIONS(arg_node) != NULL) {
+        FUNCTIONBODY_LOCALFUNCTIONS(arg_node) = TRAVdo(FUNCTIONBODY_LOCALFUNCTIONS(arg_node), arg_info);
     }
 
     DBUG_RETURN (arg_node);
