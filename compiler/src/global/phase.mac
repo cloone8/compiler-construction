@@ -167,15 +167,15 @@ SUBPHASE(prt_ict_ast, "Printing transformed AST", PRTdoPrint, ONLYIF(myglobal.pr
 ENDPHASE(ict)
 /******************************************************************************/
 
-// PHASE(su,
-//        "Stripping unused code",
-//        ALWAYS)
+PHASE(su,
+       "Stripping unused code",
+       ALWAYS)
 
-// SUBPHASE(suf, "Stripping unused functions", SUFdo, ALWAYS, su)
+SUBPHASE(suf, "Stripping unused functions", SUFdo, ALWAYS, su)
 
-// SUBPHASE(prt_su, "Printing stripped AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), su)
+SUBPHASE(prt_su, "Printing stripped AST", PRTdoPrint, ONLYIF(myglobal.printtree >= PRINT_END_PHASE), su)
 
-// ENDPHASE(su)
+ENDPHASE(su)
 /******************************************************************************/
 
 PHASE(cg,

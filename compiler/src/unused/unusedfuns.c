@@ -7,7 +7,7 @@
 #include "tree_basic.h"
 #include "traverse.h"
 #include "free_node.h"
-
+#include "globals.h"
 #include "str.h"
 #include "memory.h"
 #include "ctinfo.h"
@@ -20,6 +20,7 @@
 struct INFO {
     countMap* funcounts;
     bool deletephase;
+    bool deleteinit;
 };
 
 
@@ -29,6 +30,7 @@ struct INFO {
 
 #define COUNTS(__arg_info_struct__) ((__arg_info_struct__)->funcounts)
 #define DELETE(__arg_info_struct__) ((__arg_info_struct__)->deletephase)
+#define DELETEINIT(__arg_info_struct__) ((__arg_info_struct__)->deleteinit)
 
 /*
  * INFO functions
@@ -43,6 +45,7 @@ static info *SUFmakeInfo(void) {
     info *result = (info *)MEMmalloc(sizeof(info));
     result->funcounts = CMcreate();
     result->deletephase = FALSE;
+    result->deleteinit = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -64,14 +67,14 @@ node *SUFfunction(node *arg_node, info *arg_info) {
     DBUG_ENTER("SUFfunction");
 
     if(!DELETE(arg_info)) {
-        if(FUNCTION_DEFINITION(arg_node) != NULL && FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node)) == TRUE) {
-            // Add an occurence of this item, so exported functions are never deleted
-            CMaddOccurence(COUNTS(arg_info), FUNCTION_NAME(arg_node));
-        }
-
         if(STReq(FUNCTION_NAME(arg_node), "__init")) {
             if(FUNCTIONBODY_STATEMENTS(FUNCTIONDEFINITION_FUNCTIONBODY(FUNCTION_DEFINITION(arg_node))) != NULL) {
                 CMaddOccurence((COUNTS(arg_info)), FUNCTION_NAME(arg_node));
+            }
+        } else {
+            if(FUNCTION_DEFINITION(arg_node) != NULL && FUNCTIONDEFINITION_ISEXPORT(FUNCTION_DEFINITION(arg_node)) == TRUE) {
+                // Add an occurence of this item, so exported functions are never deleted
+                CMaddOccurence(COUNTS(arg_info), FUNCTION_NAME(arg_node));
             }
         }
     }
@@ -114,12 +117,14 @@ node *SUFdeclaration(node *arg_node, info *arg_info) {
         if(NODE_TYPE(DECLARATION_CURRENT(arg_node)) == N_function) {
             countMapItem* item = CMgetItem(COUNTS(arg_info), FUNCTION_NAME(DECLARATION_CURRENT(arg_node)));
 
+            // Delete the function if there are no calls to it, or the function is the init function and
+            // its body is empty
             if(item == NULL) {
                 char* fun_name = FUNCTION_NAME(DECLARATION_CURRENT(arg_node));
                 DBUG_PRINT("SUFfree", ("Deleting function %s", fun_name));
-                // Don't warn for internal __init() function
-                if(!STReq(fun_name, "__init")) {
-                    CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unused non-export function \"%s\"", fun_name);
+
+                if(STReq(NODE_FILE(arg_node), global.infile) && !STReq("__init", fun_name)) {
+                    CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Unused non-export function %s", fun_name);
                 }
 
                 fun_symbol_table_entry* entry = FUNCTION_FUNPOINTER(DECLARATION_CURRENT(arg_node));
@@ -134,6 +139,10 @@ node *SUFdeclaration(node *arg_node, info *arg_info) {
                 TRAVpush(TR_free);
                 FREEdeclaration(arg_node, NULL);
                 TRAVpop();
+
+                if(toreturn != NULL) {
+                    toreturn = TRAVdo(toreturn, arg_info);
+                }
 
                 DBUG_RETURN(toreturn);
             }
@@ -169,6 +178,12 @@ node *SUFdo(node * syntaxtree) {
 
     SUFfreeInfo(arg_info);
     TRAVpop();
+
+    if(PROGRAM_FIRST(syntaxtree) == NULL) {
+        CTIwarn("The output file wasn't created or modified as no output has been generated.");
+        CTIwarnContinued("This is the result of compiling a file which exports no functions.");
+        CTIterminateCompilation(syntaxtree);
+    }
 
     DBUG_RETURN(syntaxtree);
 }
