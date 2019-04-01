@@ -142,7 +142,7 @@ node* CBCcast(node* arg_node, info* arg_info) {
 
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
 
-    if (TO_CAST(arg_info) != TP_bool || CAST_CASTTO(arg_node) != TP_bool) {
+    if (TO_CAST(arg_info) == TP_bool || CAST_CASTTO(arg_node) == TP_bool) {
         if (CAST_CASTTO(arg_node) == TP_bool) {
             /*casting towards bool*/
             node* old_cast = arg_node;
@@ -150,7 +150,6 @@ node* CBCcast(node* arg_node, info* arg_info) {
             TRAVpush(TR_free);
             FREEcast(old_cast, NULL);
             TRAVpop();
-            // CBCfreeInfo(arg_info);
         } else {
             /*casting towards non-bool*/
             node *old_cast = arg_node;
@@ -158,7 +157,6 @@ node* CBCcast(node* arg_node, info* arg_info) {
             TRAVpush(TR_free);
             FREEcast(old_cast, NULL);
             TRAVpop();
-            // CBCfreeInfo(arg_info);
         }
         DBUG_RETURN(arg_node);
     }
