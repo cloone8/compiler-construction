@@ -1595,8 +1595,24 @@ node* GBCconditionalexpr(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCconditionalexpr");
 
     CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
+
+    get_size_t_str(count, BRANCH_AMOUNT(arg_info)++);
+    char* end_label = STRcat(count, "_end");
+
+    char* else_label = STRcat(count, "_else");
+    branch_f(else_label);
+
     CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), arg_info);
+
+    jump(end_label);
+
+    label(else_label);
+    MEMfree(else_label);
+
     CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), arg_info);
+
+    label(end_label);
+    MEMfree(end_label);
 
     DBUG_RETURN(arg_node);
 }
