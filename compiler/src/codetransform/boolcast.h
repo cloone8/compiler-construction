@@ -7,6 +7,7 @@ extern node* CBCfloatconst(node* arg_node, info* arg_info);
 extern node *CBCboolconst(node *arg_node, info *arg_info);
 extern node *CBCintconst(node *arg_node, info *arg_info);
 extern node* CBCvarread(node* arg_node, info* arg_info);
+extern node* CBCbinop(node* arg_node, info* arg_info);
 
 extern node* CBCdo(node* syntaxtree);
 

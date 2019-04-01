@@ -80,6 +80,36 @@ node* CBCvarread(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node* CBCbinop(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CBCbinop");
+
+    symbol_table_entry *entry = VARREAD_VARPOINTER(arg_node);
+    TO_CAST(arg_info) = entry->vartype;
+
+    info* left_info = CBCmakeInfo();
+
+    /* We need to  store types of the left and right operands.*/
+    TRAVdo(BINOP_LEFT(arg_node), left_info);
+
+    switch(BINOP_BINOPERATORS(arg_node)) {
+        case BO_lt:
+        case BO_le:
+        case BO_eq:
+        case BO_ne:
+        case BO_ge:
+        case BO_gt:
+            TO_CAST(arg_info) = TP_bool;
+            break;
+        default:
+            TO_CAST(arg_info) = TO_CAST(left_info);
+            break;
+    }
+
+    CBCfreeInfo(left_info);
+
+    DBUG_RETURN(arg_node);
+}
+
 /* Handle the conversion from an int or float towards a bool. */
 node* handle_boolcast(node* arg_node, info* arg_info) {
     DBUG_ENTER("handle_boolcast");
