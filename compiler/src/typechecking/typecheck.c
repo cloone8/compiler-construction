@@ -18,7 +18,6 @@ struct INFO {
     size_t paramdepth;
     type* given_params;
     type expected_returntype;
-    bool has_return;
 };
 
 
@@ -30,7 +29,6 @@ struct INFO {
 #define DEPTH(__arg_info_struct__) ((__arg_info_struct__)->paramdepth)
 #define GIVEN(__arg_info_struct__) ((__arg_info_struct__)->given_params)
 #define RETURNTYPE(__arg_info_struct__) ((__arg_info_struct__)->expected_returntype)
-#define HASRETURN(__arg_info_struct__) ((__arg_info_struct__)->has_return)
 
 /*
  * INFO functions
@@ -47,7 +45,6 @@ static info *TCmakeInfo(void) {
     GIVEN(result) = NULL;
     TYPE(result) = TP_unknown;
     RETURNTYPE(result) = TP_unknown;
-    HASRETURN(result) = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -83,10 +80,6 @@ node* TCfunction(node* arg_node, info* arg_info) {
 
         FUNCTION_DEFINITION(arg_node) = TRAVdo(FUNCTION_DEFINITION(arg_node), new_info);
 
-        if(!HASRETURN(new_info) && FUNCTION_TYPE(arg_node) != TP_void) {
-            CTIerrorLine(NODE_LINE(arg_node), "Non void function %s missing return statement!", FUNCTION_NAME(arg_node));
-        }
-
         TCfreeInfo(new_info);
     }
 
@@ -101,8 +94,6 @@ node* TCreturn(node *arg_node, info *arg_info) {
     DBUG_ASSERT((funtype != TP_int_array), "Invalid return type encountered!");
     DBUG_ASSERT((funtype != TP_float_array), "Invalid return type encountered!");
     DBUG_ASSERT((funtype != TP_bool_array), "Invalid return type encountered!");
-
-    HASRETURN(arg_info) = TRUE;
 
     if(funtype != TP_void) {
         if(RETURN_VALUE(arg_node) == NULL) {
