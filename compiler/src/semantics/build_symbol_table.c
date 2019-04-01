@@ -292,16 +292,16 @@ node *STBvarassign(node *arg_node, info *arg_info) {
  * @param arg_info: The INFO struct that contains additional information.
  **/
 node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
-    DBUG_ENTER("basicvardeclaration");
+    DBUG_ENTER("STBbasicvardeclaration");
+
+    /* If the variable is also initialized, we need to traverse this. */
+    if (BASICVARDECLARATION_INITVAL(arg_node) != NULL)
+        BASICVARDECLARATION_INITVAL(arg_node) = TRAVdo(BASICVARDECLARATION_INITVAL(arg_node), arg_info);
 
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
     symbol_table_entry* entry = symbol_table_add(current, BASICVARDECLARATION_VARNAME(arg_node), BASICVARDECLARATION_TYPE(arg_node), FALSE, FALSE);
     BASICVARDECLARATION_VARPOINTER(arg_node) = entry;
-
-    /* If the variable is also initialized, we need to traverse this. */
-    if (BASICVARDECLARATION_INITVAL(arg_node) != NULL)
-        BASICVARDECLARATION_INITVAL(arg_node) = TRAVdo(BASICVARDECLARATION_INITVAL(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -315,19 +315,19 @@ node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
 node *STBarrayvardeclaration(node *arg_node, info *arg_info) {
     DBUG_ENTER("STBarrayvardeclaration");
 
+        /* Traverse dimensions. */
+    ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
+
+    /* If the array is also initialized, we need to traverse this. */
+    if (ARRAYVARDECLARATION_INITVAL(arg_node) != NULL)
+        ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
+
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
     type atype = type_to_array_type(ARRAYVARDECLARATION_TYPE(arg_node));
     ARRAYVARDECLARATION_TYPE(arg_node) = atype;
 
     symbol_table_entry* entry = symbol_table_add(current, ARRAYVARDECLARATION_VARNAME(arg_node), atype, FALSE, FALSE);
     ARRAYVARDECLARATION_VARPOINTER(arg_node) = entry;
-
-    /* Traverse dimensions. */
-    ARRAYVARDECLARATION_DIMENSIONS(arg_node) = TRAVdo(ARRAYVARDECLARATION_DIMENSIONS(arg_node), arg_info);
-
-    /* If the array is also initialized, we need to traverse this. */
-    if (ARRAYVARDECLARATION_INITVAL(arg_node) != NULL)
-        ARRAYVARDECLARATION_INITVAL(arg_node) = TRAVdo(ARRAYVARDECLARATION_INITVAL(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
