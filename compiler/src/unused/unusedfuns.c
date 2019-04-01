@@ -68,7 +68,10 @@ node *SUFfunction(node *arg_node, info *arg_info) {
 
     if(!DELETE(arg_info)) {
         if(STReq(FUNCTION_NAME(arg_node), "__init")) {
-            if(FUNCTIONBODY_STATEMENTS(FUNCTIONDEFINITION_FUNCTIONBODY(FUNCTION_DEFINITION(arg_node))) != NULL) {
+            // Init is always guaranteed to have a single statement, as we implicitly add return statements to
+            // the end of void-type functions
+            node* init_statements = FUNCTIONBODY_STATEMENTS(FUNCTIONDEFINITION_FUNCTIONBODY(FUNCTION_DEFINITION(arg_node)));
+            if(STATEMENTS_NEXT(init_statements) != NULL) {
                 CMaddOccurence((COUNTS(arg_info)), FUNCTION_NAME(arg_node));
             }
         } else {

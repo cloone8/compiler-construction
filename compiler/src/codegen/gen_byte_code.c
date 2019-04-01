@@ -361,6 +361,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
                 default:
                     break;
             }
+            TYPE(arg_info) = TP_bool;
             break;
         case BO_ne:
             switch (to_process) {
@@ -376,6 +377,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
                 default:
                     break;
             }
+            TYPE(arg_info) = TP_bool;
             break;
         case BO_ge:
             switch (to_process) {
@@ -388,6 +390,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
                 default:
                     break;
             }
+            TYPE(arg_info) = TP_bool;
             break;
         case BO_gt:
             switch (to_process) {
@@ -400,6 +403,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
                 default:
                     break;
             }
+            TYPE(arg_info) = TP_bool;
             break;
         case BO_le:
             switch (to_process) {
@@ -412,6 +416,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
                 default:
                     break;
             }
+            TYPE(arg_info) = TP_bool;
             break;
         case BO_lt:
             switch (to_process) {
@@ -424,6 +429,7 @@ node* GBCbinop (node * arg_node, info * arg_info) {
                 default:
                     break;
             }
+            TYPE(arg_info) = TP_bool;
             break;
         case BO_and:
             CTIerror("CiviCVM cannot handle \'&&\'");
@@ -1342,6 +1348,8 @@ node* GBCfuncall(node * arg_node, info * arg_info) {
             default:
                 break;
         }
+    } else {
+        TYPE(arg_info) = entry->returntype;
     }
 
     DBUG_RETURN (arg_node);
