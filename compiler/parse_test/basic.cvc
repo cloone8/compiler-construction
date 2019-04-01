@@ -10,14 +10,15 @@
 // bool bar() {
 //     return false;
 // }
+#include "civic.h"
 
 int foo() {
     int a = 4;
     bool b = true;
-    float c = bar();
+    int c = bar(1, 2);
 
-    float bar() {
-        return 14.0;
+    int bar(int a, int b) {
+        return (a + b);
     }
     // if (b == true) {
     //     b = bar();
@@ -27,5 +28,6 @@ int foo() {
 
 export int main() {
     int a = foo();
+    printInt(a);
     return 1;
 }
