@@ -127,7 +127,9 @@ node *RCbranch(node *arg_node, info *arg_info) {
     info* arg_if = RCmakeInfo();
     info* arg_else = RCmakeInfo();
 
-    BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_if);
+    if(BRANCH_THENBRANCH(arg_node) != NULL) {
+        BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_if);
+    }
 
     if(BRANCH_ELSEBRANCH(arg_node) != NULL) {
         BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_else);

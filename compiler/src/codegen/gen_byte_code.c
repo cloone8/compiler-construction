@@ -1451,7 +1451,9 @@ node* GBCbranch(node * arg_node, info * arg_info) {
         char* else_label = STRcatn(3, "branch_", count, "_else");
         branch_f(else_label);
 
-        BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+        if(BRANCH_THENBRANCH(arg_node) != NULL) {
+            BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+        }
 
         jump(end_label);
 
@@ -1461,7 +1463,9 @@ node* GBCbranch(node * arg_node, info * arg_info) {
     } else {
         branch_f(end_label);
 
-        BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+        if(BRANCH_THENBRANCH(arg_node) != NULL) {
+            BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+        }
     }
 
     label(end_label);

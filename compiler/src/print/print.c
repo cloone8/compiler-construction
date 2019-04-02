@@ -1123,7 +1123,9 @@ node* PRTbranch(node * arg_node, info * arg_info) {
 
     fprintf(stderr, ") {\n");
     INFO_INDENTLEVEL(arg_info) += 1;
-    BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+    if(BRANCH_THENBRANCH(arg_node) != NULL) {
+        BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+    }
     INFO_INDENTLEVEL(arg_info) -= 1;
 
     if (BRANCH_ELSEBRANCH(arg_node) != NULL) {

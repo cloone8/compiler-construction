@@ -1372,7 +1372,7 @@
                 </son>
                 <son name="thenbranch">
                     <targets>
-                        <target mandatory="yes" >
+                        <target mandatory="no" >
                             <node name="Statements" />
                             <phases>
                                 <all />
