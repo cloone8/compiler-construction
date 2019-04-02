@@ -3,7 +3,7 @@
 #include "tree_basic.h"
 #include "traverse.h"
 #include "dbug.h"
-
+#include "free_node.h"
 #include "str.h"
 #include "memory.h"
 #include "ctinfo.h"
@@ -454,11 +454,26 @@ node *TCcast(node *arg_node, info *arg_info) {
 
     CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), new_info);
 
-    TCfreeInfo(new_info);
+    if(TYPE(new_info) == CAST_CASTTO(arg_node)) {
+        // Useless cast, remove it
 
-    TYPE(arg_info) = CAST_CASTTO(arg_node);
+        TCfreeInfo(new_info);
 
-    DBUG_RETURN(arg_node);
+        TYPE(arg_info) = CAST_CASTTO(arg_node);
+
+        node* toreturn = CAST_TARGET(arg_node);
+        CAST_TARGET(arg_node) = NULL;
+
+        FREEcast(arg_node, NULL);
+
+        DBUG_RETURN(toreturn);
+    } else {
+        TCfreeInfo(new_info);
+
+        TYPE(arg_info) = CAST_CASTTO(arg_node);
+
+        DBUG_RETURN(arg_node);
+    }
 }
 
 node *TCbranch(node* arg_node, info* arg_info) {
