@@ -461,6 +461,59 @@ node *TCcast(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node *TCbranch(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCbranch");
+
+    BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
+
+    if(TYPE(arg_info) != TP_bool) {
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "If-statement condition must be of type bool!");
+    }
+
+    if(BRANCH_THENBRANCH(arg_node) != NULL) {
+        BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
+    }
+
+    if(BRANCH_ELSEBRANCH(arg_node) != NULL) {
+        BRANCH_ELSEBRANCH(arg_node) = TRAVdo(BRANCH_ELSEBRANCH(arg_node), arg_info);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node *TCwhile(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCwhile");
+
+    WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
+
+    if(TYPE(arg_info) != TP_bool) {
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "While-loop condition must be of type bool!");
+    }
+
+    if(WHILE_CODE(arg_node) != NULL) {
+        WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node *TCdowhile(node* arg_node, info* arg_info) {
+    DBUG_ENTER("TCdowhile");
+
+    DOWHILE_CONDITION(arg_node) = TRAVdo(DOWHILE_CONDITION(arg_node), arg_info);
+
+    if(TYPE(arg_info) != TP_bool) {
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Do-while-loop condition must be of type bool!");
+    }
+
+    if(DOWHILE_CODE(arg_node) != NULL) {
+        DOWHILE_CODE(arg_node) = TRAVdo(DOWHILE_CODE(arg_node), arg_info);
+    }
+
+
+    DBUG_RETURN(arg_node);
+}
+
 node *TCdo(node *syntaxtree) {
     DBUG_ENTER("TCdo");
 

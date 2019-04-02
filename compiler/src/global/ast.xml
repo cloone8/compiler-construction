@@ -136,6 +136,9 @@
                     <node name="ArrayVarRead" />
                     <node name="VarRead" />
                     <node name="Cast" />
+                    <node name="Branch" />
+                    <node name="While" />
+                    <node name="DoWhile" />
                 </travuser>
             </traversal>
 
