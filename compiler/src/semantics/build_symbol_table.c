@@ -404,6 +404,26 @@ node *STBarraydimensionvars(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node *STBdeclaration(node *arg_node, info *arg_info) {
+    DBUG_ENTER("STBdeclaration");
+
+    if(NODE_TYPE(DECLARATION_CURRENT(arg_node)) == N_global) {
+        DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
+
+        if(DECLARATION_NEXT(arg_node) != NULL) {
+            DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
+        }
+    } else {
+        if(DECLARATION_NEXT(arg_node) != NULL) {
+            DECLARATION_NEXT(arg_node) = TRAVdo(DECLARATION_NEXT(arg_node), arg_info);
+        }
+
+        DECLARATION_CURRENT(arg_node) = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 /**
  * The start traversal function.
  *

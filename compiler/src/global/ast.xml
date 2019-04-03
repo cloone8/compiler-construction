@@ -62,6 +62,7 @@
                     <node name="VarRead" />
                     <node name="ArrayVarRead" />
                     <node name="ArrayDimensionVars" />
+                    <node name="Declaration" />
                 </travuser>
             </traversal>
 
