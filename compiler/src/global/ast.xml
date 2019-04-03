@@ -224,6 +224,7 @@
                 <travuser>
                     <node name="BinOp" />
                     <node name="MonOp" />
+                    <node name="ConditionalExpr" />
                 </travuser>
             </traversal>
         </general>

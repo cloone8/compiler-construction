@@ -322,6 +322,32 @@ node* CFOmonop(node* arg_node, info* arg_info) {
     DBUG_RETURN(toreturn);
 }
 
+node* CFOconditionalexpr(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CFOconditionalexpr");
+
+    CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
+    CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), arg_info);
+    CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), arg_info);
+
+    if(NODE_TYPE(EXPR_CURRENT(CONDITIONALEXPR_CONDITION(arg_node))) == N_constant) {
+        node* toreturn;
+
+        if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(CONDITIONALEXPR_CONDITION(arg_node)))) == TRUE) {
+            toreturn = COPYdoCopy(CONDITIONALEXPR_IFBRANCH(arg_node));
+        } else {
+            toreturn = COPYdoCopy(CONDITIONALEXPR_ELSEBRANCH(arg_node));
+        }
+
+        TRAVpush(TR_free);
+        FREEconditionalexpr(arg_node, NULL);
+        TRAVpop();
+
+        DBUG_RETURN(toreturn);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 node* CFOdo(node* syntaxtree) {
     DBUG_ENTER("CFOdo");
 
