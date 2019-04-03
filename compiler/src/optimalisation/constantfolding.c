@@ -594,9 +594,9 @@ node* CFOconditionalexpr(node* arg_node, info* arg_info) {
         node* toreturn;
 
         if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(CONDITIONALEXPR_CONDITION(arg_node)))) == TRUE) {
-            toreturn = COPYdoCopy(CONDITIONALEXPR_IFBRANCH(arg_node));
+            toreturn = COPYdoCopy(EXPR_CURRENT(CONDITIONALEXPR_IFBRANCH(arg_node)));
         } else {
-            toreturn = COPYdoCopy(CONDITIONALEXPR_ELSEBRANCH(arg_node));
+            toreturn = COPYdoCopy(EXPR_CURRENT(CONDITIONALEXPR_ELSEBRANCH(arg_node)));
         }
 
         TRAVpush(TR_free);
@@ -604,6 +604,66 @@ node* CFOconditionalexpr(node* arg_node, info* arg_info) {
         TRAVpop();
 
         DBUG_RETURN(toreturn);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* CFObranch(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CFObranch");
+
+    BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
+    // printf("%s\n", get_nodetype_string(NODE_TYPE(BRANCH_CONDITION(arg_node))));
+
+    BRANCH_THENBRANCH(arg_node) = TRAVopt(BRANCH_THENBRANCH(arg_node), arg_info);
+    BRANCH_ELSEBRANCH(arg_node) = TRAVopt(BRANCH_ELSEBRANCH(arg_node), arg_info);
+
+    if(NODE_TYPE(EXPR_CURRENT(BRANCH_CONDITION(arg_node))) == N_constant) {
+        if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BRANCH_CONDITION(arg_node)))) == TRUE) {
+            if(BRANCH_THENBRANCH(arg_node) != NULL) {
+                node* toreturn = COPYdoCopy(BRANCH_THENBRANCH(arg_node));
+
+                TRAVpush(TR_free);
+                FREEbranch(arg_node, NULL);
+                TRAVpop();
+
+                DBUG_RETURN(toreturn);
+            }
+        } else {
+            if(BRANCH_ELSEBRANCH(arg_node) != NULL) {
+                node* toreturn = COPYdoCopy(BRANCH_ELSEBRANCH(arg_node));
+
+                TRAVpush(TR_free);
+                FREEbranch(arg_node, NULL);
+                TRAVpop();
+
+                DBUG_RETURN(toreturn);
+            }
+        }
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* CFOstatements(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CFOstatements");
+
+    STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
+
+    if(NODE_TYPE(STATEMENTS_CURRENT(arg_node)) == N_statements) {
+        if(STATEMENTS_NEXT(arg_node) != NULL) {
+            STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);
+            append_statement_to_tail(STATEMENTS_CURRENT(arg_node), STATEMENTS_NEXT(arg_node));
+        }
+
+        node* toreturn = STATEMENTS_CURRENT(arg_node);
+        STATEMENTS_CURRENT(arg_node) = NULL;
+        STATEMENTS_NEXT(arg_node) = NULL;
+        FREEstatements(arg_node, NULL);
+
+        DBUG_RETURN(toreturn);
+    } else {
+        STATEMENTS_NEXT(arg_node) = TRAVopt(STATEMENTS_NEXT(arg_node), arg_info);
     }
 
     DBUG_RETURN(arg_node);

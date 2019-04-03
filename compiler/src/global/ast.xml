@@ -228,6 +228,8 @@
                     <node name="BinOp" />
                     <node name="MonOp" />
                     <node name="ConditionalExpr" />
+                    <node name="Branch" />
+                    <node name="Statements" />
                 </travuser>
             </traversal>
         </general>

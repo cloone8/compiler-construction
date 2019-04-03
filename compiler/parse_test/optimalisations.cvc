@@ -4,7 +4,7 @@ int test() {
 
 export int main() {
     int a = -1;
-    bool b = false;
+    bool b = !false;
     int c = -(2 * 6) + 7 / (6 - 1);
     float d = -(2.7 * 6.2) + 7.0 - 5.1;
     bool e = true + false * false * !true;
@@ -83,6 +83,18 @@ export int main() {
     b = b * false;
     b = b + true;
     b = b * true;
+
+    if(1 > 0) {
+        a = a + 1;
+    } else {
+        a = a - 1;
+    }
+
+    if(1 < 0) {
+        a = a + 1;
+    } else {
+        a = a - 1;
+    }
 
     return 1;
 }
