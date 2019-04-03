@@ -282,6 +282,8 @@ node *STBvarassign(node *arg_node, info *arg_info) {
 
     if (entry_pointer == NULL) {
         CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Var %s not in scope", name);
+    } else if(entry_pointer->isforcounter) {
+        CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Can't write to for-loop counter variable %s", name);
     } else {
         VARASSIGN_VARPOINTER(arg_node) = entry_pointer;
     }
@@ -309,6 +311,7 @@ node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
     symbol_table_entry* entry = symbol_table_add(current, BASICVARDECLARATION_VARNAME(arg_node), BASICVARDECLARATION_TYPE(arg_node), FALSE, FALSE);
 
     if(ISFOR(arg_info)) {
+        DBUG_PRINT("FORCOUNTER", ("Var %s is for counter", BASICVARDECLARATION_VARNAME(arg_node)));
         entry->isforcounter = TRUE;
     }
 
