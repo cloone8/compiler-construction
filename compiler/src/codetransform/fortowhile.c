@@ -71,7 +71,7 @@ node* FTWfor(node* arg_node, info* arg_info) {
     symbol_table* table = CURR_SYMTABLE(arg_info);
 
     // Migrate all the entries
-    for(size_t i = 1; i < FOR_VARSYMBOLTABLE(arg_node)->current_entries; i++) {
+    for(size_t i = 0; i < FOR_VARSYMBOLTABLE(arg_node)->current_entries; i++) {
         symbol_table_entry* entry = symbol_table_get_idx(FOR_VARSYMBOLTABLE(arg_node), i);
 
         symbol_table_insert(table, entry);
