@@ -50,6 +50,89 @@ static info *CFOfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
+static node* binop_zero_int(node* arg_node, binop operator, node* other, bool noremove) {
+    DBUG_ENTER("binop_zero_int");
+    node* toreturn = arg_node;
+
+    switch(operator) {
+        case BO_add:
+        case BO_sub:
+            toreturn = COPYdoCopy(other);
+            break;
+        case BO_mul:
+        case BO_div:
+        case BO_mod:
+            if(noremove) {
+                DBUG_RETURN(toreturn);
+            }
+            toreturn = TBmakeExpr(TBmakeConstant(TBmakeIntconst(0)));
+            break;
+        default:
+            DBUG_RETURN(toreturn);
+    }
+
+    TRAVpush(TR_free);
+    FREEexpr(BINOP_LEFT(arg_node), NULL);
+    FREEexpr(BINOP_RIGHT(arg_node), NULL);
+    TRAVpop();
+
+    DBUG_RETURN(toreturn);
+}
+
+static node* binop_zero_float(node* arg_node, binop operator, node* other, bool noremove) {
+    DBUG_ENTER("binop_zero_float");
+    node* toreturn = arg_node;
+
+    switch(operator) {
+        case BO_add:
+        case BO_sub:
+            toreturn = COPYdoCopy(other);
+            break;
+        case BO_mul:
+        case BO_div:
+            if(noremove) {
+                DBUG_RETURN(toreturn);
+            }
+            toreturn = TBmakeExpr(TBmakeConstant(TBmakeFloatconst(0.0)));
+            break;
+        default:
+            DBUG_RETURN(toreturn);
+    }
+
+    TRAVpush(TR_free);
+    FREEexpr(BINOP_LEFT(arg_node), NULL);
+    FREEexpr(BINOP_RIGHT(arg_node), NULL);
+    TRAVpop();
+
+    DBUG_RETURN(toreturn);
+}
+
+static node* binop_zero_bool(node* arg_node, binop operator, node* other, bool noremove) {
+    DBUG_ENTER("binop_zero_bool");
+    node* toreturn = arg_node;
+
+    switch(operator) {
+        case BO_add:
+            toreturn = COPYdoCopy(other);
+            break;
+        case BO_mul:
+            if(noremove) {
+                DBUG_RETURN(toreturn);
+            }
+            toreturn = TBmakeExpr(TBmakeConstant(TBmakeBoolconst(FALSE)));
+            break;
+        default:
+            DBUG_RETURN(toreturn);
+    }
+
+    TRAVpush(TR_free);
+    FREEexpr(BINOP_LEFT(arg_node), NULL);
+    FREEexpr(BINOP_RIGHT(arg_node), NULL);
+    TRAVpop();
+
+    DBUG_RETURN(toreturn);
+}
+
 static node* binop_int(binop operator, node* left, node* right) {
     DBUG_ENTER("binop_int");
     node* toreturn = NULL;
@@ -234,6 +317,86 @@ static node* binop_bool(binop operator, node* left, node* right) {
     DBUG_RETURN(toreturn);
 }
 
+static node* check_special_cases(node* arg_node) {
+    DBUG_ENTER("check_special_cases");
+    node* toreturn = arg_node;
+
+    bool left_constant = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant;
+    bool right_constant = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant;
+
+    bool left_varread = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_varread;
+    bool right_varread = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_varread;
+
+    node* constant = NULL;
+    node* variable = NULL;
+
+    switch(BINOP_BINOPERATORS(arg_node)) {
+        case BO_mod:
+            if(left_constant && right_constant) {
+                if(INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) ==
+                   INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node))))) {
+                       toreturn = TBmakeConstant(TBmakeIntconst(0));
+                   }
+            } else if(left_varread && right_varread) {
+                if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_LEFT(arg_node))) ==
+                   VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) {
+                       toreturn = TBmakeConstant(TBmakeIntconst(0));
+                   }
+            }
+            break;
+        case BO_add:
+            if(!((left_constant && right_varread) || (left_varread && right_constant))) {
+                break;
+            }
+
+            if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
+                constant = BINOP_LEFT(arg_node);
+                variable = BINOP_RIGHT(arg_node);
+            } else if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
+                constant = BINOP_LEFT(arg_node);
+                variable = BINOP_RIGHT(arg_node);
+            }
+
+            if(constant == NULL) {
+                break;
+            }
+
+            if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
+                toreturn = TBmakeConstant(TBmakeBoolconst(TRUE));
+            } else {
+                toreturn = COPYdoCopy(EXPR_CURRENT(variable));
+            }
+            break;
+        case BO_mul:
+            if(!((left_constant && right_varread) || (left_varread && right_constant))) {
+                break;
+            }
+
+            if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
+                constant = BINOP_LEFT(arg_node);
+                variable = BINOP_RIGHT(arg_node);
+            } else if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
+                constant = BINOP_LEFT(arg_node);
+                variable = BINOP_RIGHT(arg_node);
+            }
+
+            if(constant == NULL) {
+                break;
+            }
+
+            if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
+                toreturn = COPYdoCopy(EXPR_CURRENT(variable));
+            } else {
+                toreturn = TBmakeConstant(TBmakeBoolconst(FALSE));
+            }
+            break;
+        default:
+            break;
+    }
+
+    DBUG_RETURN(toreturn);
+}
+
 node* CFObinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFObinop");
 
@@ -242,9 +405,8 @@ node* CFObinop(node* arg_node, info* arg_info) {
 
     node* toreturn = arg_node;
 
-    if(NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant &&
-       NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant) {
-
+    if((NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant &&
+       NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant)) {
         switch(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node))))) {
             case N_intconst:
                 toreturn = binop_int(BINOP_BINOPERATORS(arg_node), BINOP_LEFT(arg_node), BINOP_RIGHT(arg_node));
@@ -268,7 +430,83 @@ node* CFObinop(node* arg_node, info* arg_info) {
                 DBUG_ASSERT((FALSE), "Invalid constant type");
                 break;
         }
-    }
+    } else if (NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant ||
+               NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant) {
+        node* other;
+        node* constant;
+        bool nodiv = FALSE;
+        bool noremove = FALSE;
+
+        if(NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant) {
+            constant = BINOP_LEFT(arg_node);
+            other = BINOP_RIGHT(arg_node);
+            if(NODE_TYPE(EXPR_CURRENT(other)) == N_funcall) {
+                noremove = TRUE;
+            }
+        } else {
+            constant = BINOP_RIGHT(arg_node);
+            other = BINOP_LEFT(arg_node);
+            if(NODE_TYPE(EXPR_CURRENT(other)) == N_funcall) {
+                noremove = TRUE;
+            }
+            if(BINOP_BINOPERATORS(arg_node) == BO_div || BINOP_BINOPERATORS(arg_node) == BO_mod) {
+                nodiv = TRUE;
+            }
+        }
+
+        switch(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(constant)))) {
+            case N_intconst:
+                if(INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) != 0) {
+                    break;
+                }
+                if(nodiv) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Expression folds to division or modulo by zero!");
+                }
+                toreturn = binop_zero_int(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
+                if(toreturn != arg_node) {
+                    BINOP_LEFT(arg_node) = NULL;
+                    BINOP_RIGHT(arg_node) = NULL;
+                    FREEbinop(arg_node, NULL);
+                }
+                break;
+            case N_floatconst:
+                if(FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) != 0.0) {
+                    break;
+                }
+                if(nodiv) {
+                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Expression folds to division or modulo by zero!");
+                }
+                toreturn = binop_zero_float(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
+                if(toreturn != arg_node) {
+                    BINOP_LEFT(arg_node) = NULL;
+                    BINOP_RIGHT(arg_node) = NULL;
+                    FREEbinop(arg_node, NULL);
+                }
+                break;
+            case N_boolconst:
+                if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) != FALSE) {
+                    break;
+                }
+                toreturn = binop_zero_bool(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
+                if(toreturn != arg_node) {
+                    BINOP_LEFT(arg_node) = NULL;
+                    BINOP_RIGHT(arg_node) = NULL;
+                    FREEbinop(arg_node, NULL);
+                }
+                break;
+            default:
+                DBUG_ASSERT((FALSE), "Invalid constant type");
+                break;
+        }
+               }
+    // } else {
+    //     toreturn = check_special_cases(arg_node);
+    //     if(toreturn != arg_node) {
+    //         BINOP_LEFT(arg_node) = NULL;
+    //         BINOP_RIGHT(arg_node) = NULL;
+    //         FREEbinop(arg_node, NULL);
+    //     }
+    // }
 
     DBUG_RETURN(toreturn);
 }
