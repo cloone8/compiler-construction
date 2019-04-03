@@ -109,7 +109,7 @@ node* FSPfor(node* arg_node, info* arg_info) {
 
     node *condition = FOR_CONDITION(arg_node);
 
-    node* vardecl = TBmakeBasicvardeclaration("FOR_COND", TP_bool, condition);
+    node* vardecl = TBmakeBasicvardeclaration(STRcpy("FOR_COND"), TP_int, NULL);
 
     if(NEW_VARDECS(arg_info) == NULL){
         NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(vardecl, NULL);
@@ -117,20 +117,30 @@ node* FSPfor(node* arg_node, info* arg_info) {
         append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(vardecl, NULL));
     }
 
-    symbol_table_add(CURRENT_SYMBOL_TABLE(arg_info), BASICVARDECLARATION_VARNAME(vardecl), BASICVARDECLARATION_TYPE(vardecl), FALSE, FALSE);
-    symbol_table_entry* new = symbol_table_get_name(CURRENT_SYMBOL_TABLE(arg_info), "FOR_COND");
+    symbol_table_entry* cond_entry = symbol_table_add(FOR_VARSYMBOLTABLE(arg_node), BASICVARDECLARATION_VARNAME(vardecl), TP_int, FALSE, FALSE);
 
-    get_size_t_str(table_id_buffer2, new->idx);
-    char *new_name_cond = STRcatn(4, "for-", table_id_buffer2, "-condition-", new->name);
+    // Change the name for clarity
+    get_size_t_str(table_id_buffer, cond_entry->table->id);
 
-    symbol_table_update(CURRENT_SYMBOL_TABLE(arg_info), new->idx, new_name_cond);
+    char *new_name_cond = STRcatn(3, "for-", table_id_buffer, "-condition");
+    
+    symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), cond_entry->idx, new_name_cond);
 
-    BASICVARDECLARATION_VARPOINTER(vardecl) = new;
-    node *new_varread = TBmakeVarread(new->name);
-    VARREAD_VARPOINTER(new_varread) = new;
-    FOR_CONDITION(arg_node) = TBmakeExpr(new_varread);
+    BASICVARDECLARATION_VARPOINTER(vardecl) = cond_entry;
+    node *cond_varread = TBmakeVarread(STRcpy(cond_entry->name));
+    VARREAD_VARPOINTER(cond_varread) = cond_entry;
+    FOR_CONDITION(arg_node) = TBmakeExpr(cond_varread);
+
+    node* init_stat = TBmakeVarassign(STRcpy(new_name_cond), condition);
+    VARASSIGN_VARPOINTER(init_stat) = cond_entry;
+
     MEMfree(new_name_cond);
 
+    if(INIT_STATEMENTS(arg_info) == NULL) {
+        INIT_STATEMENTS(arg_info) = TBmakeStatements(init_stat, NULL);
+    } else {
+        append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat, NULL)); 
+    }
 
     DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR_COUNTER was NULL, while it shouldn't yet be!");
     // Lift the counter out of the loop
@@ -138,10 +148,7 @@ node* FSPfor(node* arg_node, info* arg_info) {
     FOR_COUNTER(arg_node) = NULL;
     symbol_table_entry* entry = BASICVARDECLARATION_VARPOINTER(counter_dec);
 
-    // Change the name for clarity
-    get_size_t_str(table_id_buffer, entry->table->id);
-
-    char* new_name = STRcatn(4, "for-", table_id_buffer, "-counter-", entry->name);
+    char* new_name = STRcatn(3, "for-", table_id_buffer, "-counter");
     symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), entry->idx, new_name);
 
 

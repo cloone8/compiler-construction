@@ -65,13 +65,17 @@ node* FTWfunctiondefinition(node* arg_node, info* arg_info) {
 
 node* FTWfor(node* arg_node, info* arg_info) {
     DBUG_ENTER("FTWfor");
-
-    // As the forloop symbol table has only a single entry for the counter, get that
-    // entry.
+    // The first entry is always the counter entry
     symbol_table_entry* counter_entry = symbol_table_get_idx(FOR_VARSYMBOLTABLE(arg_node), 0);
 
     symbol_table* table = CURR_SYMTABLE(arg_info);
-    symbol_table_insert(table, counter_entry);
+
+    // Migrate all the entries
+    for(size_t i = 1; i < FOR_VARSYMBOLTABLE(arg_node)->current_entries; i++) {
+        symbol_table_entry* entry = symbol_table_get_idx(FOR_VARSYMBOLTABLE(arg_node), i);
+
+        symbol_table_insert(table, entry);
+    }
 
     symbol_table_free_no_entries(FOR_VARSYMBOLTABLE(arg_node));
     FOR_VARSYMBOLTABLE(arg_node) = NULL;

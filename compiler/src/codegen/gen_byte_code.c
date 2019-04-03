@@ -573,7 +573,8 @@ static bool check_iinc_idec(node* arg_node, info* arg_info) {
 
     symbol_table_entry* varassign_entry = VARASSIGN_VARPOINTER(arg_node);
 
-    if(varassign_entry->vartype == TP_int && varassign_entry->table->table_depth == DEPTH(arg_info)) {
+    if(varassign_entry->vartype == TP_int && 
+        varassign_entry->table->table_depth == DEPTH(arg_info)) {
         // Now check if the assignment is a binop
         if(NODE_TYPE(EXPR_CURRENT(VARASSIGN_VALUE(arg_node))) == N_binop) {
             node* binop = EXPR_CURRENT(VARASSIGN_VALUE(arg_node));
