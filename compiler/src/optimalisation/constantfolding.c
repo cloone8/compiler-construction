@@ -57,7 +57,7 @@ static node* binop_zero_int(node* arg_node, binop operator, node* other, bool no
     switch(operator) {
         case BO_add:
         case BO_sub:
-            toreturn = COPYdoCopy(other);
+            toreturn = COPYdoCopy(EXPR_CURRENT(other));
             break;
         case BO_mul:
         case BO_div:
@@ -65,7 +65,7 @@ static node* binop_zero_int(node* arg_node, binop operator, node* other, bool no
             if(noremove) {
                 DBUG_RETURN(toreturn);
             }
-            toreturn = TBmakeExpr(TBmakeConstant(TBmakeIntconst(0)));
+            toreturn = TBmakeConstant(TBmakeIntconst(0));
             break;
         default:
             DBUG_RETURN(toreturn);
@@ -86,14 +86,14 @@ static node* binop_zero_float(node* arg_node, binop operator, node* other, bool 
     switch(operator) {
         case BO_add:
         case BO_sub:
-            toreturn = COPYdoCopy(other);
+            toreturn = COPYdoCopy(EXPR_CURRENT(other));
             break;
         case BO_mul:
         case BO_div:
             if(noremove) {
                 DBUG_RETURN(toreturn);
             }
-            toreturn = TBmakeExpr(TBmakeConstant(TBmakeFloatconst(0.0)));
+            toreturn = TBmakeConstant(TBmakeFloatconst(0.0));
             break;
         default:
             DBUG_RETURN(toreturn);
@@ -113,13 +113,13 @@ static node* binop_zero_bool(node* arg_node, binop operator, node* other, bool n
 
     switch(operator) {
         case BO_add:
-            toreturn = COPYdoCopy(other);
+            toreturn = COPYdoCopy(EXPR_CURRENT(other));
             break;
         case BO_mul:
             if(noremove) {
                 DBUG_RETURN(toreturn);
             }
-            toreturn = TBmakeExpr(TBmakeConstant(TBmakeBoolconst(FALSE)));
+            toreturn = TBmakeConstant(TBmakeBoolconst(FALSE));
             break;
         default:
             DBUG_RETURN(toreturn);
@@ -353,15 +353,16 @@ static node* check_special_cases(node* arg_node) {
                 constant = BINOP_LEFT(arg_node);
                 variable = BINOP_RIGHT(arg_node);
             } else if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
-                constant = BINOP_LEFT(arg_node);
-                variable = BINOP_RIGHT(arg_node);
+                variable = BINOP_LEFT(arg_node);
+                constant = BINOP_RIGHT(arg_node);
             }
 
             if(constant == NULL) {
                 break;
             }
-
+            printf("%d\n", BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))));
             if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
+
                 toreturn = TBmakeConstant(TBmakeBoolconst(TRUE));
             } else {
                 toreturn = COPYdoCopy(EXPR_CURRENT(variable));
@@ -376,15 +377,17 @@ static node* check_special_cases(node* arg_node) {
                 constant = BINOP_LEFT(arg_node);
                 variable = BINOP_RIGHT(arg_node);
             } else if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
-                constant = BINOP_LEFT(arg_node);
-                variable = BINOP_RIGHT(arg_node);
+                variable = BINOP_LEFT(arg_node);
+                constant = BINOP_RIGHT(arg_node);
             }
 
             if(constant == NULL) {
                 break;
             }
 
+            printf("%d\n", BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))));
             if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
+
                 toreturn = COPYdoCopy(EXPR_CURRENT(variable));
             } else {
                 toreturn = TBmakeConstant(TBmakeBoolconst(FALSE));
@@ -485,6 +488,12 @@ node* CFObinop(node* arg_node, info* arg_info) {
                 break;
             case N_boolconst:
                 if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) != FALSE) {
+                    toreturn = check_special_cases(arg_node);
+                    if(toreturn != arg_node) {
+                        BINOP_LEFT(arg_node) = NULL;
+                        BINOP_RIGHT(arg_node) = NULL;
+                        FREEbinop(arg_node, NULL);
+                    }
                     break;
                 }
                 toreturn = binop_zero_bool(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
@@ -498,15 +507,15 @@ node* CFObinop(node* arg_node, info* arg_info) {
                 DBUG_ASSERT((FALSE), "Invalid constant type");
                 break;
         }
-               }
-    // } else {
-    //     toreturn = check_special_cases(arg_node);
-    //     if(toreturn != arg_node) {
-    //         BINOP_LEFT(arg_node) = NULL;
-    //         BINOP_RIGHT(arg_node) = NULL;
-    //         FREEbinop(arg_node, NULL);
-    //     }
-    // }
+    } else {
+        toreturn = check_special_cases(arg_node);
+        if(toreturn != arg_node) {
+            BINOP_LEFT(arg_node) = NULL;
+            BINOP_RIGHT(arg_node) = NULL;
+            FREEbinop(arg_node, NULL);
+        }
+    }
+
 
     DBUG_RETURN(toreturn);
 }

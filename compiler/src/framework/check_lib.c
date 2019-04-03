@@ -180,4 +180,3 @@ node *CHKcorrectTypeInsertError(node *arg_node, char *string)
 
   DBUG_RETURN(arg_node);
 }
-
