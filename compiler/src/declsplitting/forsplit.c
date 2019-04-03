@@ -20,6 +20,7 @@ struct INFO {
     symbol_table* current_table;
     node* new_vardecs;
     node* for_init_statements;
+    size_t entry_count;
 };
 
 /*
@@ -29,6 +30,8 @@ struct INFO {
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_table)
 #define NEW_VARDECS(__arg_info_struct__) ((__arg_info_struct__)->new_vardecs)
 #define INIT_STATEMENTS(__arg_info_struct__) ((__arg_info_struct__)->for_init_statements)
+#define COUNT(__arg_info_struct__) ((__arg_info_struct__)->entry_count)
+
 /*
  * INFO functions
  */
@@ -43,6 +46,7 @@ static info *FSPmakeInfo(void) {
     CURRENT_SYMBOL_TABLE(result) = NULL;
     NEW_VARDECS(result) = NULL;
     INIT_STATEMENTS(result) = NULL;
+    COUNT(result) = 0;
 
     DBUG_RETURN(result);
 }
@@ -102,6 +106,31 @@ node* FSPfunctionbody(node* arg_node, info* arg_info) {
 
 node* FSPfor(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfor");
+
+    node *condition = FOR_CONDITION(arg_node);
+
+    node* vardecl = TBmakeBasicvardeclaration("FOR_COND", TP_bool, condition);
+
+    if(NEW_VARDECS(arg_info) == NULL){
+        NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(vardecl, NULL);
+    } else {
+        append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(vardecl, NULL));
+    }
+
+    symbol_table_add(CURRENT_SYMBOL_TABLE(arg_info), BASICVARDECLARATION_VARNAME(vardecl), BASICVARDECLARATION_TYPE(vardecl), FALSE, FALSE);
+    symbol_table_entry* new = symbol_table_get_name(CURRENT_SYMBOL_TABLE(arg_info), "FOR_COND");
+
+    get_size_t_str(table_id_buffer2, new->idx);
+    char *new_name_cond = STRcatn(4, "for-", table_id_buffer2, "-condition-", new->name);
+
+    symbol_table_update(CURRENT_SYMBOL_TABLE(arg_info), new->idx, new_name_cond);
+
+    BASICVARDECLARATION_VARPOINTER(vardecl) = new;
+    node *new_varread = TBmakeVarread(new->name);
+    VARREAD_VARPOINTER(new_varread) = new;
+    FOR_CONDITION(arg_node) = TBmakeExpr(new_varread);
+    MEMfree(new_name_cond);
+
 
     DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR_COUNTER was NULL, while it shouldn't yet be!");
     // Lift the counter out of the loop
