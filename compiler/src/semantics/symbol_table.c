@@ -111,6 +111,7 @@ symbol_table_entry* symbol_table_add(symbol_table* table, char* name, type var_t
     new_entry->table = table;
     new_entry->isimport = isimport;
     new_entry->isexport = isexport;
+    new_entry->isforcounter = FALSE;
 
     table->current_entries++;
 

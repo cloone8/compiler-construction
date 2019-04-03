@@ -20,6 +20,7 @@ struct INFO {
     node* function_parent_node;
     size_t current_scope;
     bool global_isimport;
+    bool isfor;
 };
 
 /*
@@ -30,6 +31,7 @@ struct INFO {
 #define PARENT_FUNCTION(__arg_info_struct__) ((__arg_info_struct__)->function_parent_node)
 #define CURRENT_SCOPE(__arg_info_struct__) ((__arg_info_struct__)->current_scope)
 #define ISIMPORT(__arg_info_struct__) ((__arg_info_struct__)->global_isimport)
+#define ISFOR(__arg_info_struct__) ((__arg_info_struct__)->global_isimport)
 
 /*
  * INFO functions
@@ -46,6 +48,7 @@ static info *STBmakeInfo(void) {
     PARENT_FUNCTION(result) = NULL;
     CURRENT_SCOPE(result) = 0;
     ISIMPORT(result) = FALSE;
+    ISFOR(result) = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -214,7 +217,10 @@ node *STBfor(node *arg_node, info *arg_info) {
     /* Although the counter is not mandatory in our AST, it should be for the user.
        We lift the counter out of the FOR loop in a later stage. */
     DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR counter is NULL!");
+
+    ISFOR(arg_info) = TRUE;
     FOR_COUNTER(arg_node) = TRAVdo(FOR_COUNTER(arg_node), arg_info);
+    ISFOR(arg_info) = FALSE;
 
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
 
@@ -301,6 +307,11 @@ node *STBbasicvardeclaration(node *arg_node, info *arg_info) {
     symbol_table* current = CURRENT_SYMBOL_TABLE(arg_info);
 
     symbol_table_entry* entry = symbol_table_add(current, BASICVARDECLARATION_VARNAME(arg_node), BASICVARDECLARATION_TYPE(arg_node), FALSE, FALSE);
+
+    if(ISFOR(arg_info)) {
+        entry->isforcounter = TRUE;
+    }
+
     BASICVARDECLARATION_VARPOINTER(arg_node) = entry;
 
     DBUG_RETURN(arg_node);

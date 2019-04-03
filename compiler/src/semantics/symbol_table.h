@@ -15,6 +15,7 @@ struct __symbol_table_entry {
     bool isimport;
     // Only for globals
     bool isexport;
+    bool isforcounter;
     char* name;
     type vartype;
     symbol_table* table;
