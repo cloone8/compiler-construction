@@ -1533,6 +1533,18 @@ node* GBCreturn(node * arg_node, info * arg_info) {
 node* GBCbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbranch");
 
+    if(myglobal.do_opt) {
+        if(NODE_TYPE(EXPR_CURRENT(BRANCH_CONDITION(arg_node))) == N_constant) {
+            if(BOOLCONST_VALUE(CONSTANT_CURRENT((EXPR_CURRENT(BRANCH_CONDITION(arg_node))))) == TRUE) {
+                BRANCH_THENBRANCH(arg_node) = TRAVopt(BRANCH_THENBRANCH(arg_node), arg_info);
+            } else {
+                BRANCH_ELSEBRANCH(arg_node) = TRAVopt(BRANCH_ELSEBRANCH(arg_node), arg_info);
+            }
+
+            DBUG_RETURN(arg_node);
+        }
+    }
+
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
 
     get_size_t_str(count, BRANCH_AMOUNT(arg_info)++);
@@ -1542,9 +1554,7 @@ node* GBCbranch(node * arg_node, info * arg_info) {
         char* else_label = STRcatn(3, "branch_", count, "_else");
         branch_f(else_label);
 
-        if(BRANCH_THENBRANCH(arg_node) != NULL) {
-            BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
-        }
+        BRANCH_THENBRANCH(arg_node) = TRAVopt(BRANCH_THENBRANCH(arg_node), arg_info);
 
         jump(end_label);
 
@@ -1554,9 +1564,7 @@ node* GBCbranch(node * arg_node, info * arg_info) {
     } else {
         branch_f(end_label);
 
-        if(BRANCH_THENBRANCH(arg_node) != NULL) {
-            BRANCH_THENBRANCH(arg_node) = TRAVdo(BRANCH_THENBRANCH(arg_node), arg_info);
-        }
+        BRANCH_THENBRANCH(arg_node) = TRAVopt(BRANCH_THENBRANCH(arg_node), arg_info);
     }
 
     label(end_label);

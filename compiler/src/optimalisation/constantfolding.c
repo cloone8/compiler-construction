@@ -650,23 +650,33 @@ node* CFOstatements(node* arg_node, info* arg_info) {
 
     STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
 
+    node* toreturn = arg_node;
+
     if(NODE_TYPE(STATEMENTS_CURRENT(arg_node)) == N_statements) {
         if(STATEMENTS_NEXT(arg_node) != NULL) {
             STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);
             append_statement_to_tail(STATEMENTS_CURRENT(arg_node), STATEMENTS_NEXT(arg_node));
         }
 
-        node* toreturn = STATEMENTS_CURRENT(arg_node);
+        toreturn = STATEMENTS_CURRENT(arg_node);
         STATEMENTS_CURRENT(arg_node) = NULL;
         STATEMENTS_NEXT(arg_node) = NULL;
         FREEstatements(arg_node, NULL);
-
-        DBUG_RETURN(toreturn);
+        TRAVdo(toreturn, arg_info);
     } else {
         STATEMENTS_NEXT(arg_node) = TRAVopt(STATEMENTS_NEXT(arg_node), arg_info);
     }
 
-    DBUG_RETURN(arg_node);
+    if(NODE_TYPE(STATEMENTS_CURRENT(toreturn)) == N_return) {
+        if(STATEMENTS_NEXT(toreturn) != NULL) {
+            TRAVpush(TR_free);
+            FREEstatements(STATEMENTS_NEXT(toreturn), NULL);
+            TRAVpop();
+
+            STATEMENTS_NEXT(toreturn) = NULL;
+        }
+    }
+    DBUG_RETURN(toreturn);
 }
 
 node* CFOdo(node* syntaxtree) {

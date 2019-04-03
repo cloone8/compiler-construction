@@ -4,6 +4,14 @@ export int main() {
     if (true) {
         printInt(5);
         return 0;
+        if (true) {
+            printInt(5);
+            return 0;
+            if (true) {
+                printInt(5);
+                return 0;
+            }
+        }
     }
 
     printInt(2);
