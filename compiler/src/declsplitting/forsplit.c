@@ -193,7 +193,7 @@ node* FSPfor(node* arg_node, info* arg_info) {
         // FOR_STEP(arg_node) = NULL;
     } else {
         counter_inc_step = TBmakeExpr(TBmakeConstant(TBmakeIntconst(1)));
-        FOR_STEP(arg_node) = COPYdoCopy(counter_inc_step);
+        FOR_STEP(arg_node) = counter_inc_step;
     }
 
     node* incr_binop = TBmakeBinop(BO_add, TBmakeExpr(counter_inc_varread), counter_inc_step);
