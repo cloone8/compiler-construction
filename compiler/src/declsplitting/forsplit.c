@@ -107,6 +107,87 @@ node* FSPfunctionbody(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+static void lift_condition(node* arg_node, info* arg_info) {
+    DBUG_ENTER("lift_condition");
+
+    node *condition = FOR_CONDITION(arg_node);
+
+    node* vardecl = TBmakeBasicvardeclaration(STRcpy("FOR_COND"), TP_int, NULL);
+
+    if(NEW_VARDECS(arg_info) == NULL){
+        NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(vardecl, NULL);
+    } else {
+        append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(vardecl, NULL));
+    }
+
+    symbol_table_entry* cond_entry = symbol_table_add(FOR_VARSYMBOLTABLE(arg_node), BASICVARDECLARATION_VARNAME(vardecl), TP_int, FALSE, FALSE);
+
+    // Change the name for clarity
+    get_size_t_str(table_id_buffer, cond_entry->table->id);
+
+    char *new_name_cond = STRcatn(3, "for-", table_id_buffer, "-condition");
+
+    symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), cond_entry->idx, new_name_cond);
+
+    BASICVARDECLARATION_VARPOINTER(vardecl) = cond_entry;
+    node *cond_varread = TBmakeVarread(STRcpy(cond_entry->name));
+    VARREAD_VARPOINTER(cond_varread) = cond_entry;
+    FOR_CONDITION(arg_node) = TBmakeExpr(cond_varread);
+
+    node* init_stat = TBmakeVarassign(STRcpy(new_name_cond), condition);
+    VARASSIGN_VARPOINTER(init_stat) = cond_entry;
+
+    MEMfree(new_name_cond);
+
+    if(INIT_STATEMENTS(arg_info) == NULL) {
+        INIT_STATEMENTS(arg_info) = TBmakeStatements(init_stat, NULL);
+    } else {
+        append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat, NULL));
+    }
+
+    DBUG_VOID_RETURN;
+}
+
+static void lift_step(node* arg_node, info* arg_info) {
+    DBUG_ENTER("lift_step");
+
+    node *step = FOR_STEP(arg_node);
+
+    node* stepdecl = TBmakeBasicvardeclaration(STRcpy("FOR_STEP"), TP_int, NULL);
+
+    if(NEW_VARDECS(arg_info) == NULL){
+        NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(stepdecl, NULL);
+    } else {
+        append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(stepdecl, NULL));
+    }
+
+    symbol_table_entry* step_entry = symbol_table_add(FOR_VARSYMBOLTABLE(arg_node), BASICVARDECLARATION_VARNAME(stepdecl), TP_int, FALSE, FALSE);
+
+    // Change the name for clarity
+    get_size_t_str(table_id_buffer_step, step_entry->table->id);
+    char *new_name_step = STRcatn(3, "for-", table_id_buffer_step, "-step");
+
+    symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), step_entry->idx, new_name_step);
+
+    BASICVARDECLARATION_VARPOINTER(stepdecl) = step_entry;
+    node *step_varread = TBmakeVarread(STRcpy(step_entry->name));
+    VARREAD_VARPOINTER(step_varread) = step_entry;
+    FOR_STEP(arg_node) = TBmakeExpr(step_varread);
+
+    node* init_stat_step = TBmakeVarassign(STRcpy(new_name_step), step);
+    VARASSIGN_VARPOINTER(init_stat_step) = step_entry;
+
+    MEMfree(new_name_step);
+
+    if(INIT_STATEMENTS(arg_info) == NULL) {
+        INIT_STATEMENTS(arg_info) = TBmakeStatements(init_stat_step, NULL);
+    } else {
+        append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat_step, NULL));
+    }
+
+    DBUG_VOID_RETURN;
+}
+
 node* FSPfor(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfor");
 
@@ -114,80 +195,15 @@ node* FSPfor(node* arg_node, info* arg_info) {
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
 
     if(HASFUNCALL(arg_info)) {
-        node *condition = FOR_CONDITION(arg_node);
-
-        node* vardecl = TBmakeBasicvardeclaration(STRcpy("FOR_COND"), TP_int, NULL);
-
-        if(NEW_VARDECS(arg_info) == NULL){
-            NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(vardecl, NULL);
-        } else {
-            append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(vardecl, NULL));
-        }
-
-        symbol_table_entry* cond_entry = symbol_table_add(FOR_VARSYMBOLTABLE(arg_node), BASICVARDECLARATION_VARNAME(vardecl), TP_int, FALSE, FALSE);
-
-        // Change the name for clarity
-        get_size_t_str(table_id_buffer, cond_entry->table->id);
-
-        char *new_name_cond = STRcatn(3, "for-", table_id_buffer, "-condition");
-
-        symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), cond_entry->idx, new_name_cond);
-
-        BASICVARDECLARATION_VARPOINTER(vardecl) = cond_entry;
-        node *cond_varread = TBmakeVarread(STRcpy(cond_entry->name));
-        VARREAD_VARPOINTER(cond_varread) = cond_entry;
-        FOR_CONDITION(arg_node) = TBmakeExpr(cond_varread);
-
-        node* init_stat = TBmakeVarassign(STRcpy(new_name_cond), condition);
-        VARASSIGN_VARPOINTER(init_stat) = cond_entry;
-
-        MEMfree(new_name_cond);
-
-        if(INIT_STATEMENTS(arg_info) == NULL) {
-            INIT_STATEMENTS(arg_info) = TBmakeStatements(init_stat, NULL);
-        } else {
-            append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat, NULL));
-        }
+        lift_condition(arg_node, arg_info);
     }
 
     if(FOR_STEP(arg_node) != NULL) {
         HASFUNCALL(arg_info) = FALSE;
         FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
-    }
 
-    if(HASFUNCALL(arg_info) && FOR_STEP(arg_node) != NULL) {
-        node *step = FOR_STEP(arg_node);
-
-        node* stepdecl = TBmakeBasicvardeclaration(STRcpy("FOR_STEP"), TP_int, NULL);
-
-        if(NEW_VARDECS(arg_info) == NULL){
-            NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(stepdecl, NULL);
-        } else {
-            append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(stepdecl, NULL));
-        }
-
-        symbol_table_entry* step_entry = symbol_table_add(FOR_VARSYMBOLTABLE(arg_node), BASICVARDECLARATION_VARNAME(stepdecl), TP_int, FALSE, FALSE);
-
-        // Change the name for clarity
-        get_size_t_str(table_id_buffer_step, step_entry->table->id);
-        char *new_name_step = STRcatn(3, "for-", table_id_buffer_step, "-step");
-        
-        symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), step_entry->idx, new_name_step);
-
-        BASICVARDECLARATION_VARPOINTER(stepdecl) = step_entry;
-        node *step_varread = TBmakeVarread(STRcpy(step_entry->name));
-        VARREAD_VARPOINTER(step_varread) = step_entry;
-        FOR_STEP(arg_node) = TBmakeExpr(step_varread);
-
-        node* init_stat_step = TBmakeVarassign(STRcpy(new_name_step), step);
-        VARASSIGN_VARPOINTER(init_stat_step) = step_entry;
-
-        MEMfree(new_name_step);
-
-        if(INIT_STATEMENTS(arg_info) == NULL) {
-            INIT_STATEMENTS(arg_info) = TBmakeStatements(init_stat_step, NULL);
-        } else {
-            append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat_step, NULL)); 
+        if(HASFUNCALL(arg_info)) {
+            lift_step(arg_node, arg_info);
         }
     }
 
@@ -200,7 +216,6 @@ node* FSPfor(node* arg_node, info* arg_info) {
     get_size_t_str(table_id_buffer, entry->table->id);
     char* new_name = STRcatn(3, "for-", table_id_buffer, "-counter");
     symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), entry->idx, new_name);
-
 
     // Lift the initial value out of the declaration
     node* initval = BASICVARDECLARATION_INITVAL(counter_dec);
