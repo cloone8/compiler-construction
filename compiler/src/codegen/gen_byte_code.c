@@ -568,6 +568,54 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+static bool check_iinc_idec(node* arg_node, info* arg_info) {
+    DBUG_ENTER("check_iinc_idec");
+
+    symbol_table_entry* varassign_entry = VARASSIGN_VARPOINTER(arg_node);
+
+    if(varassign_entry->vartype == TP_int && varassign_entry->table->table_depth == DEPTH(arg_info)) {
+        // Now check if the assignment is a binop
+        if(NODE_TYPE(EXPR_CURRENT(VARASSIGN_VALUE(arg_node))) == N_binop) {
+            node* binop = EXPR_CURRENT(VARASSIGN_VALUE(arg_node));
+            // Now we check if the binop contains one constant and one varread, and
+            // the binop is a + or -
+            if(BINOP_BINOPERATORS(binop) == BO_add || BINOP_BINOPERATORS(binop) == BO_sub) {
+                bool left_isconstant = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(binop))) == N_constant;
+                bool right_isconstant = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(binop))) == N_constant;
+
+                bool left_isvarread = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(binop))) == N_varread;
+                bool right_isvarread = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(binop))) == N_varread;
+
+                if(left_isconstant && right_isvarread) {
+                    // Check if the varread is to the same variable as the assignment
+                    if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == varassign_entry) {
+                        constval_t const_value;
+                        const_value.intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(binop))));
+                        if(BINOP_BINOPERATORS(binop) == BO_add) {
+
+                        } else {
+
+                        }
+                    }
+                } else if(left_isvarread && right_isconstant) {
+                    // Check if the varread is to the same variable as the assignment
+                    if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_LEFT(arg_node))) == varassign_entry) {
+                        constval_t const_value;
+                        const_value.intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(binop))));
+                        if(BINOP_BINOPERATORS(binop) == BO_add) {
+                            // iinc
+                        } else {
+                            // idec
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    DBUG_RETURN(FALSE);
+}
+
 
 /** <!--******************************************************************-->
  *
@@ -582,6 +630,12 @@ node* GBCarrayvarread (node * arg_node, info * arg_info) {
  ***************************************************************************/
 node* GBCvarassign (node * arg_node, info * arg_info) {
     DBUG_ENTER("GBCvarassign");
+
+    if(check_iinc_idec(arg_node, arg_info)) {
+        // If we can use the special iinc or idec instructions,
+        // do that instead
+        DBUG_RETURN(arg_node);
+    }
 
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
 

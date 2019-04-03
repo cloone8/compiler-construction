@@ -19,6 +19,7 @@
 struct INFO {
     symbol_table* current_table;
     node* new_vardecs;
+    node* for_init_statements;
 };
 
 /*
@@ -27,6 +28,7 @@ struct INFO {
 
 #define CURRENT_SYMBOL_TABLE(__arg_info_struct__) ((__arg_info_struct__)->current_table)
 #define NEW_VARDECS(__arg_info_struct__) ((__arg_info_struct__)->new_vardecs)
+#define INIT_STATEMENTS(__arg_info_struct__) ((__arg_info_struct__)->for_init_statements)
 /*
  * INFO functions
  */
@@ -40,6 +42,7 @@ static info *FSPmakeInfo(void) {
     info *result = (info *)MEMmalloc(sizeof(info));
     CURRENT_SYMBOL_TABLE(result) = NULL;
     NEW_VARDECS(result) = NULL;
+    INIT_STATEMENTS(result) = NULL;
 
     DBUG_RETURN(result);
 }
@@ -128,6 +131,14 @@ node* FSPfor(node* arg_node, info* arg_info) {
     node* init_assign = TBmakeVarassign(STRcpy(new_name), initval);
     VARASSIGN_VARPOINTER(init_assign) = entry;
 
+    node* counter_init_statement = TBmakeStatements(init_assign, NULL);
+
+    if(INIT_STATEMENTS(arg_info) == NULL) {
+        INIT_STATEMENTS(arg_info) = counter_init_statement;
+    } else {
+        append_statement_to_tail(INIT_STATEMENTS(arg_info), counter_init_statement);
+    }
+
     // Create a new var assignment, which increments the counter with the given stepsize.
     node* counter_inc_varread = TBmakeVarread(STRcpy(new_name));
     VARREAD_VARPOINTER(counter_inc_varread) = entry;
@@ -153,32 +164,46 @@ node* FSPfor(node* arg_node, info* arg_info) {
 
     MEMfree(new_name);
 
+    // Traverse through the body of the loop, and append any inner-loop init statements
+    // to the body of this loop
+    node* new_statements = INIT_STATEMENTS(arg_info);
+
+    INIT_STATEMENTS(arg_info) = NULL;
     FOR_CODE(arg_node) = TRAVdo(FOR_CODE(arg_node), arg_info);
+
+    if(INIT_STATEMENTS(arg_info) != NULL) {
+        append_statement_to_tail(INIT_STATEMENTS(arg_info), FOR_CODE(arg_node));
+        FOR_CODE(arg_node) = INIT_STATEMENTS(arg_info);
+        INIT_STATEMENTS(arg_info) = NULL;
+    }
+
     append_statement_to_tail(FOR_CODE(arg_node), counter_increment);
+
+    INIT_STATEMENTS(arg_info) = new_statements;
 
     // Return the new assignment, so the FSPstatement traversal function can
     // put it in the right place
-    DBUG_RETURN(init_assign);
+    DBUG_RETURN(arg_node);
 }
 
 node* FSPstatements(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPstatements");
 
     if(NODE_TYPE(STATEMENTS_CURRENT(arg_node)) == N_for) {
-        // The for traversal returns the new for loop initialiser
-        node* for_node = STATEMENTS_CURRENT(arg_node);
-        node* for_init = TRAVdo(for_node, arg_info);
+        INIT_STATEMENTS(arg_info) = NULL;
+        STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
 
-        // Insert the initial statement here
-        node* for_statement = TBmakeStatements(for_node, STATEMENTS_NEXT(arg_node));
-        STATEMENTS_CURRENT(arg_node) = for_init;
-        STATEMENTS_NEXT(arg_node) = for_statement;
-
-
-        // Continue traversing at the original next node
-        if(STATEMENTS_NEXT(for_statement) != NULL) {
-            STATEMENTS_NEXT(for_statement) = TRAVdo(STATEMENTS_NEXT(for_statement), arg_info);
+        if(INIT_STATEMENTS(arg_info) != NULL) {
+            append_statement_to_tail(INIT_STATEMENTS(arg_info), arg_node);
         }
+        node* toreturn = INIT_STATEMENTS(arg_info);
+        INIT_STATEMENTS(arg_info) = NULL;
+
+        if(STATEMENTS_NEXT(arg_node) != NULL) {
+            STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);
+        }
+
+        DBUG_RETURN(toreturn);
     } else {
         STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
 
