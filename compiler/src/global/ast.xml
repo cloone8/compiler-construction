@@ -219,6 +219,14 @@
             </traversal>
 
             <traversal id="GBC" name="Generate byte code" default="user" include="gen_byte_code.h" />
+
+            <traversal id="CFO" name="Constant folding" default="sons" include="constantfolding.h">
+                <travuser>
+                    <node name="BinOp" />
+                    <node name="MonOp" />
+                    <node name="ConditionalExpr" />
+                </travuser>
+            </traversal>
         </general>
     </phases>
 

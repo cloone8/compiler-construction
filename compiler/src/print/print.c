@@ -1181,8 +1181,6 @@ node* PRTexpr(node * arg_node, info * arg_info) {
 node* PRTmonop(node * arg_node, info * arg_info) {
     DBUG_ENTER ("PRTmonop");
 
-    fputc('(', stderr);
-
     switch (MONOP_TYPE(arg_node)) {
         case MO_not:
             fputc('!', stderr);
@@ -1193,6 +1191,8 @@ node* PRTmonop(node * arg_node, info * arg_info) {
         default:
             fprintf(stderr, "INVALID_MONOP_TYPE");
     }
+
+    fputc('(', stderr);
 
     MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
 
