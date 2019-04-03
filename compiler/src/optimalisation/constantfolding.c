@@ -332,6 +332,7 @@ static node* check_special_cases(node* arg_node) {
 
     switch(BINOP_BINOPERATORS(arg_node)) {
         case BO_mod:
+            // x % x is always 0
             if(left_constant && right_constant) {
                 if(INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) ==
                    INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node))))) {
@@ -345,51 +346,64 @@ static node* check_special_cases(node* arg_node) {
             }
             break;
         case BO_add:
-            if(!((left_constant && right_varread) || (left_varread && right_constant))) {
+            if(left_constant && right_varread) {
+                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
+                    constant = BINOP_LEFT(arg_node);
+                    variable = BINOP_RIGHT(arg_node);
+                } else {
+                    break;
+                }
+            } else if(left_varread && right_constant) {
+                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
+                    variable = BINOP_LEFT(arg_node);
+                    constant = BINOP_RIGHT(arg_node);
+                } else {
+                    break;
+                }
+            } else {
                 break;
-            }
-
-            if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
-                constant = BINOP_LEFT(arg_node);
-                variable = BINOP_RIGHT(arg_node);
-            } else if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
-                variable = BINOP_LEFT(arg_node);
-                constant = BINOP_RIGHT(arg_node);
             }
 
             if(constant == NULL) {
                 break;
             }
-            printf("%d\n", BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))));
-            if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
 
+            if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
+                // a OR TRUE is always TRUE
                 toreturn = TBmakeConstant(TBmakeBoolconst(TRUE));
             } else {
+                // a OR FALSE is always a
                 toreturn = COPYdoCopy(EXPR_CURRENT(variable));
             }
             break;
         case BO_mul:
-            if(!((left_constant && right_varread) || (left_varread && right_constant))) {
+            if(left_constant && right_varread) {
+                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
+                    constant = BINOP_LEFT(arg_node);
+                    variable = BINOP_RIGHT(arg_node);
+                } else {
+                    break;
+                }
+            } else if(left_varread && right_constant) {
+                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
+                    variable = BINOP_LEFT(arg_node);
+                    constant = BINOP_RIGHT(arg_node);
+                } else {
+                    break;
+                }
+            } else {
                 break;
-            }
-
-            if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
-                constant = BINOP_LEFT(arg_node);
-                variable = BINOP_RIGHT(arg_node);
-            } else if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
-                variable = BINOP_LEFT(arg_node);
-                constant = BINOP_RIGHT(arg_node);
             }
 
             if(constant == NULL) {
                 break;
             }
 
-            printf("%d\n", BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))));
             if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
-
+                // a AND TRUE is always a
                 toreturn = COPYdoCopy(EXPR_CURRENT(variable));
             } else {
+                // a AND FALSE is always FALSE
                 toreturn = TBmakeConstant(TBmakeBoolconst(FALSE));
             }
             break;

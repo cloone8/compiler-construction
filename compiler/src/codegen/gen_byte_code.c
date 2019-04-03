@@ -665,6 +665,15 @@ node* GBCvarassign (node * arg_node, info * arg_info) {
         DBUG_RETURN(arg_node);
     }
 
+    // Check if we don't do a useless read-assign from and to the same variable
+    if(myglobal.do_opt) {
+        if(NODE_TYPE(EXPR_CURRENT(VARASSIGN_VALUE(arg_node))) == N_varread) {
+            if(VARASSIGN_VARPOINTER(arg_node) == VARREAD_VARPOINTER(EXPR_CURRENT(VARASSIGN_VALUE(arg_node)))) {
+                DBUG_RETURN(arg_node);
+            }
+        }
+    }
+
     VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
 
     symbol_table_entry* entry = VARASSIGN_VARPOINTER(arg_node);
