@@ -186,6 +186,20 @@ SUBPHASE(prt_su, "Printing stripped AST", PRTdoPrint, ONLYIF(myglobal.printtree 
 ENDPHASE(su)
 /******************************************************************************/
 
+PHASE(opt,
+       "Doing optimalisations",
+       ONLYIF(myglobal.do_opt))
+
+SUBPHASE(cfo,
+       "Folding constants",
+        CFOdo,
+        ALWAYS,
+        opt)
+
+ENDPHASE(opt)
+
+/******************************************************************************/
+
 PHASE(cg,
        "Generating Code",
        ALWAYS)

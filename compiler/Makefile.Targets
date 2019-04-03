@@ -87,7 +87,7 @@ TEST_CIVCC := bin/civicc
 
 
 src = global scanparse print codegen framework finalisation semantics \
-      util declsplitting typechecking codetransform unused
+      util declsplitting typechecking codetransform unused optimalisation
 
 
 
@@ -128,3 +128,5 @@ codetransform = arrayparams.o boolcomp.o boolcast.o arraylower.o \
 				fortowhile.o whiletodowhile.o
 
 unused		  = unusedfuns.o count_map.o
+
+optimalisation = constantfolding.o

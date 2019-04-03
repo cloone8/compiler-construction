@@ -1,0 +1,6 @@
+export int main() {
+    int a = -1;
+    bool b = !false;
+
+    return a;
+}

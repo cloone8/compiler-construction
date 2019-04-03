@@ -36,6 +36,8 @@ void OPTcheckOptions(int argc, char **argv) {
 
     ARGS_FLAG("tc", global.treecheck = TRUE);
 
+    ARGS_FLAG("noopt", myglobal.do_opt = FALSE);
+
     ARGS_OPTION("#", DBUG_PUSH(copy_arg(ARG)));
 
     ARGS_ARGUMENT(global.infile = copy_arg(ARG); );
