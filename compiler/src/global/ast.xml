@@ -101,6 +101,7 @@
                     <node name="FunctionBody" />
                     <node name="For" />
                     <node name="Statements" />
+                    <node name="FunCall" />
                 </travuser>
             </traversal>
 

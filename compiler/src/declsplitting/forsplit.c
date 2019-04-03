@@ -21,6 +21,7 @@ struct INFO {
     node* new_vardecs;
     node* for_init_statements;
     size_t entry_count;
+    bool containsfuncall;
 };
 
 /*
@@ -31,6 +32,7 @@ struct INFO {
 #define NEW_VARDECS(__arg_info_struct__) ((__arg_info_struct__)->new_vardecs)
 #define INIT_STATEMENTS(__arg_info_struct__) ((__arg_info_struct__)->for_init_statements)
 #define COUNT(__arg_info_struct__) ((__arg_info_struct__)->entry_count)
+#define HASFUNCALL(__arg_info_struct__) ((__arg_info_struct__)->containsfuncall)
 
 /*
  * INFO functions
@@ -47,6 +49,7 @@ static info *FSPmakeInfo(void) {
     NEW_VARDECS(result) = NULL;
     INIT_STATEMENTS(result) = NULL;
     COUNT(result) = 0;
+    HASFUNCALL(result) = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -107,6 +110,8 @@ node* FSPfunctionbody(node* arg_node, info* arg_info) {
 node* FSPfor(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfor");
 
+    HASFUNCALL(arg_info) = FALSE;
+
     node *condition = FOR_CONDITION(arg_node);
 
     node* vardecl = TBmakeBasicvardeclaration(STRcpy("FOR_COND"), TP_int, NULL);
@@ -123,7 +128,7 @@ node* FSPfor(node* arg_node, info* arg_info) {
     get_size_t_str(table_id_buffer, cond_entry->table->id);
 
     char *new_name_cond = STRcatn(3, "for-", table_id_buffer, "-condition");
-    
+
     symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), cond_entry->idx, new_name_cond);
 
     BASICVARDECLARATION_VARPOINTER(vardecl) = cond_entry;
@@ -139,7 +144,7 @@ node* FSPfor(node* arg_node, info* arg_info) {
     if(INIT_STATEMENTS(arg_info) == NULL) {
         INIT_STATEMENTS(arg_info) = TBmakeStatements(init_stat, NULL);
     } else {
-        append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat, NULL)); 
+        append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat, NULL));
     }
 
     DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR_COUNTER was NULL, while it shouldn't yet be!");
@@ -247,6 +252,14 @@ node* FSPstatements(node* arg_node, info* arg_info) {
             STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);
         }
     }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* FSPfuncall(node* arg_node, info* arg_info) {
+    DBUG_ENTER("FSPfuncall");
+
+    HASFUNCALL(arg_info) = TRUE;
 
     DBUG_RETURN(arg_node);
 }
