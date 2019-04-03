@@ -1,6 +1,9 @@
 export int main() {
     int a = -1;
     bool b = !false;
+    int c = -(2 * 6) + 7 / (6 - 1);
+    float d = -(2.7 * 6.2) + 7.0 - 5.1;
+    bool e = true + false * false * !true;
 
     return a;
 }
