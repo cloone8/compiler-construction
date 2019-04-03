@@ -456,6 +456,13 @@ node *TCcast(node *arg_node, info *arg_info) {
 
     if(TYPE(new_info) == CAST_CASTTO(arg_node)) {
         // Useless cast, remove it
+        char* orgtype = get_type_str(TYPE(new_info));
+        char* totype = get_type_str(CAST_CASTTO(arg_node));
+
+        CTIwarnFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Useless typecast from %s to %s", orgtype, totype);
+
+        MEMfree(orgtype);
+        MEMfree(totype);
 
         TCfreeInfo(new_info);
 
