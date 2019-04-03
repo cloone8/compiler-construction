@@ -33,7 +33,7 @@ GLOBAL(char*, current_file, NULL);
 GLOBAL(int, printtree, 0);
 GLOBAL(size_t, varsymtable_num, 0);
 GLOBAL(size_t, funsymtable_num, 0);
-GLOBAL(bool, do_opt, FALSE);
+GLOBAL(bool, do_opt, TRUE);
 
 #undef GLOBALtype
 #undef GLOBALname

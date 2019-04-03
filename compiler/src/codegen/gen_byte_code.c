@@ -586,29 +586,53 @@ static bool check_iinc_idec(node* arg_node, info* arg_info) {
                 bool left_isvarread = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(binop))) == N_varread;
                 bool right_isvarread = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(binop))) == N_varread;
 
+                constval_t constant_val;
+
                 if(left_isconstant && right_isvarread) {
                     // Check if the varread is to the same variable as the assignment
-                    if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == varassign_entry) {
-                        constval_t const_value;
-                        const_value.intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(binop))));
-                        if(BINOP_BINOPERATORS(binop) == BO_add) {
-
-                        } else {
-
-                        }
+                    if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_RIGHT(binop))) == varassign_entry) {
+                        constant_val.intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(binop))));
+                    } else {
+                        DBUG_RETURN(FALSE);
                     }
                 } else if(left_isvarread && right_isconstant) {
                     // Check if the varread is to the same variable as the assignment
-                    if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_LEFT(arg_node))) == varassign_entry) {
-                        constval_t const_value;
-                        const_value.intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(binop))));
-                        if(BINOP_BINOPERATORS(binop) == BO_add) {
-                            // iinc
-                        } else {
-                            // idec
-                        }
+                    if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_LEFT(binop))) == varassign_entry) {
+                        constant_val.intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(binop))));
+                    } else {
+                        DBUG_RETURN(FALSE);
+                    }
+                } else {
+                    DBUG_RETURN(FALSE);
+                }
+
+                bool use_dec = BINOP_BINOPERATORS(binop) == BO_sub;
+                if(constant_val.intval < 0) {
+                    use_dec = !use_dec;
+                    constant_val.intval *= -1;
+                }
+
+                if(constant_val.intval == 1) {
+                    if(use_dec) {
+                        idec_1(varassign_entry->idx);
+                    } else {
+                        iinc_1(varassign_entry->idx);
+                    }
+                } else {
+                    instruction* const_entry = PSI_find_constant(CONSTANTS(arg_info), TP_int, constant_val);
+                    if(const_entry == NULL) {
+                        const_entry = PSI_make_const(TP_int, constant_val);
+                        PSI_add(CONSTANTS(arg_info), const_entry);
+                    }
+
+                    if(use_dec) {
+                        idec(varassign_entry->idx, const_entry->index);
+                    } else {
+                        iinc(varassign_entry->idx, const_entry->index);
                     }
                 }
+
+                DBUG_RETURN(TRUE);
             }
         }
     }
