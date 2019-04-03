@@ -147,6 +147,47 @@ node* FSPfor(node* arg_node, info* arg_info) {
         append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat, NULL));
     }
 
+    if(FOR_STEP(arg_node) == NULL) {
+        FOR_STEP(arg_node) = TBmakeExpr(TBmakeConstant(TBmakeIntconst(1)));
+    }
+
+    node *step = FOR_STEP(arg_node);
+
+    node* stepdecl = TBmakeBasicvardeclaration(STRcpy("FOR_STEP"), TP_int, NULL);
+
+    if(NEW_VARDECS(arg_info) == NULL){
+        NEW_VARDECS(arg_info) = TBmakeFunctionvardeclaration(stepdecl, NULL);
+    } else {
+        append_functionvardeclaration_to_tail(NEW_VARDECS(arg_info), TBmakeFunctionvardeclaration(stepdecl, NULL));
+    }
+
+    symbol_table_entry* step_entry = symbol_table_add(FOR_VARSYMBOLTABLE(arg_node), BASICVARDECLARATION_VARNAME(stepdecl), TP_int, FALSE, FALSE);
+
+    // Change the name for clarity
+    get_size_t_str(table_id_buffer_step, step_entry->table->id);
+
+    char *new_name_step = STRcatn(3, "for-", table_id_buffer_step, "-step");
+    
+    symbol_table_update(FOR_VARSYMBOLTABLE(arg_node), step_entry->idx, new_name_step);
+
+    BASICVARDECLARATION_VARPOINTER(stepdecl) = step_entry;
+    node *step_varread = TBmakeVarread(STRcpy(step_entry->name));
+    VARREAD_VARPOINTER(step_varread) = step_entry;
+    FOR_STEP(arg_node) = TBmakeExpr(step_varread);
+
+    node* init_stat_step = TBmakeVarassign(STRcpy(new_name_step), step);
+    VARASSIGN_VARPOINTER(init_stat_step) = step_entry;
+
+    MEMfree(new_name_step);
+
+    if(INIT_STATEMENTS(arg_info) == NULL) {
+        INIT_STATEMENTS(arg_info) = TBmakeStatements(init_stat_step, NULL);
+    } else {
+        append_statement_to_tail(INIT_STATEMENTS(arg_info), TBmakeStatements(init_stat_step, NULL)); 
+    }
+
+
+
     DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR_COUNTER was NULL, while it shouldn't yet be!");
     // Lift the counter out of the loop
     node* counter_dec = FOR_COUNTER(arg_node);
