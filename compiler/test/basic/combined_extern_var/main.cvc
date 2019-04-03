@@ -1,9 +1,14 @@
 extern void printInt(int val);
 extern void printNewlines(int num);
 
-extern int foo;
+extern int foo();
+extern int step();
+extern int cond();
 
 export int main() {
-    printInt(foo);
+    printInt(foo());
+    for(int i = 0, cond(), step()) {
+        printInt(foo());
+    }
     return 0;
 }

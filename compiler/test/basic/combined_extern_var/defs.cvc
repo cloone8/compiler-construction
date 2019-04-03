@@ -1,1 +1,11 @@
-export int foo = 222;
+export int foo() {
+    return 222;
+}
+
+export int step() {
+    return 1;
+}
+
+export int cond() {
+    return 3;
+}
