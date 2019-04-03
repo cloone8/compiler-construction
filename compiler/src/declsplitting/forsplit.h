@@ -8,6 +8,8 @@ extern node* FSPfunctionbody(node * arg_node, info * arg_info);
 extern node* FSPfor(node * arg_node, info * arg_info);
 extern node* FSPstatements(node * arg_node, info * arg_info);
 extern node* FSPfuncall(node * arg_node, info * arg_info);
+extern node* FSPvarread(node * arg_node, info * arg_info);
+extern node* FSParrayvarread(node * arg_node, info * arg_info);
 extern node *FSPdo(node * syntaxtree);
 
 #endif

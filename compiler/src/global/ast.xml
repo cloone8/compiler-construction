@@ -102,6 +102,8 @@
                     <node name="For" />
                     <node name="Statements" />
                     <node name="FunCall" />
+                    <node name="VarRead" />
+                    <node name="ArrayVarRead" />
                 </travuser>
             </traversal>
 

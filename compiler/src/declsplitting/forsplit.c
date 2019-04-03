@@ -22,6 +22,7 @@ struct INFO {
     node* for_init_statements;
     size_t entry_count;
     bool containsfuncall;
+    bool containsvarread;
 };
 
 /*
@@ -33,6 +34,7 @@ struct INFO {
 #define INIT_STATEMENTS(__arg_info_struct__) ((__arg_info_struct__)->for_init_statements)
 #define COUNT(__arg_info_struct__) ((__arg_info_struct__)->entry_count)
 #define HASFUNCALL(__arg_info_struct__) ((__arg_info_struct__)->containsfuncall)
+#define HASVARREAD(__arg_info_struct__) ((__arg_info_struct__)->containsvarread)
 
 /*
  * INFO functions
@@ -50,6 +52,7 @@ static info *FSPmakeInfo(void) {
     INIT_STATEMENTS(result) = NULL;
     COUNT(result) = 0;
     HASFUNCALL(result) = FALSE;
+    HASVARREAD(result) = FALSE;
 
     DBUG_RETURN(result);
 }
@@ -192,17 +195,19 @@ node* FSPfor(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfor");
 
     HASFUNCALL(arg_info) = FALSE;
+    HASVARREAD(arg_info) = FALSE;
     FOR_CONDITION(arg_node) = TRAVdo(FOR_CONDITION(arg_node), arg_info);
 
-    if(HASFUNCALL(arg_info)) {
+    if(HASFUNCALL(arg_info) || HASVARREAD(arg_info)) {
         lift_condition(arg_node, arg_info);
     }
 
     if(FOR_STEP(arg_node) != NULL) {
         HASFUNCALL(arg_info) = FALSE;
+        HASVARREAD(arg_info) = FALSE;
         FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
 
-        if(HASFUNCALL(arg_info)) {
+        if(HASFUNCALL(arg_info) || HASVARREAD(arg_info)) {
             lift_step(arg_node, arg_info);
         }
     }
@@ -320,6 +325,22 @@ node* FSPfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("FSPfuncall");
 
     HASFUNCALL(arg_info) = TRUE;
+
+    DBUG_RETURN(arg_node);
+}
+
+node* FSPvarread(node* arg_node, info* arg_info) {
+    DBUG_ENTER("FSPvarread");
+
+    HASVARREAD(arg_info) = TRUE;
+
+    DBUG_RETURN(arg_node);
+}
+
+node* FSParrayvarread(node* arg_node, info* arg_info) {
+    DBUG_ENTER("FSParrayvarread");
+
+    HASVARREAD(arg_info) = TRUE;
 
     DBUG_RETURN(arg_node);
 }
