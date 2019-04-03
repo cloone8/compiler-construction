@@ -340,7 +340,14 @@ static void CleanUp() {
 static void AbortCompilation() {
     DBUG_ENTER("AbortCompilation");
 
+    #ifdef _WIN32
+    // Windows is bad and does not support colours
     fprintf(stderr, "\n*** Compilation failed ***\n");
+    #else
+    // Print with pretty colours
+    fprintf(stderr, "\n***\E[27;31m\033[1m Compilation failed \033[0m***\n");
+    #endif
+
     fprintf(stderr, "*** %d Error(s), %d Warning(s)\n\n",
                      errors, warnings);
 
