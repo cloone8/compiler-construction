@@ -1,9 +1,25 @@
+#include "test_wouter/array.cvc"
+
 int test() {
     return 1;
 }
 
-int test2() {
-    return 1;
+int test2(int testa, int testb) {
+    return testa + testb;
+}
+
+int testFun() {
+    int a = 5;
+    int b = 6;
+    int c = a + b;
+    int d = a + c;
+    int[2,2,2] e = [[[1,2],[3,4]], [[5,6],[7,8]]];
+
+    for(int i = a, c, b) {
+        printInt(a + b + c + d);
+    }
+
+    return 0;
 }
 
 export int main() {
@@ -13,6 +29,17 @@ export int main() {
     float d = -(2.7 * 6.2) + 7.0 - 5.1;
     bool e = true + false * false * !true;
     int[2] la = [1,2];
+    int[4] testInt = 4;
+    float[4] testFloat = [1.2, 2.3, 3.4, 4.5];
+    int[2, 2] testIntMat = [[1, 2], [3, 4]];
+    float[2, 2] testFloatMat = [[1.2, 2.3], [3.4, 4.5]];
+
+    testFun();
+    printIntVec(testInt);
+    printFloatVec(testFloat);
+
+    printIntMat(testIntMat);
+    printFloatMat(testFloatMat);
 
     a = a + 1;
     a = a - 1;

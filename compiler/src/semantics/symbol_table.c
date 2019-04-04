@@ -138,6 +138,7 @@ void symbol_table_insert(symbol_table* table, symbol_table_entry* to_insert) {
     }
 
     table->current_entries++;
+    table->__next_id++;
 
     if(table->current_entries > table->__entry_array_size) {
         increase_table_size(table);

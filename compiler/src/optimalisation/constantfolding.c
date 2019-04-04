@@ -19,12 +19,6 @@ struct INFO {
 
 
 /*
- * INFO macros
- */
-
-#define TYPE(__arg_info_struct__) ((__arg_info_struct__)->final_type)
-
-/*
  * INFO functions
  */
 
@@ -628,6 +622,12 @@ node* CFObranch(node* arg_node, info* arg_info) {
                 TRAVpop();
 
                 DBUG_RETURN(toreturn);
+            } else {
+                TRAVpush(TR_free);
+                FREEbranch(arg_node, NULL);
+                TRAVpop();
+
+                DBUG_RETURN(TBmakeNoop());
             }
         } else {
             if(BRANCH_ELSEBRANCH(arg_node) != NULL) {
@@ -638,6 +638,12 @@ node* CFObranch(node* arg_node, info* arg_info) {
                 TRAVpop();
 
                 DBUG_RETURN(toreturn);
+            }  else {
+                TRAVpush(TR_free);
+                FREEbranch(arg_node, NULL);
+                TRAVpop();
+
+                DBUG_RETURN(TBmakeNoop());
             }
         }
     }

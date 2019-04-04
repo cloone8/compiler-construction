@@ -43,6 +43,7 @@ extern node *GBCfunctionvardeclaration(node *arg_node, info *arg_info);
 extern node *GBClocalfunction(node *arg_node, info *arg_info);
 extern node *GBCarrayinit(node *arg_node, info *arg_info);
 extern node *GBCprogram(node *arg_node, info *arg_info);
+extern node *GBCnoop(node *arg_node, info *arg_info);
 
 extern node *GBCdoGenByteCode(node *syntaxtree);
 
