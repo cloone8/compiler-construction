@@ -232,6 +232,15 @@
                     <node name="Statements" />
                 </travuser>
             </traversal>
+
+            <traversal id="CPR" name="Constant propagation" default="sons" include="constantpropagation.h">
+                <travuser>
+                    <node name="BasicVarDeclaration" />
+                    <node name="VarRead" />
+                    <node name="VarAssign" />
+                    <node name="FunctionVarDeclaration" />
+                </travuser>
+            </traversal>
         </general>
     </phases>
 
@@ -257,6 +266,7 @@
                 <node name="VarAssign" />
                 <node name="ArrayVarAssign" />
                 <node name="ArrayInit" />
+                <node name="NoOp" />
             </target>
         </nodeset>
         <nodeset name="ExprTypes">
@@ -1887,6 +1897,20 @@
                         </targets>
                     </type>
                 </attribute>
+            </attributes>
+        </node>
+
+        <!--
+         Node NoOp
+         -->
+
+        <node name="NoOp">
+            <description>
+                A noop statement for codegen
+            </description>
+            <sons>
+            </sons>
+            <attributes>
             </attributes>
         </node>
 

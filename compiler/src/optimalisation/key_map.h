@@ -8,6 +8,8 @@ typedef struct {
     void* key;
     bool was_init;
     bool can_read;
+    size_t count;
+    type vartype;
     union {
         int intval;
         float floatval;

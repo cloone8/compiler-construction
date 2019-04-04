@@ -52,6 +52,7 @@ extern node *PRTconstant (node * arg_node, info * arg_info);
 extern node *PRTfunctionvardeclaration (node * arg_node, info * arg_info);
 extern node *PRTlocalfunction (node * arg_node, info * arg_info);
 extern node *PRTprogram (node * arg_node, info * arg_info);
+extern node *PRTnoop (node * arg_node, info * arg_info);
 
 
 

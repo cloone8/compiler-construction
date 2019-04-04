@@ -1310,6 +1310,15 @@ node *PRTarrayinit (node * arg_node, info * arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node *PRTnoop (node * arg_node, info * arg_info) {
+    DBUG_ENTER("PRTnoop");
+
+    print_indents(arg_info);
+    fprintf(stderr, "NOOP");
+
+    DBUG_RETURN(arg_node);
+}
+
 /** <!-- ****************************************************************** -->
  * @brief Prints the given syntaxtree
  *

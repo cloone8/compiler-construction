@@ -1533,18 +1533,6 @@ node* GBCreturn(node * arg_node, info * arg_info) {
 node* GBCbranch(node * arg_node, info * arg_info) {
     DBUG_ENTER ("GBCbranch");
 
-    if(myglobal.do_opt) {
-        if(NODE_TYPE(EXPR_CURRENT(BRANCH_CONDITION(arg_node))) == N_constant) {
-            if(BOOLCONST_VALUE(CONSTANT_CURRENT((EXPR_CURRENT(BRANCH_CONDITION(arg_node))))) == TRUE) {
-                BRANCH_THENBRANCH(arg_node) = TRAVopt(BRANCH_THENBRANCH(arg_node), arg_info);
-            } else {
-                BRANCH_ELSEBRANCH(arg_node) = TRAVopt(BRANCH_ELSEBRANCH(arg_node), arg_info);
-            }
-
-            DBUG_RETURN(arg_node);
-        }
-    }
-
     BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
 
     get_size_t_str(count, BRANCH_AMOUNT(arg_info)++);
@@ -1765,6 +1753,13 @@ node *GBCarrayinit(node *arg_node, info *arg_info) {
         DBUG_ASSERT((FALSE), "Can't init an array from upper scope!");
         CTIabort("Internal compiler error!");
     }
+
+    DBUG_RETURN(arg_node);
+}
+
+node *GBCnoop(node *arg_node, info *arg_info) {
+    DBUG_ENTER("GBCnoop");
+    UNUSED_VAR(arg_info);
 
     DBUG_RETURN(arg_node);
 }
