@@ -30,8 +30,8 @@ keyMapItem* KMaddItem(keyMap* map, void* key) {
     keyMapItem* item = (keyMapItem*) MEMmalloc(sizeof(keyMapItem));
 
     item->key = key;
-    item->count = 0;
     item->intval = 0;
+    item->was_init = FALSE;
 
     map->itemCount++;
     map->items = realloc(map->items, sizeof(keyMapItem*) * map->itemCount);
@@ -53,19 +53,6 @@ keyMapItem* KMgetItem(keyMap* map, void* key) {
     }
 
     return NULL;
-}
-
-/**
- * Adds an occurence of the given variable to the map. Automatically adds new items
- * to the map if required.
- */
-void KMaddOccurence(keyMap* map, void* key) {
-    keyMapItem* item = KMgetItem(map, key);
-    if(item == NULL) {
-        item = KMaddItem(map, key);
-    }
-
-    item->count++;
 }
 
 /**

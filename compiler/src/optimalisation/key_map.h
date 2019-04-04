@@ -6,7 +6,7 @@
 
 typedef struct {
     void* key;
-    size_t count;
+    bool was_init;
     union {
         int intval;
         float floatval;
@@ -26,8 +26,6 @@ keyMap* KMcreate();
 keyMapItem* KMaddItem(keyMap* map, void* key);
 
 keyMapItem* KMgetItem(keyMap* map, void* key);
-
-void KMaddOccurence(keyMap* map, void* key);
 
 void KMfree(keyMap* map);
 
