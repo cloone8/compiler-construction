@@ -1,6 +1,11 @@
 #include "test_wouter/array.cvc"
 
 int test() {
+    int a = 5;
+    int b = a - 5;
+    int c = a;
+    c = c - b;
+
     return 1;
 }
 
