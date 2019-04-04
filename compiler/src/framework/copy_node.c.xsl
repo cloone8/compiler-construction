@@ -101,7 +101,7 @@ version="1.0">
 #include "lookup_table.h"
 
 
-#define COPYTRAV(node, info) (node != NULL) ? TRAVdo(node, info) : node
+#define COPYTRAV( node, info) (node != NULL) ? TRAVdo( node, info) : node
 
   </xsl:text>
   <!-- functions -->
@@ -131,7 +131,8 @@ version="1.0">
     </xsl:with-param>
   </xsl:call-template>
   <xsl:value-of select="'&quot;);'"/>
-  <xsl:value-of select="'LUTinsertIntoLutP(INFO_LUT(arg_info), arg_node, result);'"/>
+  <xsl:value-of select="'LUTinsertIntoLutP( INFO_LUT( arg_info), arg_node, result);'"/>
+
   <!-- call copy for attributes -->
   <xsl:if test="count(attributes/attribute) > 0">
     <xsl:text>
@@ -139,6 +140,15 @@ version="1.0">
     </xsl:text>
   </xsl:if>
   <xsl:apply-templates select="attributes/attribute"/>
+
+  <!-- call copy for flags -->
+  <xsl:if test="count(flags/flag) > 0">
+    <xsl:text>
+    /* Copy flags */
+    </xsl:text>
+  </xsl:if>
+  <xsl:apply-templates select="flags/flag"/>
+
   <!-- call copy for all sons -->
   <xsl:if test="count(sons/son[@name]) > 0">
     <xsl:text>
@@ -150,7 +160,7 @@ version="1.0">
   <xsl:text>
   /* Return value */
   </xsl:text>
-  <xsl:value-of select="'DBUG_RETURN(result);'"/>
+  <xsl:value-of select="'DBUG_RETURN( result);'"/>
   <!-- end of body -->
   <xsl:value-of select="'}'"/>
 </xsl:template>
@@ -181,7 +191,7 @@ version="1.0">
       <xsl:value-of select="@name"/>
     </xsl:with-param>
   </xsl:call-template>
-  <xsl:value-of select="' = COPYTRAV('"/>
+  <xsl:value-of select="' = COPYTRAV( '"/>
   <xsl:call-template name="node-access">
     <xsl:with-param name="node">arg_node</xsl:with-param>
     <xsl:with-param name="nodetype">
@@ -192,6 +202,36 @@ version="1.0">
     </xsl:with-param>
   </xsl:call-template>
   <xsl:value-of select="', arg_info);'"/>
+</xsl:template>
+
+<!-- generate copying flags -->
+<xsl:template match="flag">
+  <!-- left side of assignment -->
+  <xsl:call-template name="node-access">
+    <xsl:with-param name="node">
+      <xsl:value-of select="'result'" />
+    </xsl:with-param>
+    <xsl:with-param name="nodetype">
+      <xsl:value-of select="../../@name" />
+    </xsl:with-param>
+    <xsl:with-param name="field">
+      <xsl:value-of select="@name" />
+    </xsl:with-param>
+    </xsl:call-template>
+    <xsl:value-of select="' = '" />
+  <!-- right side of assignment -->
+    <xsl:call-template name="node-access">
+      <xsl:with-param name="node">
+        <xsl:value-of select="'arg_node'" />
+      </xsl:with-param>
+      <xsl:with-param name="nodetype">
+        <xsl:value-of select="../../@name" />
+      </xsl:with-param>
+      <xsl:with-param name="field">
+        <xsl:value-of select="@name" />
+      </xsl:with-param>
+    </xsl:call-template>
+    <xsl:value-of select="';'" />
 </xsl:template>
 
 
@@ -229,7 +269,7 @@ version="1.0">
     </xsl:when>
     <!-- literal attributes are just copied (assigment) -->
     <xsl:when test="key(&quot;types&quot;, ./type/@name)[@copy = &quot;lookup&quot;]">
-       <xsl:value-of select="'LUTsearchInLutPp(INFO_LUT(arg_info), '"/>
+       <xsl:value-of select="'LUTsearchInLutPp( INFO_LUT( arg_info), '"/>
       <xsl:call-template name="node-access">
         <xsl:with-param name="node">
           <xsl:value-of select="'arg_node'" />
@@ -269,25 +309,25 @@ version="1.0">
   <xsl:value-of select="'TBmake'"/>
   <xsl:call-template name="uppercase" >
     <xsl:with-param name="string" >
-      <xsl:value-of select="substring(@name, 1, 1)" />
+      <xsl:value-of select="substring( @name, 1, 1)" />
     </xsl:with-param>
   </xsl:call-template>
   <xsl:call-template name="lowercase" >
     <xsl:with-param name="string" >
-      <xsl:value-of select="substring(@name, 2, 30)" />
+      <xsl:value-of select="substring( @name, 2, 30)" />
     </xsl:with-param>
   </xsl:call-template>
-  <xsl:value-of select="'('"/>
+  <xsl:value-of select="'( '"/>
   <!-- permanent attributes without default value first -->
   <xsl:apply-templates select="attributes/attribute[type/targets/target/phases/all][not(@default)][type/targets/target/@mandatory = &quot;yes&quot;]" mode="make-function-call"/>
   <!-- add a , if needed -->
   <xsl:if test="attributes/attribute[type/targets/target/phases/all][not(@default)][type/targets/target/@mandatory = &quot;yes&quot;]">
-    <xsl:if test="sons/son[ not(@default)]">
+    <xsl:if test="sons/son[ not( @default)]">
       <xsl:value-of select="' ,'"/>
     </xsl:if>
   </xsl:if>
   <!-- sons without default value are last parameters -->
-  <xsl:apply-templates select="sons/son[ not(@default)]" mode="make-function-call"/>
+  <xsl:apply-templates select="sons/son[ not( @default)]" mode="make-function-call"/>
   <xsl:value-of select="')'"/>
 </xsl:template>
 
