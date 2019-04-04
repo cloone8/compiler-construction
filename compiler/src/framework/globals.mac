@@ -71,7 +71,7 @@ GLOBAL(compiler_phase_t, compiler_subphase, PH_initial)
 GLOBAL(compiler_phase_t, compiler_cyclephase, PH_initial)
 GLOBAL(compiler_phase_t, compiler_anyphase, PH_initial)
 GLOBAL(int, cycle_counter, 0)
-GLOBAL(int, max_optcycles, 10)
+GLOBAL(int, max_optcycles, 15)
 GLOBAL(bool, treecheck, FALSE)
 
 
