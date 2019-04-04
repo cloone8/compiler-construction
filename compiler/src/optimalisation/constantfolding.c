@@ -685,6 +685,25 @@ node* CFOstatements(node* arg_node, info* arg_info) {
     DBUG_RETURN(toreturn);
 }
 
+node* CFOvarassign(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CFOvarassign");
+
+    VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
+
+    if(NODE_TYPE(EXPR_CURRENT(VARASSIGN_VALUE(arg_node))) == N_varread) {
+        if(VARASSIGN_VARPOINTER(arg_node) == VARREAD_VARPOINTER(EXPR_CURRENT(VARASSIGN_VALUE(arg_node)))) {
+
+            TRAVpush(TR_free);
+            FREEvarassign(arg_node, NULL);
+            TRAVpop();
+
+            DBUG_RETURN(TBmakeNoop());
+        }
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 node* CFOdo(node* syntaxtree) {
     DBUG_ENTER("CFOdo");
 

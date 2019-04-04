@@ -7,6 +7,7 @@ extern node* CFOmonop(node* arg_node, info* arg_info);
 extern node* CFOconditionalexpr(node* arg_node, info* arg_info);
 extern node* CFObranch(node* arg_node, info* arg_info);
 extern node* CFOstatements(node* arg_node, info* arg_info);
+extern node* CFOvarassign(node* arg_node, info* arg_info);
 
 extern node* CFOdo(node* syntaxtree);
 

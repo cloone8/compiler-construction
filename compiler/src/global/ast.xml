@@ -230,6 +230,7 @@
                     <node name="ConditionalExpr" />
                     <node name="Branch" />
                     <node name="Statements" />
+                    <node name="VarAssign" />
                 </travuser>
             </traversal>
 
