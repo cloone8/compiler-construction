@@ -7,6 +7,7 @@
 typedef struct {
     void* key;
     bool was_init;
+    bool can_read;
     union {
         int intval;
         float floatval;

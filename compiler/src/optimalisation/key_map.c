@@ -32,6 +32,7 @@ keyMapItem* KMaddItem(keyMap* map, void* key) {
     item->key = key;
     item->intval = 0;
     item->was_init = FALSE;
+    item->can_read = FALSE;
 
     map->itemCount++;
     map->items = realloc(map->items, sizeof(keyMapItem*) * map->itemCount);
