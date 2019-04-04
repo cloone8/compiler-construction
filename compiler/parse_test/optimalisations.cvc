@@ -2,99 +2,103 @@ int test() {
     return 1;
 }
 
+int test2() {
+    return 1;
+}
+
 export int main() {
     int a = -1;
-    // bool b = !false;
-    // int c = -(2 * 6) + 7 / (6 - 1);
-    // float d = -(2.7 * 6.2) + 7.0 - 5.1;
-    // bool e = true + false * false * !true;
-    // int[2] la = [1,2];
+    bool b = !false;
+    int c = -(2 * 6) + 7 / (6 - 1);
+    float d = -(2.7 * 6.2) + 7.0 - 5.1;
+    bool e = true + false * false * !true;
+    int[2] la = [1,2];
 
-    // a = a + 1;
-    // a = a - 1;
-    // a = a + 2;
-    // a = 5 + a;
-    // a = 1 + a;
-    // a = -1 + a;
+    a = a + 1;
+    a = a - 1;
+    a = a + 2;
+    a = 5 + a;
+    a = 1 + a;
+    a = -1 + a;
 
-    // for(int i = 0, 10, 1) {
-    //     a = a + 1;
-    // }
+    for(int i = 0, 10, 1) {
+        a = a + 1;
+    }
 
-    // for(int i = 0, 10, test()) {
-    //     a = a - 1;
-    // }
+    for(int i = 0, 10, test()) {
+        a = a - 1;
+    }
 
-    // for(int i = 10, 0, -1) {
-    //     a = a + -1;
-    // }
+    for(int i = 10, 0, -1) {
+        a = a + -1;
+    }
 
-    // for(int i = 10, 0, -test()) {
-    //     a = a + -1;
-    // }
+    for(int i = 10, 0, -test()) {
+        a = a + -1;
+    }
 
-    // for(int i = 0, test(), 2) {
-    //     a = a - 1;
-    // }
+    for(int i = 0, test(), 2) {
+        a = a - 1;
+    }
 
-    // for(int i = 0, test(), test()) {
-    //     a = a - 1;
-    // }
+    for(int i = 0, test(), test()) {
+        a = a - 1;
+    }
 
-    // for(int i = 0, a, 2) {
-    //     a = a + 1;
-    // }
+    for(int i = 0, a, 2) {
+        a = a + 1;
+    }
 
-    // for(int i = 0, 10, a) {
-    //     a = a + 1;
-    // }
+    for(int i = 0, 10, a) {
+        a = a + 1;
+    }
 
-    // for(int i = 0, a, a) {
-    //     a = a + 1;
-    // }
+    for(int i = 0, a, a) {
+        a = a + 1;
+    }
 
-    // for(int i = 0, la[0], 2) {
-    //     la[0] = la[0] + 1;
-    // }
+    for(int i = 0, la[0], 2) {
+        la[0] = la[0] + 1;
+    }
 
-    // for(int i = 0, 10, la[0]) {
-    //     la[0] = la[0] + 1;
-    // }
+    for(int i = 0, 10, la[0]) {
+        la[0] = la[0] + 1;
+    }
 
-    // for(int i = 0, la[0], la[0]) {
-    //     la[0] = la[0] + 1;
-    // }
+    for(int i = 0, la[0], la[0]) {
+        la[0] = la[0] + 1;
+    }
 
-    // a = a * 0;
-    // a = a - 0;
-    // a = a + 0;
-    // a = 0 / a;
-    // // a = a / 0;
-    // // a = a % 0;
-    // a = a % a;
-    // a = 0 % a;
+    a = a * 0;
+    a = a - 0;
+    a = a + 0;
+    a = 0 / a;
+    // a = a / 0;
+    // a = a % 0;
+    a = a % a;
+    a = 0 % a;
 
-    // d = d * 0.0;
-    // d = d - 0.0;
-    // d = d + 0.0;
-    // d = 0.0 / d;
+    d = d * 0.0;
+    d = d - 0.0;
+    d = d + 0.0;
+    d = 0.0 / d;
 
-    // b = b + false;
-    // b = b * false;
-    // b = b + true;
-    // b = b * true;
+    b = b + false;
+    b = b * false;
+    b = b + true;
+    b = b * true;
 
-    // if(1 > 0) {
-    //     a = a + 1;
-    // } else {
-    //     a = a - 1;
-    // }
+    if(1 > 0) {
+        a = a + 1;
+    } else {
+        a = a - 1;
+    }
 
-    // if(1 < 0) {
-    //     a = a + 1;
-    // } else {
-    //     a = a - 1;
-    // }
+    if(1 < 0) {
+        a = a + 1;
+    } else {
+        a = a - 1;
+    }
 
     if(true) {
 

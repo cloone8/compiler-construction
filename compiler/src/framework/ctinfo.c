@@ -977,18 +977,20 @@ void CTIterminateCompilation(node *syntax_tree) {
      *  At last, we display a success message.
      */
 
-    CTIstate(" ");
+    if(global.verbosity >= 1) {
+        fprintf(stderr, " \n");
 
-    #ifdef _WIN32
-    // Windows is bad and does not support colours
-    CTIstate("*** Compilation successful ***");
-    #else
-    // Print with pretty colours
-    CTIstate("***\E[27;32m\033[1m Compilation successful \033[0m***");
-    #endif
+        #ifdef _WIN32
+        // Windows is bad and does not support colours
+        fprintf(stderr, "*** Compilation successful ***\n");
+        #else
+        // Print with pretty colours
+        fprintf(stderr, "***\E[27;32m\033[1m Compilation successful \033[0m***\n");
+        #endif
 
-    CTIstate("*** 0 error(s), %d warning(s)", warnings);
-    CTIstate(" ");
+        fprintf(stderr, "*** 0 error(s), %d warning(s)\n", warnings);
+        fprintf(stderr, " \n");
+    }
 
     exit(EXIT_SUCCESS);
 

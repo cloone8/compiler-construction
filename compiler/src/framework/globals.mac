@@ -78,8 +78,11 @@ GLOBAL(bool, treecheck, FALSE)
 /*
  * Compile time information globals
  */
-
+#ifndef DBUG_OFF
 GLOBAL(int, verbosity, 3)
+#else
+GLOBAL(int, verbosity, 1)
+#endif
 
 
 /*
@@ -124,6 +127,3 @@ GLOBAL(int, cpp, FALSE)
 #undef GLOBALname
 #undef GLOBALinit
 #undef GLOBAL
-
-
-

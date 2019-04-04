@@ -8,7 +8,7 @@
 #include "memory.h"
 #include "ctinfo.h"
 #include "copy.h"
-
+#include "globals.h"
 #include "util.h"
 
 /*
