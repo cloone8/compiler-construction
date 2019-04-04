@@ -704,6 +704,38 @@ node* CFOvarassign(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node* CFOcast(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CFOcast");
+
+    CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
+
+    if(NODE_TYPE(EXPR_CURRENT(CAST_TARGET(arg_node))) == N_constant) {
+        node* constant = EXPR_CURRENT(CAST_TARGET(arg_node));
+        node* toreturn = arg_node;
+
+        switch(CAST_CASTTO(arg_node)) {
+            case TP_int:
+                toreturn = TBmakeConstant(TBmakeIntconst((int) FLOATCONST_VALUE(CONSTANT_CURRENT(constant))));
+                break;
+            case TP_float:
+                toreturn = TBmakeConstant(TBmakeFloatconst((float) INTCONST_VALUE(CONSTANT_CURRENT(constant))));
+                break;
+            default:
+                DBUG_ASSERT((FALSE), "Invalid cast type!");
+                DBUG_RETURN(toreturn);
+                break;
+        }
+
+        TRAVpush(TR_free);
+        FREEcast(arg_node, NULL);
+        TRAVpop();
+
+        DBUG_RETURN(toreturn);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 node* CFOdo(node* syntaxtree) {
     DBUG_ENTER("CFOdo");
 

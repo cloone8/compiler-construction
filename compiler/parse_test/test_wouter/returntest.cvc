@@ -1,20 +1,16 @@
-void a() {
+export void a() {
     int a = 1;
 }
 
-void b() {
+export void b() {
     return;
 }
 
-int c() {
+export int c() {
     return 1;
 }
 
-int d() {
-    int a = 1 + 4;
-}
-
-int e() {
+export int e() {
     int a = 6;
 
     if(a > 2) {
@@ -24,7 +20,7 @@ int e() {
     }
 }
 
-int f() {
+export int f() {
     int a = 6;
 
     if(a > 2) {
@@ -35,17 +31,7 @@ int f() {
     return 0;
 }
 
-int g() {
-    int a = 6;
-
-    if(a > 2) {
-        return a;
-    } else {
-        a = 2;
-    }
-}
-
-int h() {
+export int h() {
     int a = 6;
 
     if(a > 2) {
@@ -59,7 +45,7 @@ int h() {
     }
 }
 
-int i() {
+export int i() {
     int a = 6;
 
     if(a > 2) {

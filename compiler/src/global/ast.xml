@@ -231,6 +231,7 @@
                     <node name="Branch" />
                     <node name="Statements" />
                     <node name="VarAssign" />
+                    <node name="Cast" />
                 </travuser>
             </traversal>
 
