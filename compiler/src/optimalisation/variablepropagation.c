@@ -85,17 +85,6 @@ node* VPRbasicvardeclaration(node* arg_node, info* arg_info) {
         keyMapItem* item = KMaddItem(MAP(arg_info), BASICVARDECLARATION_VARPOINTER(arg_node));
         item->vartype = BASICVARDECLARATION_VARPOINTER(arg_node)->vartype;
         DBUG_PRINT("VPR", ("Adding %s to keymap", BASICVARDECLARATION_VARNAME(arg_node)));
-    } else if(REPLACE(arg_info)) {
-        symbol_table_entry* entry = BASICVARDECLARATION_VARPOINTER(arg_node);
-        keyMapItem* item = KMgetItem(MAP(arg_info), entry);
-
-        if(item != NULL && item->count == 1 && item->can_read == TRUE) {
-            DBUG_PRINT("VPR",("Deleting %s", BASICVARDECLARATION_VARNAME(arg_node)));
-            symbol_table_remove(entry->table, entry->idx);
-            BASICVARDECLARATION_VARPOINTER(arg_node) = NULL;
-
-            DBUG_RETURN(NULL);
-        }
     }
 
     DBUG_RETURN(arg_node);
@@ -128,19 +117,6 @@ node* VPRglobal(node* arg_node, info* arg_info) {
                 keyMapItem* item = KMaddItem(MAP(arg_info), entry);
                 item->vartype = entry->vartype;
                 DBUG_PRINT("VPR", ("Adding %s to keymap", entry->name));
-            }
-        }
-    } else if(REPLACE(arg_info)) {
-        if(GLOBAL_DEFINITION(arg_node) != NULL) {
-            symbol_table_entry* entry = GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node));
-            keyMapItem* item = KMgetItem(MAP(arg_info), entry);
-
-            if(item != NULL && item->count == 1 && item->can_read == TRUE) {
-                DBUG_PRINT("VPR",("Deleting %s", entry->name));
-                symbol_table_remove(entry->table, entry->idx);
-                GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node)) = NULL;
-
-                DBUG_RETURN(NULL);
             }
         }
     }
