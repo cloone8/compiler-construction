@@ -246,28 +246,6 @@
                 </travuser>
             </traversal>
 
-            <traversal id="VPR" name="Variable propagation" default="sons" include="variablepropagation.h">
-                <travuser>
-                    <node name="BasicVarDeclaration" />
-                    <node name="VarRead" />
-                    <node name="VarAssign" />
-                    <node name="FunctionVarDeclaration" />
-                    <node name="Global" />
-                    <node name="Declaration" />
-                </travuser>
-            </traversal>
-
-            <traversal id="UVR" name="Unused variable deletion" default="sons" include="unusedvars.h">
-                <travuser>
-                    <node name="BasicVarDeclaration" />
-                    <node name="VarRead" />
-                    <node name="VarAssign" />
-                    <node name="FunctionVarDeclaration" />
-                    <node name="Global" />
-                    <node name="Declaration" />
-                </travuser>
-            </traversal>
-
         </general>
     </phases>
 

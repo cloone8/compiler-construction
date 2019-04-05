@@ -129,5 +129,4 @@ codetransform = arrayparams.o boolcomp.o boolcast.o arraylower.o \
 
 unused		  = unusedfuns.o count_map.o
 
-optimalisation = constantfolding.o key_map.o constantpropagation.o \
-			     variablepropagation.o unusedvars.o
+optimalisation = constantfolding.o key_map.o constantpropagation.o
