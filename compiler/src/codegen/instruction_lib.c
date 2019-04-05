@@ -180,12 +180,14 @@ void iinc_1(uint8_t local) {
     char instruction[15];
     sprintf(instruction, "iinc_1 %" PRIu8, local);
     prt_inst(instruction);
+    DBUG_VOID_RETURN;
 }
 void idec_1(uint8_t local) {
     DBUG_ENTER("idec_1");
     char instruction[15];
     sprintf(instruction, "idec_1 %" PRIu8, local);
     prt_inst(instruction);
+    DBUG_VOID_RETURN;
 }
 
 void badd(void) {

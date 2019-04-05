@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include "types.h"
+#include "symbol_table.h"
 
 typedef struct {
     void* key;
@@ -14,6 +15,7 @@ typedef struct {
         int intval;
         float floatval;
         bool boolval;
+        symbol_table_entry* varval;
     };
 } keyMapItem;
 
