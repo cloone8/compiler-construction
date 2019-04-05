@@ -11,39 +11,21 @@
 #include "globals.h"
 #include "util.h"
 
-/*
- * INFO structure
- */
-struct INFO {
-};
-
-
-/*
- * INFO functions
- */
+#define BINOP_INTCONST_VAL(x) INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(x)))
+#define BINOP_FLOATCONST_VAL(x) FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(x)))
+#define BINOP_BOOLCONST_VAL(x) BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(x)))
 
 /**
- * Creates a new info struct and sets the initial values
+ * Binop folding function for a binop which acts on integers. This function folds
+ * binops when one of the two sides is equal to 0.
+ *
+ * @param arg_node: The binop node
+ * @param operator: The binop operator
+ * @param other: The non-zero side of the binop
+ * @param noremove: Whether the other side is something that can't be removed (like a function call with side effects)
+ *
+ * @return The folded binop
  */
-static info *CFOmakeInfo(void) {
-    DBUG_ENTER("CFOmakeInfo");
-
-    info *result = (info *)MEMmalloc(sizeof(info));
-
-    DBUG_RETURN(result);
-}
-
-/**
- * Frees the memory of an info struct
- */
-static info *CFOfreeInfo(info *info) {
-    DBUG_ENTER("CFOfreeInfo");
-
-    info = MEMfree(info);
-
-    DBUG_RETURN(info);
-}
-
 static node* binop_zero_int(node* arg_node, binop operator, node* other, bool noremove) {
     DBUG_ENTER("binop_zero_int");
     node* toreturn = arg_node;
@@ -51,16 +33,20 @@ static node* binop_zero_int(node* arg_node, binop operator, node* other, bool no
     switch(operator) {
         case BO_add:
         case BO_sub:
+            // (x + 0) = x and (x - 0) = x
             toreturn = COPYdoCopy(EXPR_CURRENT(other));
             break;
         case BO_mul:
         case BO_div:
         case BO_mod:
+            // (x * 0) = 0, (0 / x) = 0, (0 % x) = 0
             if(noremove) {
+                // Binop contains a function call which can have side effects.
                 DBUG_RETURN(toreturn);
+            } else {
+                toreturn = TBmakeConstant(TBmakeIntconst(0));
+                break;
             }
-            toreturn = TBmakeConstant(TBmakeIntconst(0));
-            break;
         default:
             DBUG_RETURN(toreturn);
     }
@@ -68,6 +54,17 @@ static node* binop_zero_int(node* arg_node, binop operator, node* other, bool no
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Binop folding function for a binop which acts on floats. This function folds
+ * binops when one of the two sides is equal to 0.0
+ *
+ * @param arg_node: The binop node
+ * @param operator: The binop operator
+ * @param other: The non-zero side of the binop
+ * @param noremove: Whether the other side is something that can't be removed (like a function call with side effects)
+ *
+ * @return The folded binop
+ */
 static node* binop_zero_float(node* arg_node, binop operator, node* other, bool noremove) {
     DBUG_ENTER("binop_zero_float");
     node* toreturn = arg_node;
@@ -75,15 +72,18 @@ static node* binop_zero_float(node* arg_node, binop operator, node* other, bool 
     switch(operator) {
         case BO_add:
         case BO_sub:
+            // (x + 0.0) = x and (x - 0.0) = x
             toreturn = COPYdoCopy(EXPR_CURRENT(other));
             break;
         case BO_mul:
         case BO_div:
             if(noremove) {
+                // Binop contains a function call which can have side effects
                 DBUG_RETURN(toreturn);
+            } else {
+                toreturn = TBmakeConstant(TBmakeFloatconst(0.0));
+                break;
             }
-            toreturn = TBmakeConstant(TBmakeFloatconst(0.0));
-            break;
         default:
             DBUG_RETURN(toreturn);
     }
@@ -91,16 +91,30 @@ static node* binop_zero_float(node* arg_node, binop operator, node* other, bool 
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Binop folding function for a binop which acts on booleans. This function folds
+ * binops when one of the two sides is equal to FALSE.
+ *
+ * @param arg_node: The binop node
+ * @param operator: The binop operator
+ * @param other: The non-zero side of the binop
+ * @param noremove: Whether the other side is something that can't be removed (like a function call with side effects)
+ *
+ * @return The folded binop
+ */
 static node* binop_zero_bool(node* arg_node, binop operator, node* other, bool noremove) {
     DBUG_ENTER("binop_zero_bool");
     node* toreturn = arg_node;
 
     switch(operator) {
         case BO_add:
+            // (x OR false) = x
             toreturn = COPYdoCopy(EXPR_CURRENT(other));
             break;
         case BO_mul:
+            // (x AND false) = false
             if(noremove) {
+                // Binop contains a function call which can have side effects
                 DBUG_RETURN(toreturn);
             }
             toreturn = TBmakeConstant(TBmakeBoolconst(FALSE));
@@ -112,6 +126,15 @@ static node* binop_zero_bool(node* arg_node, binop operator, node* other, bool n
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Binop folding function for a binop which acts on integers.
+ *
+ * @param operator: The binop operator
+ * @param left: The left side of the binop
+ * @param right: The right side of the binop
+ *
+ * @return The folded binop
+ */
 static node* binop_int(binop operator, node* left, node* right) {
     DBUG_ENTER("binop_int");
     node* toreturn = NULL;
@@ -120,58 +143,47 @@ static node* binop_int(binop operator, node* left, node* right) {
 
     switch(operator) {
         case BO_add:
-            new_intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) +
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_intval = BINOP_INTCONST_VAL(left) + BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeIntconst(new_intval));
             break;
         case BO_div:
-            new_intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) /
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_intval = BINOP_INTCONST_VAL(left) / BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeIntconst(new_intval));
             break;
         case BO_eq:
-            new_boolval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) ==
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_INTCONST_VAL(left) == BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_ge:
-            new_boolval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) >=
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_INTCONST_VAL(left) >= BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_gt:
-            new_boolval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) >
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_INTCONST_VAL(left) > BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_le:
-            new_boolval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) <=
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_INTCONST_VAL(left) <= BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_lt:
-            new_boolval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) <
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_INTCONST_VAL(left) < BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_mod:
-            new_intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) %
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_intval = BINOP_INTCONST_VAL(left) % BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeIntconst(new_intval));
             break;
         case BO_mul:
-            new_intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) *
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_intval = BINOP_INTCONST_VAL(left) * BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeIntconst(new_intval));
             break;
         case BO_ne:
-            new_boolval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) !=
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_INTCONST_VAL(left) != BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_sub:
-            new_intval = INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) -
-                         INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_intval = BINOP_INTCONST_VAL(left) - BINOP_INTCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeIntconst(new_intval));
             break;
         default:
@@ -182,6 +194,15 @@ static node* binop_int(binop operator, node* left, node* right) {
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Binop folding function for a binop which acts on floats.
+ *
+ * @param operator: The binop operator
+ * @param left: The left side of the binop
+ * @param right: The right side of the binop
+ *
+ * @return The folded binop
+ */
 static node* binop_float(binop operator, node* left, node* right) {
     DBUG_ENTER("binop_float");
     node* toreturn = NULL;
@@ -190,53 +211,43 @@ static node* binop_float(binop operator, node* left, node* right) {
 
     switch(operator) {
         case BO_add:
-            new_fltval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) +
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_fltval = BINOP_FLOATCONST_VAL(left) + BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeFloatconst(new_fltval));
             break;
         case BO_div:
-            new_fltval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) /
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_fltval = BINOP_FLOATCONST_VAL(left) / BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeFloatconst(new_fltval));
             break;
         case BO_eq:
-            new_boolval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) ==
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_FLOATCONST_VAL(left) == BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_ge:
-            new_boolval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) >=
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_FLOATCONST_VAL(left) >= BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_gt:
-            new_boolval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) >
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_FLOATCONST_VAL(left) > BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_le:
-            new_boolval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) <=
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_FLOATCONST_VAL(left) <= BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_lt:
-            new_boolval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) <
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_FLOATCONST_VAL(left) < BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_mul:
-            new_fltval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) *
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_fltval = BINOP_FLOATCONST_VAL(left) * BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeFloatconst(new_fltval));
             break;
         case BO_ne:
-            new_boolval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) !=
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_FLOATCONST_VAL(left) != BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_sub:
-            new_fltval = FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) -
-                         FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_fltval = BINOP_FLOATCONST_VAL(left) - BINOP_FLOATCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeFloatconst(new_fltval));
             break;
         default:
@@ -247,6 +258,15 @@ static node* binop_float(binop operator, node* left, node* right) {
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Binop folding function for a binop which acts on booleans.
+ *
+ * @param operator: The binop operator
+ * @param left: The left side of the binop
+ * @param right: The right side of the binop
+ *
+ * @return The folded binop
+ */
 static node* binop_bool(binop operator, node* left, node* right) {
     DBUG_ENTER("binop_bool");
     node* toreturn = NULL;
@@ -254,23 +274,19 @@ static node* binop_bool(binop operator, node* left, node* right) {
 
     switch(operator) {
         case BO_add:
-            new_boolval = BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) ||
-                         BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_BOOLCONST_VAL(left) || BINOP_BOOLCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_mul:
-            new_boolval = BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) &&
-                         BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_BOOLCONST_VAL(left) && BINOP_BOOLCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_eq:
-            new_boolval = BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) ==
-                         BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_BOOLCONST_VAL(left) == BINOP_BOOLCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         case BO_ne:
-            new_boolval = BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(left))) !=
-                         BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(right)));
+            new_boolval = BINOP_BOOLCONST_VAL(left) != BINOP_BOOLCONST_VAL(right);
             toreturn = TBmakeConstant(TBmakeBoolconst(new_boolval));
             break;
         default:
@@ -281,8 +297,14 @@ static node* binop_bool(binop operator, node* left, node* right) {
     DBUG_RETURN(toreturn);
 }
 
-static node* check_special_cases(node* arg_node) {
-    DBUG_ENTER("check_special_cases");
+/**
+ * Checks for any special cases when the binop is a modulo binop
+ *
+ * @param arg_node: The binop node
+ * @return The folded binop
+ */
+static node* special_case_mod(node* arg_node) {
+    DBUG_ENTER("special_case_mod");
     node* toreturn = arg_node;
 
     bool left_constant = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant;
@@ -291,85 +313,138 @@ static node* check_special_cases(node* arg_node) {
     bool left_varread = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_varread;
     bool right_varread = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_varread;
 
-    node* constant = NULL;
-    node* variable = NULL;
+    // x % x is always 0
+    if(left_constant && right_constant) {
+        if(BINOP_INTCONST_VAL(BINOP_LEFT(arg_node)) == BINOP_INTCONST_VAL(BINOP_RIGHT(arg_node))) {
+                toreturn = TBmakeConstant(TBmakeIntconst(0));
+        }
+    } else if(left_varread && right_varread) {
+        if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_LEFT(arg_node))) ==
+            VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) {
+                toreturn = TBmakeConstant(TBmakeIntconst(0));
+        }
+    }
+
+    DBUG_RETURN(toreturn);
+}
+
+/**
+ * Checks for any special cases when the binop is an addition binop
+ *
+ * @param arg_node: The binop node
+ * @return The folded binop
+ */
+static node* special_case_add(node* arg_node) {
+    DBUG_ENTER("special_case_add");
+
+    bool left_constant = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant;
+    bool right_constant = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant;
+
+    bool left_varread = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_varread;
+    bool right_varread = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_varread;
+
+    node* constant;
+    node* variable;
+
+    if(left_constant && right_varread) {
+        if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
+            constant = BINOP_LEFT(arg_node);
+            variable = BINOP_RIGHT(arg_node);
+        } else {
+            // This special case works only for booleans
+            DBUG_RETURN(arg_node);
+        }
+    } else if(left_varread && right_constant) {
+        if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
+            variable = BINOP_LEFT(arg_node);
+            constant = BINOP_RIGHT(arg_node);
+        } else {
+            // This special case works only for booleans
+            DBUG_RETURN(arg_node);
+        }
+    } else {
+        // Binop not a variable and a constant so no special cases are
+        // possible
+        DBUG_RETURN(arg_node);
+    }
+
+    if(BINOP_BOOLCONST_VAL(constant) == TRUE) {
+        // a OR TRUE is always TRUE
+        DBUG_RETURN(TBmakeConstant(TBmakeBoolconst(TRUE)));
+    } else {
+        // a OR FALSE is always a
+        DBUG_RETURN(COPYdoCopy(EXPR_CURRENT(variable)));
+    }
+}
+
+/**
+ * Checks for any special cases when the binop is a multiplication binop
+ *
+ * @param arg_node: The binop node
+ * @return The folded binop
+ */
+static node* special_case_mul(node* arg_node) {
+    DBUG_ENTER("special_case_mul");
+
+    bool left_constant = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant;
+    bool right_constant = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant;
+
+    bool left_varread = NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_varread;
+    bool right_varread = NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_varread;
+
+    node* constant;
+    node* variable;
+
+    if(left_constant && right_varread) {
+        if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
+            constant = BINOP_LEFT(arg_node);
+            variable = BINOP_RIGHT(arg_node);
+        } else {
+            // This special case works only for booleans
+            DBUG_RETURN(arg_node);
+        }
+    } else if(left_varread && right_constant) {
+        if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
+            variable = BINOP_LEFT(arg_node);
+            constant = BINOP_RIGHT(arg_node);
+        } else {
+            // This special case works only for booleans
+            DBUG_RETURN(arg_node);
+        }
+    } else {
+        // Binop not a variable and a constant so no special cases are
+        // possible
+        DBUG_RETURN(arg_node);
+    }
+
+    if(BINOP_BOOLCONST_VAL(constant) == TRUE) {
+        // a AND TRUE is always a
+        DBUG_RETURN(COPYdoCopy(EXPR_CURRENT(variable)));
+    } else {
+        // a AND FALSE is always FALSE
+        DBUG_RETURN(TBmakeConstant(TBmakeBoolconst(FALSE)));
+    }
+}
+
+/**
+ * Binop folding function for special cases.
+ *
+ * @param arg_node: The binop node
+ * @return The folded binop
+ */
+static node* check_special_cases(node* arg_node) {
+    DBUG_ENTER("check_special_cases");
+    node* toreturn = arg_node;
 
     switch(BINOP_BINOPERATORS(arg_node)) {
         case BO_mod:
-            // x % x is always 0
-            if(left_constant && right_constant) {
-                if(INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) ==
-                   INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node))))) {
-                       toreturn = TBmakeConstant(TBmakeIntconst(0));
-                   }
-            } else if(left_varread && right_varread) {
-                if(VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_LEFT(arg_node))) ==
-                   VARREAD_VARPOINTER(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) {
-                       toreturn = TBmakeConstant(TBmakeIntconst(0));
-                   }
-            }
+            toreturn = special_case_mod(toreturn);
             break;
         case BO_add:
-            if(left_constant && right_varread) {
-                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
-                    constant = BINOP_LEFT(arg_node);
-                    variable = BINOP_RIGHT(arg_node);
-                } else {
-                    break;
-                }
-            } else if(left_varread && right_constant) {
-                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
-                    variable = BINOP_LEFT(arg_node);
-                    constant = BINOP_RIGHT(arg_node);
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-
-            if(constant == NULL) {
-                break;
-            }
-
-            if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
-                // a OR TRUE is always TRUE
-                toreturn = TBmakeConstant(TBmakeBoolconst(TRUE));
-            } else {
-                // a OR FALSE is always a
-                toreturn = COPYdoCopy(EXPR_CURRENT(variable));
-            }
+            toreturn = special_case_add(toreturn);
             break;
         case BO_mul:
-            if(left_constant && right_varread) {
-                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node)))) == N_boolconst) {
-                    constant = BINOP_LEFT(arg_node);
-                    variable = BINOP_RIGHT(arg_node);
-                } else {
-                    break;
-                }
-            } else if(left_varread && right_constant) {
-                if(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_RIGHT(arg_node)))) == N_boolconst) {
-                    variable = BINOP_LEFT(arg_node);
-                    constant = BINOP_RIGHT(arg_node);
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-
-            if(constant == NULL) {
-                break;
-            }
-
-            if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) == TRUE) {
-                // a AND TRUE is always a
-                toreturn = COPYdoCopy(EXPR_CURRENT(variable));
-            } else {
-                // a AND FALSE is always FALSE
-                toreturn = TBmakeConstant(TBmakeBoolconst(FALSE));
-            }
+            toreturn = special_case_mul(toreturn);
             break;
         default:
             break;
@@ -378,41 +453,48 @@ static node* check_special_cases(node* arg_node) {
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Folds the given binop node and all its children, if possible
+ *
+ * @param arg_node: The binop node
+ * @param arg_info: The info struct
+ * @return The folded binop
+ */
 node* CFObinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFObinop");
+    UNUSED_VAR(arg_info);
 
-    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
-    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
+    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), NULL);
+    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), NULL);
 
     node* toreturn = arg_node;
 
     if((NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant &&
        NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant)) {
+        // Both sides of the binop are constants and can thus always be folded
         switch(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(BINOP_LEFT(arg_node))))) {
             case N_intconst:
                 toreturn = binop_int(BINOP_BINOPERATORS(arg_node), BINOP_LEFT(arg_node), BINOP_RIGHT(arg_node));
-                TRAVpush(TR_free);
-                FREEbinop(arg_node, NULL);
-                TRAVpop();
                 break;
             case N_floatconst:
                 toreturn = binop_float(BINOP_BINOPERATORS(arg_node), BINOP_LEFT(arg_node), BINOP_RIGHT(arg_node));
-                TRAVpush(TR_free);
-                FREEbinop(arg_node, NULL);
-                TRAVpop();
                 break;
             case N_boolconst:
                 toreturn = binop_bool(BINOP_BINOPERATORS(arg_node), BINOP_LEFT(arg_node), BINOP_RIGHT(arg_node));
-                TRAVpush(TR_free);
-                FREEbinop(arg_node, NULL);
-                TRAVpop();
                 break;
             default:
                 DBUG_ASSERT((FALSE), "Invalid constant type");
                 break;
         }
+
+        TRAVpush(TR_free);
+        FREEbinop(arg_node, NULL);
+        TRAVpop();
+
     } else if (NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant ||
                NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant) {
+        // One side of the binop is a constant and the binop may be able to be
+        // folded
         node* other;
         node* constant;
         bool nodiv = FALSE;
@@ -437,7 +519,7 @@ node* CFObinop(node* arg_node, info* arg_info) {
 
         switch(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(constant)))) {
             case N_intconst:
-                if(INTCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) != 0) {
+                if(BINOP_INTCONST_VAL(constant) != 0) {
                     break;
                 }
                 if(nodiv) {
@@ -451,7 +533,7 @@ node* CFObinop(node* arg_node, info* arg_info) {
                 }
                 break;
             case N_floatconst:
-                if(FLOATCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) != 0.0) {
+                if(BINOP_FLOATCONST_VAL(constant) != 0.0) {
                     break;
                 }
                 if(nodiv) {
@@ -465,7 +547,7 @@ node* CFObinop(node* arg_node, info* arg_info) {
                 }
                 break;
             case N_boolconst:
-                if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(constant))) != FALSE) {
+                if(BINOP_BOOLCONST_VAL(constant) != FALSE) {
                     toreturn = check_special_cases(arg_node);
                     if(toreturn != arg_node) {
                         TRAVpush(TR_free);
@@ -500,8 +582,9 @@ node* CFObinop(node* arg_node, info* arg_info) {
 
 node* CFOmonop(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOmonop");
+    UNUSED_VAR(arg_info);
 
-    MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), arg_info);
+    MONOP_TARGET(arg_node) = TRAVdo(MONOP_TARGET(arg_node), NULL);
 
     node* toreturn = arg_node;
 
@@ -512,18 +595,10 @@ node* CFOmonop(node* arg_node, info* arg_info) {
                     case N_intconst:
                         toreturn = COPYdoCopy(EXPR_CURRENT(MONOP_TARGET(arg_node)));
                         INTCONST_VALUE(CONSTANT_CURRENT(toreturn)) *= -1;
-
-                        TRAVpush(TR_free);
-                        FREEmonop(arg_node, NULL);
-                        TRAVpop();
                         break;
                     case N_floatconst:
                         toreturn = COPYdoCopy(EXPR_CURRENT(MONOP_TARGET(arg_node)));
                         FLOATCONST_VALUE(CONSTANT_CURRENT(toreturn)) *= -1;
-
-                        TRAVpush(TR_free);
-                        FREEmonop(arg_node, NULL);
-                        TRAVpop();
                         break;
                     default:
                         DBUG_ASSERT((FALSE), "Invalid monop constant type");
@@ -533,15 +608,15 @@ node* CFOmonop(node* arg_node, info* arg_info) {
             case MO_not:
                 toreturn = COPYdoCopy(EXPR_CURRENT(MONOP_TARGET(arg_node)));
                 BOOLCONST_VALUE(CONSTANT_CURRENT(toreturn)) = !BOOLCONST_VALUE(CONSTANT_CURRENT(toreturn));
-
-                TRAVpush(TR_free);
-                FREEmonop(arg_node, NULL);
-                TRAVpop();
                 break;
             case MO_unknown:
                 DBUG_ASSERT((FALSE), "Invalid monop type");
                 break;
         }
+
+        TRAVpush(TR_free);
+        FREEmonop(arg_node, NULL);
+        TRAVpop();
     }
 
     DBUG_RETURN(toreturn);
@@ -549,15 +624,16 @@ node* CFOmonop(node* arg_node, info* arg_info) {
 
 node* CFOconditionalexpr(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOconditionalexpr");
+    UNUSED_VAR(arg_info);
 
-    CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), arg_info);
-    CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), arg_info);
-    CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), arg_info);
+    CONDITIONALEXPR_CONDITION(arg_node) = TRAVdo(CONDITIONALEXPR_CONDITION(arg_node), NULL);
+    CONDITIONALEXPR_IFBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_IFBRANCH(arg_node), NULL);
+    CONDITIONALEXPR_ELSEBRANCH(arg_node) = TRAVdo(CONDITIONALEXPR_ELSEBRANCH(arg_node), NULL);
 
     if(NODE_TYPE(EXPR_CURRENT(CONDITIONALEXPR_CONDITION(arg_node))) == N_constant) {
         node* toreturn;
 
-        if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(CONDITIONALEXPR_CONDITION(arg_node)))) == TRUE) {
+        if(BINOP_BOOLCONST_VAL(CONDITIONALEXPR_CONDITION(arg_node)) == TRUE) {
             toreturn = COPYdoCopy(EXPR_CURRENT(CONDITIONALEXPR_IFBRANCH(arg_node)));
         } else {
             toreturn = COPYdoCopy(EXPR_CURRENT(CONDITIONALEXPR_ELSEBRANCH(arg_node)));
@@ -575,14 +651,15 @@ node* CFOconditionalexpr(node* arg_node, info* arg_info) {
 
 node* CFObranch(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFObranch");
+    UNUSED_VAR(arg_info);
 
-    BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), arg_info);
+    BRANCH_CONDITION(arg_node) = TRAVdo(BRANCH_CONDITION(arg_node), NULL);
 
-    BRANCH_THENBRANCH(arg_node) = TRAVopt(BRANCH_THENBRANCH(arg_node), arg_info);
-    BRANCH_ELSEBRANCH(arg_node) = TRAVopt(BRANCH_ELSEBRANCH(arg_node), arg_info);
+    BRANCH_THENBRANCH(arg_node) = TRAVopt(BRANCH_THENBRANCH(arg_node), NULL);
+    BRANCH_ELSEBRANCH(arg_node) = TRAVopt(BRANCH_ELSEBRANCH(arg_node), NULL);
 
     if(NODE_TYPE(EXPR_CURRENT(BRANCH_CONDITION(arg_node))) == N_constant) {
-        if(BOOLCONST_VALUE(CONSTANT_CURRENT(EXPR_CURRENT(BRANCH_CONDITION(arg_node)))) == TRUE) {
+        if(BINOP_BOOLCONST_VAL(BRANCH_CONDITION(arg_node)) == TRUE) {
             if(BRANCH_THENBRANCH(arg_node) != NULL) {
                 node* toreturn = COPYdoCopy(BRANCH_THENBRANCH(arg_node));
 
@@ -622,14 +699,15 @@ node* CFObranch(node* arg_node, info* arg_info) {
 
 node* CFOstatements(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOstatements");
+    UNUSED_VAR(arg_info);
 
-    STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), arg_info);
+    STATEMENTS_CURRENT(arg_node) = TRAVdo(STATEMENTS_CURRENT(arg_node), NULL);
 
     node* toreturn = arg_node;
 
     if(NODE_TYPE(STATEMENTS_CURRENT(arg_node)) == N_statements) {
         if(STATEMENTS_NEXT(arg_node) != NULL) {
-            STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), arg_info);
+            STATEMENTS_NEXT(arg_node) = TRAVdo(STATEMENTS_NEXT(arg_node), NULL);
             append_statement_to_tail(STATEMENTS_CURRENT(arg_node), STATEMENTS_NEXT(arg_node));
         }
 
@@ -637,9 +715,9 @@ node* CFOstatements(node* arg_node, info* arg_info) {
         STATEMENTS_CURRENT(arg_node) = NULL;
         STATEMENTS_NEXT(arg_node) = NULL;
         FREEstatements(arg_node, NULL);
-        TRAVdo(toreturn, arg_info);
+        TRAVdo(toreturn, NULL);
     } else {
-        STATEMENTS_NEXT(arg_node) = TRAVopt(STATEMENTS_NEXT(arg_node), arg_info);
+        STATEMENTS_NEXT(arg_node) = TRAVopt(STATEMENTS_NEXT(arg_node), NULL);
     }
 
     if(NODE_TYPE(STATEMENTS_CURRENT(toreturn)) == N_return) {
@@ -656,8 +734,9 @@ node* CFOstatements(node* arg_node, info* arg_info) {
 
 node* CFOvarassign(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOvarassign");
+    UNUSED_VAR(arg_info);
 
-    VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), arg_info);
+    VARASSIGN_VALUE(arg_node) = TRAVdo(VARASSIGN_VALUE(arg_node), NULL);
 
     if(NODE_TYPE(EXPR_CURRENT(VARASSIGN_VALUE(arg_node))) == N_varread) {
         if(VARASSIGN_VARPOINTER(arg_node) == VARREAD_VARPOINTER(EXPR_CURRENT(VARASSIGN_VALUE(arg_node)))) {
@@ -675,8 +754,9 @@ node* CFOvarassign(node* arg_node, info* arg_info) {
 
 node* CFOcast(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOcast");
+    UNUSED_VAR(arg_info);
 
-    CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), arg_info);
+    CAST_TARGET(arg_node) = TRAVdo(CAST_TARGET(arg_node), NULL);
 
     if(NODE_TYPE(EXPR_CURRENT(CAST_TARGET(arg_node))) == N_constant) {
         node* constant = EXPR_CURRENT(CAST_TARGET(arg_node));
@@ -709,11 +789,7 @@ node* CFOdo(node* syntaxtree) {
     DBUG_ENTER("CFOdo");
 
     TRAVpush(TR_cfo);
-    info *arg_info = CFOmakeInfo();
-
-    syntaxtree = TRAVdo(syntaxtree, arg_info);
-
-    CFOfreeInfo(arg_info);
+    syntaxtree = TRAVdo(syntaxtree, NULL);
     TRAVpop();
 
     DBUG_RETURN(syntaxtree);
