@@ -454,6 +454,79 @@ static node* check_special_cases(node* arg_node) {
 }
 
 /**
+ * Folds the given binop node when only one side of the binop is
+ * a constant type node
+ *
+ * @param arg_node: The binop node
+ * @param arg_info: The info struct
+ * @return The folded binop
+ */
+static node* binop_single_constant(node* arg_node) {
+    DBUG_ENTER("binop_single_constant");
+    node* toreturn = arg_node;
+    node* other;
+    node* constant;
+    bool nozero = FALSE;
+    bool noremove = FALSE;
+
+    // Identify which of the two sides is the constant
+    if(NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant) {
+        constant = BINOP_LEFT(arg_node);
+        other = BINOP_RIGHT(arg_node);
+        if(NODE_TYPE(EXPR_CURRENT(other)) == N_funcall) {
+            // Function calls may have side effects and can't be removed
+            noremove = TRUE;
+        }
+    } else {
+        constant = BINOP_RIGHT(arg_node);
+        other = BINOP_LEFT(arg_node);
+        if(NODE_TYPE(EXPR_CURRENT(other)) == N_funcall) {
+            // Function calls may have side effects and can't be removed
+            noremove = TRUE;
+        }
+        if(BINOP_BINOPERATORS(arg_node) == BO_div || BINOP_BINOPERATORS(arg_node) == BO_mod) {
+            // Dividing by zero or modulo by zero is undefined
+            nozero = TRUE;
+        }
+    }
+
+    switch(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(constant)))) {
+        case N_intconst:
+            if(BINOP_INTCONST_VAL(constant) != 0) {
+                // Can't do any folding when the constant isn't zero
+                break;
+            }
+            if(nozero) {
+                CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Expression folds to division or modulo by zero!");
+            }
+            toreturn = binop_zero_int(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
+            break;
+        case N_floatconst:
+            if(BINOP_FLOATCONST_VAL(constant) != 0.0) {
+                // Can't do any folding when the constant isn't zero
+                break;
+            }
+            if(nozero) {
+                CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Expression folds to division or modulo by zero!");
+            }
+            toreturn = binop_zero_float(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
+            break;
+        case N_boolconst:
+            if(BINOP_BOOLCONST_VAL(constant) != FALSE) {
+                toreturn = check_special_cases(arg_node);
+                break;
+            }
+            toreturn = binop_zero_bool(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
+            break;
+        default:
+            DBUG_ASSERT((FALSE), "Invalid constant type");
+            break;
+    }
+
+    DBUG_RETURN(toreturn);
+}
+
+/**
  * Folds the given binop node and all its children, if possible
  *
  * @param arg_node: The binop node
@@ -486,100 +559,32 @@ node* CFObinop(node* arg_node, info* arg_info) {
                 DBUG_ASSERT((FALSE), "Invalid constant type");
                 break;
         }
-
-        TRAVpush(TR_free);
-        FREEbinop(arg_node, NULL);
-        TRAVpop();
-
     } else if (NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant ||
                NODE_TYPE(EXPR_CURRENT(BINOP_RIGHT(arg_node))) == N_constant) {
         // One side of the binop is a constant and the binop may be able to be
         // folded
-        node* other;
-        node* constant;
-        bool nodiv = FALSE;
-        bool noremove = FALSE;
-
-        if(NODE_TYPE(EXPR_CURRENT(BINOP_LEFT(arg_node))) == N_constant) {
-            constant = BINOP_LEFT(arg_node);
-            other = BINOP_RIGHT(arg_node);
-            if(NODE_TYPE(EXPR_CURRENT(other)) == N_funcall) {
-                noremove = TRUE;
-            }
-        } else {
-            constant = BINOP_RIGHT(arg_node);
-            other = BINOP_LEFT(arg_node);
-            if(NODE_TYPE(EXPR_CURRENT(other)) == N_funcall) {
-                noremove = TRUE;
-            }
-            if(BINOP_BINOPERATORS(arg_node) == BO_div || BINOP_BINOPERATORS(arg_node) == BO_mod) {
-                nodiv = TRUE;
-            }
-        }
-
-        switch(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(constant)))) {
-            case N_intconst:
-                if(BINOP_INTCONST_VAL(constant) != 0) {
-                    break;
-                }
-                if(nodiv) {
-                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Expression folds to division or modulo by zero!");
-                }
-                toreturn = binop_zero_int(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
-                if(toreturn != arg_node) {
-                    TRAVpush(TR_free);
-                    FREEbinop(arg_node, NULL);
-                    TRAVpop();
-                }
-                break;
-            case N_floatconst:
-                if(BINOP_FLOATCONST_VAL(constant) != 0.0) {
-                    break;
-                }
-                if(nodiv) {
-                    CTIerrorFile(NODE_FILE(arg_node), NODE_LINE(arg_node), "Expression folds to division or modulo by zero!");
-                }
-                toreturn = binop_zero_float(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
-                if(toreturn != arg_node) {
-                    TRAVpush(TR_free);
-                    FREEbinop(arg_node, NULL);
-                    TRAVpop();
-                }
-                break;
-            case N_boolconst:
-                if(BINOP_BOOLCONST_VAL(constant) != FALSE) {
-                    toreturn = check_special_cases(arg_node);
-                    if(toreturn != arg_node) {
-                        TRAVpush(TR_free);
-                        FREEbinop(arg_node, NULL);
-                        TRAVpop();
-                    }
-                    break;
-                }
-                toreturn = binop_zero_bool(arg_node, BINOP_BINOPERATORS(arg_node), other, noremove);
-                if(toreturn != arg_node) {
-                    TRAVpush(TR_free);
-                    FREEbinop(arg_node, NULL);
-                    TRAVpop();
-                }
-                break;
-            default:
-                DBUG_ASSERT((FALSE), "Invalid constant type");
-                break;
-        }
+        toreturn = binop_single_constant(arg_node);
     } else {
         toreturn = check_special_cases(arg_node);
-        if(toreturn != arg_node) {
-            TRAVpush(TR_free);
-            FREEbinop(arg_node, NULL);
-            TRAVpop();
-        }
     }
 
+    if(toreturn != arg_node) {
+        TRAVpush(TR_free);
+        FREEbinop(arg_node, NULL);
+        TRAVpop();
+    }
 
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Folds the given monop and all its children.
+ *
+ * @param arg_node: The monop node to fold
+ * @param arg_info: Should be NULL
+ *
+ * @return: The folded monop node
+ */
 node* CFOmonop(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOmonop");
     UNUSED_VAR(arg_info);
@@ -589,6 +594,7 @@ node* CFOmonop(node* arg_node, info* arg_info) {
     node* toreturn = arg_node;
 
     if(NODE_TYPE(EXPR_CURRENT(MONOP_TARGET(arg_node))) == N_constant) {
+        // Can only fold monops which act on constants
         switch(MONOP_TYPE(arg_node)) {
             case MO_neg:
                 switch(NODE_TYPE(CONSTANT_CURRENT(EXPR_CURRENT(MONOP_TARGET(arg_node))))) {
@@ -622,6 +628,14 @@ node* CFOmonop(node* arg_node, info* arg_info) {
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Folds the given conditional expression when the condition is a constant
+ *
+ * @param arg_node: The conditional expression to fold
+ * @param arg_info: Should be NULL
+ *
+ * @return: The folded conditional expression
+ */
 node* CFOconditionalexpr(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOconditionalexpr");
     UNUSED_VAR(arg_info);
@@ -649,6 +663,14 @@ node* CFOconditionalexpr(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Folds the given branch when the condition is a constant
+ *
+ * @param arg_node: The branch to fold
+ * @param arg_info: Should be NULL
+ *
+ * @return: The folded branch
+ */
 node* CFObranch(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFObranch");
     UNUSED_VAR(arg_info);
@@ -659,6 +681,9 @@ node* CFObranch(node* arg_node, info* arg_info) {
     BRANCH_ELSEBRANCH(arg_node) = TRAVopt(BRANCH_ELSEBRANCH(arg_node), NULL);
 
     if(NODE_TYPE(EXPR_CURRENT(BRANCH_CONDITION(arg_node))) == N_constant) {
+        // Although this returns an N_statement type node, this is handled
+        // in the statement traversal, where the returned statements
+        // are appended into the main list of statements
         if(BINOP_BOOLCONST_VAL(BRANCH_CONDITION(arg_node)) == TRUE) {
             if(BRANCH_THENBRANCH(arg_node) != NULL) {
                 node* toreturn = COPYdoCopy(BRANCH_THENBRANCH(arg_node));
@@ -697,6 +722,16 @@ node* CFObranch(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Included to handle folded branches. This checks if the STATEMENTS_CURRENT of
+ * this statement node is equal to another block of statements (which normally
+ * can't happen), and if it is, replaces itself with that block of statements.
+ *
+ * @param arg_node: The statements node to check
+ * @param arg_info: Should be NULL
+ *
+ * @return: The updated statements node
+ */
 node* CFOstatements(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOstatements");
     UNUSED_VAR(arg_info);
@@ -732,6 +767,14 @@ node* CFOstatements(node* arg_node, info* arg_info) {
     DBUG_RETURN(toreturn);
 }
 
+/**
+ * Folds the given varassign statement when a variable is assigned to its own value
+ *
+ * @param arg_node: The varassign to fold
+ * @param arg_info: Should be NULL
+ *
+ * @return: itself, or a NOOP statement when it is a self-assign
+ */
 node* CFOvarassign(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOvarassign");
     UNUSED_VAR(arg_info);
@@ -752,6 +795,14 @@ node* CFOvarassign(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Folds the given cast when the target is a constant
+ *
+ * @param arg_node: The cast to fold
+ * @param arg_info: Should be NULL
+ *
+ * @return: The cast constant
+ */
 node* CFOcast(node* arg_node, info* arg_info) {
     DBUG_ENTER("CFOcast");
     UNUSED_VAR(arg_info);
@@ -770,6 +821,7 @@ node* CFOcast(node* arg_node, info* arg_info) {
                 toreturn = TBmakeConstant(TBmakeFloatconst((float) INTCONST_VALUE(CONSTANT_CURRENT(constant))));
                 break;
             default:
+                // Bool casts should have already been handled in an earlier phase
                 DBUG_ASSERT((FALSE), "Invalid cast type!");
                 DBUG_RETURN(toreturn);
                 break;
@@ -785,6 +837,13 @@ node* CFOcast(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Starts the folding traversal
+ *
+ * @param syntaxtree: The syntaxtree to fold
+ *
+ * @return: The folded syntaxtree
+ */
 node* CFOdo(node* syntaxtree) {
     DBUG_ENTER("CFOdo");
 
