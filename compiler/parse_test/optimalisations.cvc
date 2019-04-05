@@ -1,6 +1,13 @@
 #include "test_wouter/array.cvc"
 
+int globala = 5;
+int globalb = 10;
+export int globalc = 15;
+extern int globald;
+
 int test() {
+    int[globala, globalb] testarray = 5;
+    int[globalc, globald] testarray2 = 6;
     int a = 5;
     int b = a - 5;
     int c = a;
@@ -40,6 +47,8 @@ export int main() {
     float[2, 2] testFloatMat = [[1.2, 2.3], [3.4, 4.5]];
 
     testFun();
+
+    globalb = 6;
     printIntVec(testInt);
     printFloatVec(testFloat);
 

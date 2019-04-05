@@ -241,6 +241,8 @@
                     <node name="VarRead" />
                     <node name="VarAssign" />
                     <node name="FunctionVarDeclaration" />
+                    <node name="Global" />
+                    <node name="Declaration" />
                 </travuser>
             </traversal>
         </general>

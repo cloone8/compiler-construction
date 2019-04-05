@@ -1,6 +1,7 @@
 #include "constantpropagation.h"
 #include "types.h"
 #include "tree_basic.h"
+#include "node_basic.h"
 #include "traverse.h"
 #include "dbug.h"
 #include "free_node.h"
@@ -94,6 +95,53 @@ node* CPRbasicvardeclaration(node* arg_node, info* arg_info) {
             BASICVARDECLARATION_VARPOINTER(arg_node) = NULL;
 
             DBUG_RETURN(NULL);
+        }
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+/**
+ * Global traversal. Does something else depending on the phase.
+ *
+ * Phase 1 (Identify phase): Adds itself to the keymap to declare this variable to be
+ *                           valid for eventual replacement, if it is not exported
+ *                           or imported
+ * Phase 2 (Count phase): Does nothing
+ *
+ * Phase 3 (Replace phase): If the variable was only written to once, delete it from
+ *                          its symbol table and return NULL to indicate that this
+ *                          basicvardec is no longer needed
+ *
+ * @param arg_node: The Global node to process
+ * @param arg_info: The info struct to process
+ *
+ * @return: Itself or NULL
+ */
+node* CPRglobal(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CPRglobal");
+
+    if(!REPLACE(arg_info) && !DOCOUNT(arg_info)) {
+        if(GLOBAL_DEFINITION(arg_node) != NULL) {
+            symbol_table_entry* entry = GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node));
+            if(!entry->isimport && ! entry->isexport) {
+                keyMapItem* item = KMaddItem(MAP(arg_info), entry);
+                item->vartype = entry->vartype;
+                DBUG_PRINT("CPR", ("Adding %s to keymap", entry->name));
+            }
+        }
+    } else if(REPLACE(arg_info)) {
+        if(GLOBAL_DEFINITION(arg_node) != NULL) {
+            symbol_table_entry* entry = GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node));
+            keyMapItem* item = KMgetItem(MAP(arg_info), entry);
+
+            if(item != NULL && item->count == 1 && item->can_read == TRUE) {
+                DBUG_PRINT("CPR",("Deleting %s", entry->name));
+                symbol_table_remove(entry->table, entry->idx);
+                GLOBALDEFINITION_VARPOINTER(GLOBAL_DEFINITION(arg_node)) = NULL;
+
+                DBUG_RETURN(NULL);
+            }
         }
     }
 
@@ -254,6 +302,37 @@ node* CPRfunctionvardeclaration(node* arg_node, info* arg_info) {
 }
 
 /**
+ * Included to handle the deletion of globals. Removes itself when the
+ * child global was removed.
+ *
+ * @param arg_node: The declaration to process
+ * @param arg_info: The info struct
+ *
+ * @return: Itself, or the next declaration in line if arg_node was deleted
+ */
+node* CPRdeclaration(node* arg_node, info* arg_info) {
+    DBUG_ENTER("CPRdeclaration");
+
+    node* result = TRAVdo(DECLARATION_CURRENT(arg_node), arg_info);
+
+    DECLARATION_NEXT(arg_node) = TRAVopt(DECLARATION_NEXT(arg_node), arg_info);
+
+    if(result == NULL) {
+        // This functionvardec was deleted.
+        node* toreturn = DECLARATION_NEXT(arg_node);
+        DECLARATION_NEXT(arg_node) = NULL;
+
+        TRAVpush(TR_free);
+        FREEdeclaration(arg_node, NULL);
+        TRAVpop();
+
+        DBUG_RETURN(toreturn);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+/**
  * Starts the constant propagation traversal.
  * The propagation traversal is a three part traversal consisting of the following
  * steps:
@@ -289,6 +368,12 @@ node* CPRdo(node* syntaxtree) {
 
     CPRfreeInfo(arg_info);
     TRAVpop();
+
+    if(PROGRAM_FIRST(syntaxtree) == NULL) {
+        CTIwarn("The output file wasn't created or modified as no output has been generated.");
+        CTIwarnContinued("This is the result of compiling a file which exports no functions.");
+        CTIterminateCompilation(syntaxtree);
+    }
 
     DBUG_RETURN(syntaxtree);
 }
