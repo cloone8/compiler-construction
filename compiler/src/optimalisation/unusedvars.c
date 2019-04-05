@@ -165,7 +165,7 @@ node* UVRvarread(node* arg_node, info* arg_info) {
     if(!DELETE(arg_info)) {
         keyMapItem* item = KMgetItem(MAP(arg_info), VARREAD_VARPOINTER(arg_node));
 
-        if(item != NULL) {
+        if(item == NULL) {
             item = KMaddItem(MAP(arg_info), VARREAD_VARPOINTER(arg_node));
         }
 
@@ -200,7 +200,7 @@ node* UVRvarassign(node* arg_node, info* arg_info) {
     if(!DELETE(arg_info)) {
         keyMapItem* item = KMgetItem(MAP(arg_info), VARASSIGN_VARPOINTER(arg_node));
 
-        if(item != NULL) {
+        if(item == NULL) {
             item = KMaddItem(MAP(arg_info), VARASSIGN_VARPOINTER(arg_node));
         }
 
