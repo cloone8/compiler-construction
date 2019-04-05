@@ -61,7 +61,22 @@ static info* CPRfreeInfo(info *info) {
     DBUG_RETURN(info);
 }
 
-
+/**
+ * Basicvardeclaration traversal. Does something else depending on the phase.
+ *
+ * Phase 1 (Identify phase): Adds itself to the keymap to declare this variable to be
+ *                           valid for eventual replacement
+ * Phase 2 (Count phase): Does nothing
+ *
+ * Phase 3 (Replace phase): If the variable was only written to once, delete it from
+ *                          its symbol table and return NULL to indicate that this
+ *                          basicvardec is no longer needed
+ *
+ * @param arg_node: The basicvardeclaration node to process
+ * @param arg_info: The info struct to process
+ *
+ * @return: Itself or NULL
+ */
 node* CPRbasicvardeclaration(node* arg_node, info* arg_info) {
     DBUG_ENTER("CPRbasicvardeclaration");
 
@@ -85,6 +100,20 @@ node* CPRbasicvardeclaration(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Varread traversal. Does something else depending on the phase.
+ *
+ * Phase 1 (Identify phase): Does nothing
+ * Phase 2 (Count phase): Does nothing
+ *
+ * Phase 3 (Replace phase): If the varreads variable was only written to once, replace this
+ *                          varread with the proper value as stored in the keymap
+ *
+ * @param arg_node: The varread node to process
+ * @param arg_info: The info struct to process
+ *
+ * @return: Itself or a constant
+ */
 node* CPRvarread(node* arg_node, info* arg_info) {
     DBUG_ENTER("CPRvarread");
 
@@ -119,6 +148,23 @@ node* CPRvarread(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Varassign traversal. Does something else depending on the phase.
+ *
+ * Phase 1 (Identify phase): Does nothing
+ * Phase 2 (Count phase): Increments the write counter in the keymap for this variable,
+ *                        if the variable is in the keypmap. Otherwise does nothing.
+ *
+ * Phase 3 (Replace phase): If the variable was only written to once and is valid for
+ *                          constant substitution, replace this varassign with a NOOP
+ *                          because all its varreads have been replaces and this
+ *                          varassign is no longer nessecary.
+ *
+ * @param arg_node: The varassign node to process
+ * @param arg_info: The info struct to process
+ *
+ * @return: Itself or NULL
+ */
 node* CPRvarassign(node* arg_node, info* arg_info) {
     DBUG_ENTER("CPRvarassign");
 
@@ -133,6 +179,8 @@ node* CPRvarassign(node* arg_node, info* arg_info) {
             item->count++;
 
             if(item->count == 1) {
+                // Store the value for this varassign in the keymap, as it is the
+                // first time this variable was written to (and thus the initial value)
                 if(NODE_TYPE(EXPR_CURRENT(VARASSIGN_VALUE(arg_node))) == N_constant) {
                     item->can_read = TRUE;
                     DBUG_PRINT("CPR", ("Setting initval for %s", VARASSIGN_VARNAME(arg_node)));
@@ -161,7 +209,8 @@ node* CPRvarassign(node* arg_node, info* arg_info) {
         keyMapItem* item = KMgetItem(MAP(arg_info), VARASSIGN_VARPOINTER(arg_node));
 
         if(item != NULL && item->count == 1 && item->can_read == TRUE) {
-
+            // Valid for substitution and thus all varreads have been substituted.
+            // Remove this varassign as it's no longer needed
             TRAVpush(TR_free);
             FREEvarassign(arg_node, NULL);
             TRAVpop();
@@ -173,6 +222,15 @@ node* CPRvarassign(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Included to handle the deletion of basicvardecs. Removes itself when the
+ * child basicvardec was removed.
+ *
+ * @param arg_node: The functionvardeclaration to process
+ * @param arg_info: The info struct
+ *
+ * @return: Itself, or the next functionvardec in line if arg_node was deleted
+ */
 node* CPRfunctionvardeclaration(node* arg_node, info* arg_info) {
     DBUG_ENTER("CPRfunctionvardeclaration");
 
@@ -181,6 +239,7 @@ node* CPRfunctionvardeclaration(node* arg_node, info* arg_info) {
     FUNCTIONVARDECLARATION_NEXT(arg_node) = TRAVopt(FUNCTIONVARDECLARATION_NEXT(arg_node), arg_info);
 
     if(result == NULL) {
+        // This functionvardec was deleted.
         node* toreturn = FUNCTIONVARDECLARATION_NEXT(arg_node);
         FUNCTIONVARDECLARATION_NEXT(arg_node) = NULL;
 
@@ -194,6 +253,22 @@ node* CPRfunctionvardeclaration(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * Starts the constant propagation traversal.
+ * The propagation traversal is a three part traversal consisting of the following
+ * steps:
+ *
+ * 1. Go through all basicvardecs to identify variables to fold. This excludes any
+ *    imported, external or function parameter variables.
+ * 2. Count the assignments to those variables. We do not fold variables with
+ *    multiple assignments, as we have not transformed the AST into SSA form, and
+ *    we consequently can't properly discern dependencies
+ * 3. Replace any varreads of single-assignment known variables, and delete those
+ *    variables from the symbol table to save stack space.
+ *
+ * @param syntaxtree: The tree to propagate
+ * @return: The propagated tree
+ */
 node* CPRdo(node* syntaxtree) {
     DBUG_ENTER("CPRdo");
 
