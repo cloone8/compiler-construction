@@ -13,6 +13,7 @@
 #include "civic.h"
 
 int foo() {
+    int qr = 4;
     int a = 4;
     bool b = true;
     float c = bar(1, 2);
