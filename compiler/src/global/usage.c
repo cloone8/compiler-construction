@@ -28,7 +28,7 @@ void PrintGeneralInfo(void)
           "    -o <filename>   Name of output file.\n\n"
           "    -v <n>          Verbosity level (default: %d).\n\n"
           "    -tc             Apply syntax tree consistency checks.\n\n"
-          "    -noopt          Disable optimisations.\n\n"
+          "    -O              Enable optimisations.\n\n"
           "    -p <n>          Print the syntax tree during compilation. n can be any of the following:\n"
           "                        0: (Default) Don't print the syntax tree\n"
           "                        1: Print the syntax tree at the beginning and at the end of compilation\n"
