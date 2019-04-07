@@ -12,38 +12,6 @@
 
 #include "util.h"
 
-/*
- * INFO structure
- */
-struct INFO {
-};
-
-/*
- * INFO macros
- */
-
-/**
- * Creates a new info struct and sets the initial values
- */
-static info *LADmakeInfo(void) {
-    DBUG_ENTER("LADmakeInfo");
-
-    info *result = (info *)MEMmalloc(sizeof(info));
-
-    DBUG_RETURN(result);
-}
-
-/**
- * Frees the memory of an info struct
- */
-static info *LADfreeInfo(info *info) {
-    DBUG_ENTER("LADfreeInfo");
-
-    info = MEMfree(info);
-
-    DBUG_RETURN(info);
-}
-
 static size_t pos_count(node* positions) {
     DBUG_ENTER("pos_count");
     DBUG_ASSERT((positions != NULL), "Positions was NULL!");
@@ -197,8 +165,10 @@ static node* flatten_position_exprarray(symbol_table_entry* array_entry, node* p
 
 node* LADarrayvarread(node* arg_node, info* arg_info) {
     DBUG_ENTER("LADarrayvarread");
+    UNUSED_VAR(arg_info);
+
     symbol_table_entry* array_entry = ARRAYVARREAD_VARPOINTER(arg_node);
-    ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), arg_info);
+    ARRAYVARREAD_POSITION(arg_node) = TRAVdo(ARRAYVARREAD_POSITION(arg_node), NULL);
 
     node* read_position = ARRAYVARREAD_POSITION(arg_node);
     ARRAYVARREAD_POSITION(arg_node) = NULL;
@@ -212,10 +182,11 @@ node* LADarrayvarread(node* arg_node, info* arg_info) {
 
 node* LADarrayvarassign(node* arg_node, info* arg_info) {
     DBUG_ENTER("LADarrayvarassign");
+    UNUSED_VAR(arg_info);
 
     symbol_table_entry* array_entry = ARRAYVARASSIGN_VARPOINTER(arg_node);
-    ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), arg_info);
-    ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), arg_info);
+    ARRAYVARASSIGN_VALUES(arg_node) = TRAVdo(ARRAYVARASSIGN_VALUES(arg_node), NULL);
+    ARRAYVARASSIGN_POSITION(arg_node) = TRAVdo(ARRAYVARASSIGN_POSITION(arg_node), NULL);
 
     node* assign_position = ARRAYVARASSIGN_POSITION(arg_node);
     ARRAYVARASSIGN_POSITION(arg_node) = NULL;
@@ -229,10 +200,11 @@ node* LADarrayvarassign(node* arg_node, info* arg_info) {
 
 node* LADarrayinit(node* arg_node, info* arg_info) {
     DBUG_ENTER("LADarrayinit");
+    UNUSED_VAR(arg_info);
 
     node* dimension_binop = NULL;
 
-    ARRAYINIT_SIZE(arg_node) = TRAVdo(ARRAYINIT_SIZE(arg_node), arg_info);
+    ARRAYINIT_SIZE(arg_node) = TRAVdo(ARRAYINIT_SIZE(arg_node), NULL);
 
     node* malloc_size = ARRAYINIT_SIZE(arg_node);
     ARRAYINIT_SIZE(arg_node) = NULL;
@@ -272,15 +244,11 @@ node* LADarrayvardeclaration(node* arg_node, info* arg_info) {
 node* LADdo(node* syntaxtree) {
     DBUG_ENTER("LADdo");
 
-    info* arg_info = LADmakeInfo();
-
     TRAVpush(TR_lad);
 
-    syntaxtree = TRAVdo(syntaxtree, arg_info);
+    syntaxtree = TRAVdo(syntaxtree, NULL);
 
     TRAVpop();
-
-    arg_info = LADfreeInfo(arg_info);
 
     DBUG_RETURN(syntaxtree);
 }

@@ -16,55 +16,16 @@
 
 #include "util.h"
 
-/*
- * INFO structure
- */
-// struct INFO {
-//     lut_t* lut;
-// };
-
-
-/*
- * INFO macros
- */
-
-
-/*
- * INFO functions
- */
-
-/**
- * Creates a new info struct and sets the initial values
- */
-static info *WTDWmakeInfo(void) {
-    DBUG_ENTER("WTDWmakeInfo");
-
-    info *result = (info *)MEMmalloc(sizeof(info));
-    result->lut = NULL;
-
-    DBUG_RETURN(result);
-}
-
-/**
- * Frees the memory of an info struct
- */
-static info *WTDWfreeInfo(info *info) {
-    DBUG_ENTER("WTDWfreeInfo");
-
-    info = MEMfree(info);
-
-    DBUG_RETURN(info);
-}
-
 /**
  * This function trasnforms a while-loop to a do-while-loop. To make sure the conditon from the original while is checked the first time,
  * we wrap the new do-while-loop inside an if-statement.
  **/
 node* WTDWwhile(node* arg_node, info* arg_info) {
     DBUG_ENTER("WTDWwhile");
+    UNUSED_VAR(arg_info);
 
-    WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), arg_info);
-    WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), arg_info);
+    WHILE_CONDITION(arg_node) = TRAVdo(WHILE_CONDITION(arg_node), NULL);
+    WHILE_CODE(arg_node) = TRAVdo(WHILE_CODE(arg_node), NULL);
 
     node* code = WHILE_CODE(arg_node);
     node* cond = WHILE_CONDITION(arg_node);
@@ -85,11 +46,9 @@ node *WTDWdo(node *syntaxtree) {
     DBUG_ENTER("WTWDdo");
 
     TRAVpush(TR_wtdw);
-    info *arg_info = WTDWmakeInfo();
 
-    syntaxtree = TRAVdo(syntaxtree, arg_info);
+    syntaxtree = TRAVdo(syntaxtree, NULL);
 
-    WTDWfreeInfo(arg_info);
     TRAVpop();
 
     DBUG_RETURN(syntaxtree);

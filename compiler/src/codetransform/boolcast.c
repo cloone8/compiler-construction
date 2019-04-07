@@ -85,7 +85,7 @@ node* CBCbinop(node* arg_node, info* arg_info) {
 
     info* exprs_info = CBCmakeInfo();
 
-    /* We need to  store types of the left and right operands.*/
+    /* We need to store types of the left and right operands.*/
     TRAVdo(BINOP_LEFT(arg_node), exprs_info);
     TRAVdo(BINOP_RIGHT(arg_node), exprs_info);
 

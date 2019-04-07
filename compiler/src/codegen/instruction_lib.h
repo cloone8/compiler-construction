@@ -255,7 +255,6 @@ extern void astore(uint8_t to_store);
 extern void istoren(uint8_t scopes_above, uint8_t to_load);
 extern void fstoren(uint8_t scopes_above, uint8_t to_load);
 extern void bstoren(uint8_t scopes_above, uint8_t to_load);
-// No astoren???
 
 /**
  * Pops a value from the stack and stores it into the

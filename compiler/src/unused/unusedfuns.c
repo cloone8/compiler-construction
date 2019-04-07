@@ -187,8 +187,12 @@ node *SUFdo(node * syntaxtree) {
     TRAVpop();
 
     if(PROGRAM_FIRST(syntaxtree) == NULL) {
-        CTIwarn("The output file wasn't created or modified as no output has been generated.");
+        CTIwarn("The output file wasn't modified as no output has been generated.");
         CTIwarnContinued("This is the result of compiling a file which exports no functions.");
+        if(global.outfile != NULL) {
+            FILE* outfile = fopen(global.outfile, "w");
+            fclose(outfile);
+        }
         CTIterminateCompilation(syntaxtree);
     }
 

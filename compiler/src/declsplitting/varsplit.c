@@ -431,6 +431,10 @@ node* VSPfor(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * This phase splits variable initialisations into a seperate
+ * declaration and assignment. It also splits array dimensions into variables.
+ */
 node *VSPdo(node *syntaxtree) {
     DBUG_ENTER("VSPdo");
 

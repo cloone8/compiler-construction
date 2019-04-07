@@ -713,8 +713,6 @@ void bstoren(uint8_t scopes_above, uint8_t to_load) {
     DBUG_VOID_RETURN;
 }
 
-// No astoren???
-
 void istoreg(uint16_t global_index) {
     DBUG_ENTER("istoreg");
     char instruction[25];

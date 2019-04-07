@@ -143,6 +143,13 @@ node *RCbranch(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * This phase checks if for each function, all branches lead to a return statement.
+ * If the function does not have a valid return statement, does the following:
+ *
+ * For a void function, append an empty return statement as the final statement in the function
+ * For a non-void function, throw a compiler error.
+ */
 node *RCdo(node * syntaxtree) {
     DBUG_ENTER("RCdo");
 

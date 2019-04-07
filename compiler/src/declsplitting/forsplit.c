@@ -345,6 +345,10 @@ node* FSParrayvarread(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * This phase splits the three expressions of a for loop into variables. This
+ * ensures that the expressions are only evaluated once.
+ */
 node *FSPdo(node* syntaxtree) {
     DBUG_ENTER("FSPdo");
 

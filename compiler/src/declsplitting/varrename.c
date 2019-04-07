@@ -194,6 +194,11 @@ node* VRNfunction(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+/**
+ * This phase renames AST nodes according to their entries in the AST.
+ * This ensures that you only have to change the variable name once (in the symbol table),
+ * and that this change is then reflected everywhere in the AST.
+ */
 node* VRNdo(node* syntaxtree) {
     DBUG_ENTER("VRNdo");
 
