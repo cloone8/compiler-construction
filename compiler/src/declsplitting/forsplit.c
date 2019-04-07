@@ -213,6 +213,7 @@ node* FSPfor(node* arg_node, info* arg_info) {
     }
 
     DBUG_ASSERT((FOR_COUNTER(arg_node) != NULL), "FOR_COUNTER was NULL, while it shouldn't yet be!");
+
     // Lift the counter out of the loop
     node* counter_dec = FOR_COUNTER(arg_node);
     FOR_COUNTER(arg_node) = NULL;
@@ -255,7 +256,6 @@ node* FSPfor(node* arg_node, info* arg_info) {
     if(FOR_STEP(arg_node) != NULL) {
         FOR_STEP(arg_node) = TRAVdo(FOR_STEP(arg_node), arg_info);
         counter_inc_step = COPYdoCopy(FOR_STEP(arg_node));
-        // FOR_STEP(arg_node) = NULL;
     } else {
         counter_inc_step = TBmakeExpr(TBmakeConstant(TBmakeIntconst(1)));
         FOR_STEP(arg_node) = COPYdoCopy(counter_inc_step);

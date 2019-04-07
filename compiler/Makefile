@@ -108,17 +108,17 @@ DEPS = $(foreach file,$(DEPENDENCY_FILES),$(dir $(file)).$(notdir $(file)))
 # Start rules
 #
 
-all: devel
+all: prod
 
 devel: export CIVICC_CC=$(CCDEV)
 devel: export CIVICC_CCFLAGS=$(CCDEV_FLAGS)
 devel: export CIVICC_TYPE="Development version"
-devel: makefiles civicc.go
+devel: clean makefiles civicc.go
 
 prod: export CIVICC_CC=$(CCPROD)
 prod: export CIVICC_CCFLAGS=$(CCPROD_FLAGS)
-prod: export CIVICC_TYPE="Prodcution version"
-prod: clean makefiles civicc.go
+prod: export CIVICC_TYPE="Production version"
+prod: makefiles civicc.go
 
 makefiles: $(SOURCE_MAKEFILES)
 

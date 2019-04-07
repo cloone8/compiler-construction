@@ -197,10 +197,6 @@ CYCLEPHASE(cfo, "Folding constants", CFOdo, ONLYIF(myglobal.do_opt), opt, optcyc
 
 CYCLEPHASE(cpr, "Propagating constants", CPRdo, ONLYIF(myglobal.do_opt), opt, optcycle)
 
-// CYCLEPHASE(vpr, "Propagating variables", VPRdo, ONLYIF(myglobal.do_opt), opt, optcycle)
-
-// CYCLEPHASE(uvr, "Deleting unused variables", UVRdo, ONLYIF(myglobal.do_opt), opt, optcycle)
-
 ENDCYCLE()
 
 ENDPHASE(opt)
