@@ -259,7 +259,7 @@ clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
 # Testing
 #
 
-check: clean
+check:
 	@echo "============================="
 	@echo "Compiling development version"
 	@echo "============================="
@@ -275,6 +275,7 @@ check: clean
 	@echo "  Compiling product version"
 	@echo "============================="
 	@echo ""
+	@make clean
 	@make prod 1> /dev/null
 	@cd test_stephen; \
 		bash test.sh
