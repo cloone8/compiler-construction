@@ -60,7 +60,7 @@
 /*
  * file handle for parsing
  */
-FILE *yyin;
+extern FILE *yyin; /* defined by the flex-generated scanner */
 
 /*
  * external parser function from fun.y
@@ -84,10 +84,7 @@ node* SPdoScanParse(node *syntax_tree) {
 
     if (global.cpp) {
         // Take the preprocessed file
-        filename = STRcatn(3,
-                            "./",
-                            global.infile,
-                            CVC_PROCESSED_EXTENSION);
+        filename = STRcat(global.infile, CVC_PROCESSED_EXTENSION);
     } else {
         // Take the raw file
         filename = STRcpy(global.infile);
@@ -105,12 +102,13 @@ node* SPdoScanParse(node *syntax_tree) {
     // Do the actual parsing
     result = YYparseTree();
 
-    // Delete the intermediate file to make sure we don't leave any trash
-    char* rm_intermediate_file_str = STRcat(DELETE_COMMAND, filename);
-    int err = system(rm_intermediate_file_str);
-    rm_intermediate_file_str = MEMfree(rm_intermediate_file_str);
+    // Close before removing: Windows can't delete a file that is still open
+    fclose(yyin);
+    yyin = NULL;
+    myglobal.input_file_handler = NULL;
 
-    if(err) {
+    // Delete the intermediate file to make sure we don't leave any trash
+    if (global.cpp && remove(filename) != 0) {
         MEMfree(filename);
         CTIabort("Could not remove intermediate file, some junk files might have been left behind");
     }
@@ -138,20 +136,18 @@ node* SPdoRunPreProcessor(node *syntax_tree) {
     processedfile = STRcat(global.infile, CVC_PROCESSED_EXTENSION);
 
     cppcallstr = STRcatn(5,
-                        "gcc -E -x c ",
+                        "gcc -E -x c \"",
                         global.infile,
-                        " > ./",
+                        "\" > \"",
                         processedfile,
-                        ERROR_TO_NULL);
+                        "\"" ERROR_TO_NULL);
 
     err = system(cppcallstr);
 
     if (err) {
         // Delete the intermediate file and free the strings.
-        char* rm_intermediate_file_str = STRcat(DELETE_COMMAND, processedfile);
-        err = system(rm_intermediate_file_str);
+        remove(processedfile);
 
-        rm_intermediate_file_str = MEMfree(rm_intermediate_file_str);
         cppcallstr = MEMfree(cppcallstr);
         processedfile = MEMfree(processedfile);
 

@@ -3,11 +3,14 @@
 #include "memory.h"
 #include "types.h"
 #include "globals.h"
+#include "util.h"
 
 /**
  * Cleans all remaining memory and buffers
  */
-void FINdoFinalise(void) {
+node *FINdoFinalise(node *syntax_tree) {
+    UNUSED_VAR(syntax_tree);
+
     // Cleans lexer memory
     yylex_destroy();
 
@@ -28,5 +31,10 @@ void FINdoFinalise(void) {
     }
 
     // Close input file handler
-    fclose(myglobal.input_file_handler);
+    if(myglobal.input_file_handler != NULL) {
+        fclose(myglobal.input_file_handler);
+    }
+
+    // The tree was already freed by the previous phase
+    return NULL;
 }

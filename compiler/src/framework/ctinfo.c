@@ -429,7 +429,9 @@ void CTIinstallInterruptHandlers(void)
     DBUG_ENTER("CTIinstallInterruptHandlers");
 
     signal(SIGSEGV, InternalCompilerErrorBreak); /* Segmentation Fault */
+#ifdef SIGBUS /* not defined on Windows */
     signal(SIGBUS, InternalCompilerErrorBreak);  /* Bus Error */
+#endif
     signal(SIGINT, UserForcedBreak);     /* Interrupt (Control-C) */
 
     DBUG_VOID_RETURN;

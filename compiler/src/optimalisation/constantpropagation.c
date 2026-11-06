@@ -3,6 +3,7 @@
 #include "tree_basic.h"
 #include "node_basic.h"
 #include "traverse.h"
+#include "traverse_helper.h"
 #include "dbug.h"
 #include "free_node.h"
 #include "str.h"
@@ -120,6 +121,11 @@ node* CPRbasicvardeclaration(node* arg_node, info* arg_info) {
  */
 node* CPRglobal(node* arg_node, info* arg_info) {
     DBUG_ENTER("CPRglobal");
+
+    // Traverse the sons first: the dimension expressions can read variables
+    // (e.g. array-lowering temporaries) that the replace phase deletes, so
+    // those varreads must be replaced too or they would dangle.
+    arg_node = TRAVsons(arg_node, arg_info);
 
     if(!REPLACE(arg_info) && !DOCOUNT(arg_info)) {
         if(GLOBAL_DEFINITION(arg_node) != NULL) {

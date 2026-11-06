@@ -143,7 +143,7 @@ civicc: $(TARGETS)
 	@$(ECHO) ""
 	@$(ECHO) "Linking civicc"
 	@$(ECHO) ""
-	@$(CC) $(CCLINKFLAGS) -o $(BIN_DIR)/$@ $(TARGETS) $(LIB) $(LIBS)
+	@$(CC) $(CCLINKFLAGS) -o $(BIN_DIR)/$@ $(TARGETS) $(LIBS)
 	@$(RM) make_track
 
 
@@ -162,7 +162,7 @@ makesubdir: $(TARGETS)
 #
 
 clean: makefiles $(addsuffix .clean,$(ALL_SOURCE_DIRS))
-	@$(RM) $(BIN_DIR)/civicc $(DOC_DIR)/ast.html $(DOC_DIR)/ast.png *~
+	@$(RM) $(BIN_DIR)/civicc $(BIN_DIR)/civicc.exe $(DOC_DIR)/ast.html $(DOC_DIR)/ast.png *~
 
 %.clean:
 	@$(ECHO) "Cleaning directory $*"

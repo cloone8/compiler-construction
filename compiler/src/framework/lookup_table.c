@@ -131,6 +131,7 @@
 #include "lookup_table.h"
 
 #include <math.h>
+#include <stdint.h>
 
 #include "str.h"
 #include "memory.h"
@@ -223,7 +224,7 @@ hash_key_t GetHashKey_Pointer(void *data)
    * hash key: bits 9 .. 5
    *  ->  0 <= key < 2^5
    */
-  hash_key = (((hash_key_t) data >> 5) & 0x1f);
+  hash_key = (hash_key_t) (((uintptr_t) data >> 5) & 0x1f);
 
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wtype-limits"

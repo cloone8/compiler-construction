@@ -200,6 +200,16 @@ void interpretCPPstring(char* input) {
     // This is the final filename
     char* filename_substr = STRsubStr(filename_start, 0, toread);
 
+    // cpp escapes backslashes in file names (Windows paths): "a\\b" -> "a\b"
+    char *src = filename_substr, *dst = filename_substr;
+    while(*src != '\0') {
+        if(src[0] == '\\' && src[1] == '\\') {
+            src++;
+        }
+        *dst++ = *src++;
+    }
+    *dst = '\0';
+
     global.line = current_line;
     myglobal.current_file = filename_substr;
 
